@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "org.adde0109.ambassador.forge.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "ambassador.forge.refmap.json",
+  "mixins": [
+    "command.CommandTreeSerializationMixin",
+    "status.StatusResponseSerializationMixin",
+    "status.DisableStatusResponseCache",
+    "handshake.DisableFMLMarkerCheckMixin"
+
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
