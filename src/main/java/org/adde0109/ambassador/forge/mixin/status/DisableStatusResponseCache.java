@@ -22,6 +22,5 @@ public class DisableStatusResponseCache {
   @Inject(method = "write", at = @At("HEAD"))
   public void onWrite(CallbackInfo ci) throws IOException {
     this.status.invalidateJson();
-    LogManager.getLogger().warn("Write attempt!");
   }
 }

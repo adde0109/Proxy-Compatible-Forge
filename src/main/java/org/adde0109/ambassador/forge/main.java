@@ -51,13 +51,9 @@ public class main {
 
     buffer.writeResourceLocation(new ResourceLocation("fml:handshake"));
 
-    int index = buffer.writerIndex();
-    LogManager.getLogger().warn("Length is at index: " + String.valueOf(index));
+    //int index = buffer.writerIndex();
+    //LogManager.getLogger().warn("Length is at index: " + String.valueOf(index));
     buffer.writeVarInt(calculateLength(s2CModList));
-    LogManager.getLogger().warn("It should be: " + String.valueOf(buffer.getByte(index)));
-    LogManager.getLogger().warn("It should be: " + String.valueOf(buffer.getByte(index+1)));
-    LogManager.getLogger().warn("It should be: " + String.valueOf(buffer.getByte(index+2)));
-    LogManager.getLogger().warn("It should be: " + String.valueOf(buffer.getByte(index+3)));
     buffer.writeVarInt(1);
     s2CModList.encode(buffer);
 

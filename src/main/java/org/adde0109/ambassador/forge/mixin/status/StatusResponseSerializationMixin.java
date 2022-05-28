@@ -26,17 +26,7 @@ public class StatusResponseSerializationMixin {
       jsonObject.add("modinfo",main.serializeJson(new String(main.parts.get(main.partNrToSend-1), StandardCharsets.ISO_8859_1),
               String.valueOf(main.partNrToSend) + "-" + String.valueOf(main.parts.size())+ main.packetSplitters));
 
-      LogManager.getLogger().warn("Sent " + String.valueOf(main.partNrToSend) + " out of " + String.valueOf(main.parts.size()));
-      LogManager.getLogger().warn("First byte: " + String.valueOf(main.parts.get(main.partNrToSend-1)[0]));
-
-      LogManager.getLogger().warn(String.valueOf((new String(main.parts.get(main.partNrToSend-1), StandardCharsets.ISO_8859_1).getBytes(StandardCharsets.ISO_8859_1)[14])) + " Should be " + String.valueOf(main.parts.get(main.partNrToSend-1)[14]));
-      LogManager.getLogger().warn(String.valueOf((new String(main.parts.get(main.partNrToSend-1), StandardCharsets.ISO_8859_1).getBytes(StandardCharsets.ISO_8859_1)[15])) + " Should be " + String.valueOf(main.parts.get(main.partNrToSend-1)[15]));
-      LogManager.getLogger().warn(String.valueOf((new String(main.parts.get(main.partNrToSend-1), StandardCharsets.ISO_8859_1).getBytes(StandardCharsets.ISO_8859_1)[16])) + " Should be " + String.valueOf(main.parts.get(main.partNrToSend-1)[16]));
-      LogManager.getLogger().warn(String.valueOf((new String(main.parts.get(main.partNrToSend-1), StandardCharsets.ISO_8859_1).getBytes(StandardCharsets.ISO_8859_1)[17])) + " Should be " + String.valueOf(main.parts.get(main.partNrToSend-1)[17]));
-
       main.partNrToSend = (main.partNrToSend >= main.parts.size()) ? 1 : main.partNrToSend + 1;
-
-
 
 
       cir.setReturnValue(jsonObject);
