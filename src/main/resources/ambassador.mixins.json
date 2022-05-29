@@ -8,7 +8,8 @@
     "command.CommandTreeSerializationMixin",
     "status.StatusResponseSerializationMixin",
     "status.DisableStatusResponseCache",
-    "handshake.DisableFMLMarkerCheckMixin"
+    "handshake.DisableFMLMarkerCheckMixin",
+    "login.ModernForwardingMixin"
 
   ],
   "client": [

@@ -11,89 +11,95 @@ import net.minecraftforge.fml.config.ConfigTracker;
 import net.minecraftforge.fml.network.FMLHandshakeMessages;
 import net.minecraftforge.registries.RegistryManager;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Mod("ambassador")
-public class main {
+public class handshakeDataTransmitter {
 
   public static int partNrToSend;
 
+  @Nullable
+  public static handshakeData storedHandshakeData;
+
   private static final int MAX_DATA_LENGTH = 16000;
 
-  public static List<byte[]> parts = new ArrayList<>();
 
-  public static String packetSplitters;
-
-  public static boolean dataBuilt;
-
-  public main() {
+  public handshakeDataTransmitter() {
     partNrToSend = 1;
-    packetSplitters = "";
-    dataBuilt = false;
+  }
+
+  public static class handshakeData {
+    public String packetSplitters;
+    public List<byte[]> parts;
+    public handshakeData() {
+      packetSplitters = "";
+      parts = new ArrayList<>();
+      buildData();
+    }
+
+    private void buildData() {
+      FMLHandshakeMessages.S2CModList s2CModList = new FMLHandshakeMessages.S2CModList();
+      List<Pair<String, FMLHandshakeMessages.S2CRegistry>> registryPackets = RegistryManager.generateRegistryPackets(false);
+      List<Pair<String, FMLHandshakeMessages.S2CConfigData>> configPackets = ConfigTracker.INSTANCE.syncConfigs(false);
+
+
+      PacketBuffer buffer = new PacketBuffer(Unpooled.buffer());
+
+
+      //Mod List
+      packetSplitters += ":" + Integer.toString(buffer.writerIndex());
+
+      buffer.writeResourceLocation(new ResourceLocation("fml:handshake"));
+
+      //int index = buffer.writerIndex();
+      //LogManager.getLogger().warn("Length is at index: " + String.valueOf(index));
+      buffer.writeVarInt(calculateLength(s2CModList));
+      buffer.writeVarInt(1);
+      s2CModList.encode(buffer);
+
+
+      //Registries
+      for (Pair<String, FMLHandshakeMessages.S2CRegistry> registryPacket : registryPackets) {
+        packetSplitters += ":" + Integer.toString(buffer.writerIndex());
+
+        FMLHandshakeMessages.S2CRegistry registry = registryPacket.getRight();
+
+        buffer.writeResourceLocation(new ResourceLocation("fml:handshake"));
+        buffer.writeVarInt(calculateLength(registry));
+        buffer.writeVarInt(3);
+        encode(registry, buffer);
+      }
+
+      //Configs
+      for (Pair<String, FMLHandshakeMessages.S2CConfigData> configPacket : configPackets) {
+        packetSplitters += ":" + Integer.toString(buffer.writerIndex());
+
+        FMLHandshakeMessages.S2CConfigData config = configPacket.getRight();
+
+        buffer.writeResourceLocation(new ResourceLocation("fml:handshake"));
+        buffer.writeVarInt(calculateLength(config));
+        buffer.writeVarInt(4);
+        encode(config, buffer);
+      }
+
+
+
+      //Place everything into an array
+      //Splice into parts to fit a statusResponse
+      while (buffer.readableBytes() > 0) {
+        byte[] data = new byte[Math.min(buffer.readableBytes(), MAX_DATA_LENGTH)];
+        buffer.readBytes(data);
+        parts.add(data);
+      }
+      buffer.release();
+    }
   }
 
 
-  public static void buildData() {
-    FMLHandshakeMessages.S2CModList s2CModList = new FMLHandshakeMessages.S2CModList();
-    List<Pair<String, FMLHandshakeMessages.S2CRegistry>> registryPackets = RegistryManager.generateRegistryPackets(false);
-    List<Pair<String, FMLHandshakeMessages.S2CConfigData>> configPackets = ConfigTracker.INSTANCE.syncConfigs(false);
 
-
-    PacketBuffer buffer = new PacketBuffer(Unpooled.buffer());
-
-
-    //Mod List
-    packetSplitters += ":" + Integer.toString(buffer.writerIndex());
-
-    buffer.writeResourceLocation(new ResourceLocation("fml:handshake"));
-
-    //int index = buffer.writerIndex();
-    //LogManager.getLogger().warn("Length is at index: " + String.valueOf(index));
-    buffer.writeVarInt(calculateLength(s2CModList));
-    buffer.writeVarInt(1);
-    s2CModList.encode(buffer);
-
-
-    //Registries
-    for (Pair<String, FMLHandshakeMessages.S2CRegistry> registryPacket : registryPackets) {
-      packetSplitters += ":" + Integer.toString(buffer.writerIndex());
-
-      FMLHandshakeMessages.S2CRegistry registry = registryPacket.getRight();
-
-      buffer.writeResourceLocation(new ResourceLocation("fml:handshake"));
-      buffer.writeVarInt(calculateLength(registry));
-      buffer.writeVarInt(3);
-      encode(registry, buffer);
-    }
-
-    //Configs
-    for (Pair<String, FMLHandshakeMessages.S2CConfigData> configPacket : configPackets) {
-      packetSplitters += ":" + Integer.toString(buffer.writerIndex());
-
-      FMLHandshakeMessages.S2CConfigData config = configPacket.getRight();
-
-      buffer.writeResourceLocation(new ResourceLocation("fml:handshake"));
-      buffer.writeVarInt(calculateLength(config));
-      buffer.writeVarInt(4);
-      encode(config, buffer);
-    }
-
-
-
-    //Place everything into an array
-    //Splice into parts to fit a statusResponse
-    while (buffer.readableBytes() > 0) {
-      byte[] data = new byte[Math.min(buffer.readableBytes(), MAX_DATA_LENGTH)];
-      buffer.readBytes(data);
-      parts.add(data);
-    }
-    buffer.release();
-    dataBuilt = true;
-  }
 
 
 
