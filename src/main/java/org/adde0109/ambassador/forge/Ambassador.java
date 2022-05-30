@@ -4,10 +4,10 @@ package org.adde0109.ambassador.forge;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod("ambassador")
-public class ambassador {
+public class Ambassador {
 
 
-  public ambassador() {
-    new handshakeDataTransmitter();
+  public Ambassador() {
+    new HandshakeDataTransmitter();
   }
 }

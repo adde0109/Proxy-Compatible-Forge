@@ -2,7 +2,7 @@ package org.adde0109.ambassador.forge.mixin.status;
 
 import com.google.gson.JsonObject;
 import net.minecraft.network.ServerStatusResponse;
-import org.adde0109.ambassador.forge.handshakeDataTransmitter;
+import org.adde0109.ambassador.forge.HandshakeDataTransmitter;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,14 +19,14 @@ public class StatusResponseSerializationMixin {
         JsonObject jsonObject = cir.getReturnValue();
         jsonObject.remove("forgeData");
 
-        if(handshakeDataTransmitter.storedHandshakeData == null)
-          handshakeDataTransmitter.storedHandshakeData = new handshakeDataTransmitter.handshakeData();
+        if(HandshakeDataTransmitter.storedHandshakeData == null)
+          HandshakeDataTransmitter.storedHandshakeData = new HandshakeDataTransmitter.handshakeData();
 
-        handshakeDataTransmitter.handshakeData data = handshakeDataTransmitter.storedHandshakeData;
-        jsonObject.add("modinfo", handshakeDataTransmitter.serializeJson(new String(data.parts.get(handshakeDataTransmitter.partNrToSend-1), StandardCharsets.ISO_8859_1),
-              String.valueOf(handshakeDataTransmitter.partNrToSend) + "-" + String.valueOf(data.parts.size())+ data.packetSplitters));
+        HandshakeDataTransmitter.handshakeData data = HandshakeDataTransmitter.storedHandshakeData;
+        jsonObject.add("modinfo", HandshakeDataTransmitter.serializeJson(new String(data.parts.get(HandshakeDataTransmitter.partNrToSend-1), StandardCharsets.ISO_8859_1),
+              String.valueOf(HandshakeDataTransmitter.partNrToSend) + "-" + String.valueOf(data.parts.size())+ data.packetSplitters));
 
-        handshakeDataTransmitter.partNrToSend = (handshakeDataTransmitter.partNrToSend >= data.parts.size()) ? 1 : handshakeDataTransmitter.partNrToSend + 1;
+        HandshakeDataTransmitter.partNrToSend = (HandshakeDataTransmitter.partNrToSend >= data.parts.size()) ? 1 : HandshakeDataTransmitter.partNrToSend + 1;
 
 
         cir.setReturnValue(jsonObject);

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mod("ambassador")
-public class handshakeDataTransmitter {
+public class HandshakeDataTransmitter {
 
   public static int partNrToSend;
 
@@ -27,7 +27,7 @@ public class handshakeDataTransmitter {
   private static final int MAX_DATA_LENGTH = 16000;
 
 
-  public handshakeDataTransmitter() {
+  public HandshakeDataTransmitter() {
     partNrToSend = 1;
   }
 

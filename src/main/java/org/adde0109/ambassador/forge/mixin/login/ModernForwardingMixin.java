@@ -6,12 +6,11 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.login.ServerLoginNetHandler;
 import net.minecraft.network.login.client.CCustomPayloadLoginPacket;
-import net.minecraft.network.login.server.SCustomPayloadLoginPacket;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.network.NetworkDirection;
-import org.adde0109.ambassador.forge.modernForwarding;
+import org.adde0109.ambassador.forge.ModernForwarding;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.spongepowered.asm.mixin.Mixin;
@@ -53,7 +52,7 @@ public class ModernForwardingMixin {
       if(data != null) {
         LogManager.getLogger().info("Received forwarding packet!");
 
-        if(modernForwarding.validate(data)) {
+        if(ModernForwarding.validate(data)) {
           LogManager.getLogger().info("Player-data validated!");
           data.readUtf(); //Never used
           GameProfile forwardedProfile = new GameProfile(data.readUUID(), data.readUtf());
