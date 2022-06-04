@@ -16,7 +16,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod("ambassador")
 public class HandshakeDataTransmitter {
 
   public static int partNrToSend;

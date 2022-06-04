@@ -1,10 +1,16 @@
 //Contains code from: https://github.com/OKTW-Network/FabricProxy-Lite/blob/master/src/main/java/one/oktw/VelocityLib.java
 package org.adde0109.ambassador.forge;
 
+import com.electronwill.nightconfig.core.file.FileConfig;
+import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.login.client.CCustomPayloadLoginPacket;
+import org.apache.logging.log4j.LogManager;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import javax.annotation.Nullable;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
@@ -15,7 +21,31 @@ public class ModernForwarding {
 
   private static final int SUPPORTED_FORWARDING_VERSION = 1;
 
-  public static boolean validate(PacketBuffer buffer) {
+  private final String forwardingSecret;
+
+  ModernForwarding(String forwardingSecret) {
+    this.forwardingSecret = forwardingSecret;
+  }
+
+
+  @Nullable
+  public GameProfile handleForwardingPacket(CCustomPayloadLoginPacket packet) {
+    PacketBuffer data = packet.getInternalData();
+    if(data != null) {
+      LogManager.getLogger().info("Received forwarding packet!");
+
+      if(validate(data)) {
+        LogManager.getLogger().info("Player-data validated!");
+        data.readUtf(); //Never used
+        GameProfile forwardedProfile = new GameProfile(data.readUUID(), data.readUtf());
+
+        return forwardedProfile;
+      }
+    }
+    return null;
+  }
+
+  public boolean validate(PacketBuffer buffer) {
     final byte[] signature = new byte[32];
     buffer.readBytes(signature);
 
@@ -24,7 +54,7 @@ public class ModernForwarding {
 
     try {
       final Mac mac = Mac.getInstance("HmacSHA256");
-      mac.init(new SecretKeySpec("OMnLBWOdlQck".getBytes(), "HmacSHA256"));
+      mac.init(new SecretKeySpec(forwardingSecret.getBytes(), "HmacSHA256"));
       final byte[] mySignature = mac.doFinal(data);
       if (!MessageDigest.isEqual(signature, mySignature)) {
         return false;
@@ -40,7 +70,7 @@ public class ModernForwarding {
     return true;
   }
 
-  public static PropertyMap readProperties(PacketBuffer buf) {
+  public PropertyMap readProperties(PacketBuffer buf) {
     PropertyMap properties = new PropertyMap();
     int size = buf.readVarInt();
     for (int i = 0; i < size; i++) {
