@@ -33,6 +33,7 @@ public class HandshakeDataTransmitter {
   public static class handshakeData {
     public String packetSplitters;
     public List<byte[]> parts;
+    public int totalLength;
     public handshakeData() {
       packetSplitters = "";
       parts = new ArrayList<>();
@@ -88,6 +89,7 @@ public class HandshakeDataTransmitter {
 
       //Place everything into an array
       //Splice into parts to fit a statusResponse
+      totalLength = buffer.readableBytes();
       while (buffer.readableBytes() > 0) {
         byte[] data = new byte[Math.min(buffer.readableBytes(), MAX_DATA_LENGTH)];
         buffer.readBytes(data);
