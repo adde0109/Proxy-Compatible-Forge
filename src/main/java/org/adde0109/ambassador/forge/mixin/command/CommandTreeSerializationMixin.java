@@ -4,17 +4,17 @@ package org.adde0109.ambassador.forge.mixin.command;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import io.netty.buffer.Unpooled;
-import net.minecraft.command.arguments.ArgumentTypes;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.play.server.SCommandListPacket;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.commands.synchronization.ArgumentTypes;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
+import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.Arrays;
 
-@Mixin(SCommandListPacket.class)
+@Mixin(ClientboundCommandsPacket.class)
 public class CommandTreeSerializationMixin {
     private static final ResourceLocation MOD_ARGUMENT_INDICATOR = new ResourceLocation("crossstitch:mod_argument");
 
@@ -68,8 +68,8 @@ public class CommandTreeSerializationMixin {
             "minecraft:angle" // added in 1.16.2
     };
 
-    @Redirect(method = "writeNode", at = @At(value = "INVOKE", target = "Lnet/minecraft/command/arguments/ArgumentTypes;serialize(Lnet/minecraft/network/PacketBuffer;Lcom/mojang/brigadier/arguments/ArgumentType;)V"))
-    private static void writeNode$wrapInVelocityModArgument(PacketBuffer packetByteBuf, ArgumentType<?> type) {
+    @Redirect(method = "writeNode", at = @At(value = "INVOKE", target = "Lnet/minecraft/commands/synchronization/ArgumentTypes;serialize(Lnet/minecraft/network/FriendlyByteBuf;Lcom/mojang/brigadier/arguments/ArgumentType;)V"))
+    private static void writeNode$wrapInVelocityModArgument(FriendlyByteBuf packetByteBuf, ArgumentType<?> type) {
         ArgumentTypes.Entry entry = ArgumentTypes.get(type);
         if (entry == null) {
             packetByteBuf.writeResourceLocation(new ResourceLocation(""));
@@ -85,12 +85,12 @@ public class CommandTreeSerializationMixin {
         serializeWrappedArgumentType(packetByteBuf, type, entry);
     }
 
-    private static void serializeWrappedArgumentType(PacketBuffer packetByteBuf, ArgumentType argumentType, ArgumentTypes.Entry entry) {
+    private static void serializeWrappedArgumentType(FriendlyByteBuf packetByteBuf, ArgumentType argumentType, ArgumentTypes.Entry entry) {
         packetByteBuf.writeResourceLocation(MOD_ARGUMENT_INDICATOR);
 
         packetByteBuf.writeResourceLocation(entry.name);
 
-        PacketBuffer extraData = new PacketBuffer(Unpooled.buffer());
+        FriendlyByteBuf extraData = new FriendlyByteBuf(Unpooled.buffer());
         entry.serializer.serializeToNetwork(argumentType, extraData);
 
         packetByteBuf.writeVarInt(extraData.readableBytes());

@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "org.adde0109.ambassador.forge.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_17",
   "refmap": "ambassador.forge.refmap.json",
   "mixins": [
     "command.CommandTreeSerializationMixin",

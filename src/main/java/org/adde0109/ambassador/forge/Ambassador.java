@@ -1,20 +1,13 @@
 package org.adde0109.ambassador.forge;
 
 
-import net.minecraftforge.common.ForgeConfig;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
-import net.minecraftforge.fml.loading.progress.StartupMessageManager;
-import net.minecraftforge.fml.network.FMLNetworkConstants;
-import net.minecraftforge.versions.forge.ForgeVersion;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
 
 import java.util.Objects;
 
@@ -37,7 +30,7 @@ public static final Config config;
 
 
 
-  public void serverAbutToStart(FMLServerAboutToStartEvent event) {
+  public void serverAbutToStart(ServerAboutToStartEvent event) {
     String forwardingSecret = config.forwardingSecret.get();
     if(!Objects.equals(forwardingSecret, "")) {
       modernForwardingInstance = new ModernForwarding(forwardingSecret);

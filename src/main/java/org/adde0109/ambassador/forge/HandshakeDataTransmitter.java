@@ -3,12 +3,13 @@ package org.adde0109.ambassador.forge;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.netty.buffer.Unpooled;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.status.server.SServerInfoPacket;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.status.ClientboundStatusResponsePacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ConfigTracker;
-import net.minecraftforge.fml.network.FMLHandshakeMessages;
+import net.minecraftforge.network.ConfigSync;
+import net.minecraftforge.network.HandshakeMessages;
 import net.minecraftforge.registries.RegistryManager;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -41,12 +42,12 @@ public class HandshakeDataTransmitter {
     }
 
     private void buildData() {
-      FMLHandshakeMessages.S2CModList s2CModList = new FMLHandshakeMessages.S2CModList();
-      List<Pair<String, FMLHandshakeMessages.S2CRegistry>> registryPackets = RegistryManager.generateRegistryPackets(false);
-      List<Pair<String, FMLHandshakeMessages.S2CConfigData>> configPackets = ConfigTracker.INSTANCE.syncConfigs(false);
+      HandshakeMessages.S2CModList s2CModList = new HandshakeMessages.S2CModList();
+      List<Pair<String, HandshakeMessages.S2CRegistry>> registryPackets = RegistryManager.generateRegistryPackets(false);
+      List<Pair<String, HandshakeMessages.S2CConfigData>> configPackets = ConfigSync.INSTANCE.syncConfigs(false);
 
 
-      PacketBuffer buffer = new PacketBuffer(Unpooled.buffer());
+      FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
 
 
       //Mod List
@@ -62,10 +63,10 @@ public class HandshakeDataTransmitter {
 
 
       //Registries
-      for (Pair<String, FMLHandshakeMessages.S2CRegistry> registryPacket : registryPackets) {
+      for (Pair<String, HandshakeMessages.S2CRegistry> registryPacket : registryPackets) {
         packetSplitters += ":" + Integer.toString(buffer.writerIndex());
 
-        FMLHandshakeMessages.S2CRegistry registry = registryPacket.getRight();
+        HandshakeMessages.S2CRegistry registry = registryPacket.getRight();
 
         buffer.writeResourceLocation(new ResourceLocation("fml:handshake"));
         buffer.writeVarInt(calculateLength(registry));
@@ -74,10 +75,10 @@ public class HandshakeDataTransmitter {
       }
 
       //Configs
-      for (Pair<String, FMLHandshakeMessages.S2CConfigData> configPacket : configPackets) {
+      for (Pair<String, HandshakeMessages.S2CConfigData> configPacket : configPackets) {
         packetSplitters += ":" + Integer.toString(buffer.writerIndex());
 
-        FMLHandshakeMessages.S2CConfigData config = configPacket.getRight();
+        HandshakeMessages.S2CConfigData config = configPacket.getRight();
 
         buffer.writeResourceLocation(new ResourceLocation("fml:handshake"));
         buffer.writeVarInt(calculateLength(config));
@@ -107,8 +108,8 @@ public class HandshakeDataTransmitter {
 
 
 
-  private static int calculateLength(FMLHandshakeMessages.S2CModList s2CModList) {
-    PacketBuffer buffer = new PacketBuffer(Unpooled.buffer());
+  private static int calculateLength(HandshakeMessages.S2CModList s2CModList) {
+    FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
     buffer.writeVarInt(1);
     s2CModList.encode(buffer);
     int length = buffer.writerIndex();
@@ -116,8 +117,8 @@ public class HandshakeDataTransmitter {
     return length;
   }
 
-  private static int calculateLength(FMLHandshakeMessages.S2CRegistry s2CRegistry) {
-    PacketBuffer buffer = new PacketBuffer(Unpooled.buffer());
+  private static int calculateLength(HandshakeMessages.S2CRegistry s2CRegistry) {
+    FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
     buffer.writeVarInt(2);
     encode(s2CRegistry,buffer);
     int length = buffer.writerIndex();
@@ -125,8 +126,8 @@ public class HandshakeDataTransmitter {
     return length;
   }
 
-  private static int calculateLength(FMLHandshakeMessages.S2CConfigData s2CConfigData) {
-    PacketBuffer buffer = new PacketBuffer(Unpooled.buffer());
+  private static int calculateLength(HandshakeMessages.S2CConfigData s2CConfigData) {
+    FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
     buffer.writeVarInt(2);
     encode(s2CConfigData,buffer);
     int length = buffer.writerIndex();
@@ -134,14 +135,14 @@ public class HandshakeDataTransmitter {
     return length;
   }
 
-  private static void encode(FMLHandshakeMessages.S2CRegistry config, PacketBuffer buffer) {
+  private static void encode(HandshakeMessages.S2CRegistry config, FriendlyByteBuf buffer) {
     buffer.writeResourceLocation(config.getRegistryName());
     buffer.writeBoolean(config.hasSnapshot());
     if (config.hasSnapshot())
       buffer.writeBytes(config.getSnapshot().getPacketData());
   }
 
-  private static void encode(FMLHandshakeMessages.S2CConfigData config, PacketBuffer buffer) {
+  private static void encode(HandshakeMessages.S2CConfigData config, FriendlyByteBuf buffer) {
     buffer.writeUtf(config.getFileName());
     buffer.writeByteArray(config.getBytes());
   }
@@ -149,7 +150,7 @@ public class HandshakeDataTransmitter {
 
   private static int calculateAvailableSize(JsonObject jsonObject) {
     jsonObject.add("modinfo",serializeJson("0","1-20:0:32325:64574:99879:---------------------"));
-    int size = SServerInfoPacket.GSON.toJson(jsonObject).length();
+    int size = ClientboundStatusResponsePacket.GSON.toJson(jsonObject).length();
     jsonObject.remove("modinfo");
     return 32767-size;
   }

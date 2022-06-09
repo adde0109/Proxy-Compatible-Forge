@@ -5,8 +5,8 @@ import com.electronwill.nightconfig.core.file.FileConfig;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.login.client.CCustomPayloadLoginPacket;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
 import org.apache.logging.log4j.LogManager;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -29,8 +29,8 @@ public class ModernForwarding {
 
 
   @Nullable
-  public GameProfile handleForwardingPacket(CCustomPayloadLoginPacket packet) {
-    PacketBuffer data = packet.getInternalData();
+  public GameProfile handleForwardingPacket(ServerboundCustomQueryPacket packet) {
+    FriendlyByteBuf data = packet.getInternalData();
     if(data != null) {
       LogManager.getLogger().info("Received forwarding packet!");
 
@@ -45,7 +45,7 @@ public class ModernForwarding {
     return null;
   }
 
-  public boolean validate(PacketBuffer buffer) {
+  public boolean validate(FriendlyByteBuf buffer) {
     final byte[] signature = new byte[32];
     buffer.readBytes(signature);
 
@@ -70,7 +70,7 @@ public class ModernForwarding {
     return true;
   }
 
-  public PropertyMap readProperties(PacketBuffer buf) {
+  public PropertyMap readProperties(FriendlyByteBuf buf) {
     PropertyMap properties = new PropertyMap();
     int size = buf.readVarInt();
     for (int i = 0; i < size; i++) {

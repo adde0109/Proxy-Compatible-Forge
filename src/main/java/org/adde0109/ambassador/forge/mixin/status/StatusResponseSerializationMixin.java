@@ -1,7 +1,7 @@
 package org.adde0109.ambassador.forge.mixin.status;
 
 import com.google.gson.JsonObject;
-import net.minecraft.network.ServerStatusResponse;
+import net.minecraft.network.protocol.status.ServerStatus;
 import org.adde0109.ambassador.forge.HandshakeDataTransmitter;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.nio.charset.StandardCharsets;
 
 
-@Mixin(ServerStatusResponse.Serializer.class)
+@Mixin(ServerStatus.Serializer.class)
 public class StatusResponseSerializationMixin {
 
     @Inject(method = "serialize", at = @At("RETURN"), cancellable = true)
