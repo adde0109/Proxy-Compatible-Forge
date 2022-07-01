@@ -24,7 +24,7 @@ public class StatusResponseSerializationMixin {
 
         HandshakeDataTransmitter.handshakeData data = HandshakeDataTransmitter.storedHandshakeData;
         jsonObject.add("modinfo", HandshakeDataTransmitter.serializeJson(new String(data.parts.get(HandshakeDataTransmitter.partNrToSend-1), StandardCharsets.ISO_8859_1),
-              String.valueOf(HandshakeDataTransmitter.partNrToSend) + "-" + String.valueOf(data.parts.size()) + "-" + String.valueOf(data.totalLength) + data.packetSplitters));
+              String.valueOf(HandshakeDataTransmitter.partNrToSend) + "-" + String.valueOf(data.parts.size()) + "-" + String.valueOf(data.totalLength) + "-" + Long.toHexString(data.checksum) + data.packetSplitters));
 
         HandshakeDataTransmitter.partNrToSend = (HandshakeDataTransmitter.partNrToSend >= data.parts.size()) ? 1 : HandshakeDataTransmitter.partNrToSend + 1;
 

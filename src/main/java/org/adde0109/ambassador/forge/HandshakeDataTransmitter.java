@@ -16,6 +16,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.Adler32;
 
 public class HandshakeDataTransmitter {
 
@@ -35,6 +36,8 @@ public class HandshakeDataTransmitter {
     public String packetSplitters;
     public List<byte[]> parts;
     public int totalLength;
+
+    public long checksum;
     public handshakeData() {
       packetSplitters = "";
       parts = new ArrayList<>();
@@ -87,6 +90,10 @@ public class HandshakeDataTransmitter {
       }
 
 
+
+      Adler32 adler32 = new Adler32();
+      adler32.update(buffer.nioBuffer());
+      checksum = adler32.getValue();
 
       //Place everything into an array
       //Splice into parts to fit a statusResponse
