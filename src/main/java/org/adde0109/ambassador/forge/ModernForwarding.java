@@ -18,7 +18,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class ModernForwarding {
-
+/*
   private static final int SUPPORTED_FORWARDING_VERSION = 1;
 
   private final String forwardingSecret;
@@ -85,5 +85,5 @@ public class ModernForwarding {
     }
     return properties;
   }
-
+*/
 }

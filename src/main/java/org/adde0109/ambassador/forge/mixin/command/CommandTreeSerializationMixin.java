@@ -4,19 +4,26 @@ package org.adde0109.ambassador.forge.mixin.command;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import io.netty.buffer.Unpooled;
-import net.minecraft.commands.synchronization.ArgumentTypes;
+import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
-import net.minecraft.resources.ResourceLocation;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Inject;
 
 import java.util.Arrays;
+import java.util.Optional;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ClientboundCommandsPacket.class)
+@Mixin(targets = "net.minecraft.network.protocol.game.ClientboundCommandsPacket$ArgumentNodeStub")
 public class CommandTreeSerializationMixin {
-    private static final ResourceLocation MOD_ARGUMENT_INDICATOR = new ResourceLocation("crossstitch:mod_argument");
+
+    @Shadow @Final private ArgumentTypeInfo.Template<?> argumentType;
+    private static final int MOD_ARGUMENT_INDICATOR = -256;
 
     private static final String[] ignore = {
             "brigadier:string",
@@ -65,33 +72,36 @@ public class CommandTreeSerializationMixin {
             "minecraft:float_range",
             "minecraft:time", // added in 1.14
             "minecraft:uuid", // added in 1.16
-            "minecraft:angle" // added in 1.16.2
+            "minecraft:angle", // added in 1.16.2
+            "minecraft:template_mirror", // 1.19
+            "minecraft:template_rotation" // 1.19
     };
 
-    @Redirect(method = "writeNode", at = @At(value = "INVOKE", target = "Lnet/minecraft/commands/synchronization/ArgumentTypes;serialize(Lnet/minecraft/network/FriendlyByteBuf;Lcom/mojang/brigadier/arguments/ArgumentType;)V"))
-    private static void writeNode$wrapInVelocityModArgument(FriendlyByteBuf packetByteBuf, ArgumentType<?> type) {
-        ArgumentTypes.Entry entry = ArgumentTypes.get(type);
-        if (entry == null) {
-            packetByteBuf.writeResourceLocation(new ResourceLocation(""));
+    @Inject(method = "serializeCap(Lnet/minecraft/network/FriendlyByteBuf;Lnet/minecraft/commands/synchronization/ArgumentTypeInfo;Lnet/minecraft/commands/synchronization/ArgumentTypeInfo$Template;)V",
+            at = @At("HEAD"), cancellable = true)
+    private static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>> void writeNode$wrapInVelocityModArgument(FriendlyByteBuf buf, ArgumentTypeInfo<A, T> serializer, ArgumentTypeInfo.Template<A> properties, CallbackInfo ci) {
+        Optional<ResourceKey<ArgumentTypeInfo<?, ?>>> entry = Registry.COMMAND_ARGUMENT_TYPE.getResourceKey(serializer);
+
+        if (entry.isEmpty()) {
             return;
         }
-        if (Arrays.stream(ignore).anyMatch(entry.name.toString()::equals)) {
-            packetByteBuf.writeResourceLocation(entry.name);
-            entry.serializer.serializeToNetwork(type, packetByteBuf);
+        ResourceKey<ArgumentTypeInfo<?, ?>> keyed = entry.get();
+
+        if (Arrays.asList(ignore).contains(keyed.location().toString())) {
             return;
         }
+        ci.cancel();
 
         // Not a standard Minecraft argument type - so we need to wrap it
-        serializeWrappedArgumentType(packetByteBuf, type, entry);
+        serializeWrappedArgumentType(buf, serializer, properties);
     }
 
-    private static void serializeWrappedArgumentType(FriendlyByteBuf packetByteBuf, ArgumentType argumentType, ArgumentTypes.Entry entry) {
-        packetByteBuf.writeResourceLocation(MOD_ARGUMENT_INDICATOR);
-
-        packetByteBuf.writeResourceLocation(entry.name);
+    private static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>> void serializeWrappedArgumentType(FriendlyByteBuf packetByteBuf, ArgumentTypeInfo<A, T> serializer, ArgumentTypeInfo.Template<A> properties) {
+        packetByteBuf.writeVarInt(MOD_ARGUMENT_INDICATOR);
+        packetByteBuf.writeVarInt(Registry.COMMAND_ARGUMENT_TYPE.getId(serializer));
 
         FriendlyByteBuf extraData = new FriendlyByteBuf(Unpooled.buffer());
-        entry.serializer.serializeToNetwork(argumentType, extraData);
+        serializer.serializeToNetwork((T) properties, extraData);
 
         packetByteBuf.writeVarInt(extraData.readableBytes());
         packetByteBuf.writeBytes(extraData);

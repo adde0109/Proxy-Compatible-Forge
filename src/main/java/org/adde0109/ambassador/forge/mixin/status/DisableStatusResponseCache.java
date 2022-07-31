@@ -20,7 +20,7 @@ public class DisableStatusResponseCache {
   private ServerStatus status;
 
   @Inject(method = "write", at = @At("HEAD"))
-  public void onWrite(CallbackInfo ci) throws IOException {
+  public void onWrite(CallbackInfo ci) {
     this.status.invalidateJson();
   }
 }
