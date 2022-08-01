@@ -18,7 +18,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class ModernForwarding {
-/*
+
   private static final int SUPPORTED_FORWARDING_VERSION = 1;
 
   private final String forwardingSecret;
@@ -38,7 +38,7 @@ public class ModernForwarding {
         LogManager.getLogger().info("Player-data validated!");
         data.readUtf(); //Never used
         GameProfile forwardedProfile = new GameProfile(data.readUUID(), data.readUtf());
-
+        readProperties(data,forwardedProfile.getProperties());
         return forwardedProfile;
       }
     }
@@ -70,8 +70,7 @@ public class ModernForwarding {
     return true;
   }
 
-  public PropertyMap readProperties(FriendlyByteBuf buf) {
-    PropertyMap properties = new PropertyMap();
+  public void readProperties(FriendlyByteBuf buf, PropertyMap propertyMap) {
     int size = buf.readVarInt();
     for (int i = 0; i < size; i++) {
       String name = buf.readUtf();
@@ -81,9 +80,7 @@ public class ModernForwarding {
       if (hasSignature) {
         signature = buf.readUtf();
       }
-      properties.put(name,new Property(name, value, signature));
+      propertyMap.put(name,new Property(name, value, signature));
     }
-    return properties;
   }
-*/
 }

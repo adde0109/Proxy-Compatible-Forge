@@ -14,12 +14,12 @@ import java.util.Objects;
 @Mod("ambassador")
 public class Ambassador {
 
-//public static ModernForwarding modernForwardingInstance;
+public static ModernForwarding modernForwardingInstance;
 
-//public static final Config config;
+public static final Config config;
 
   public Ambassador() {
-    //ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON,configSpec);
+    ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON,configSpec);
 
     //Make sure the mod being absent on the other network side does not cause the client to display the server as incompatible
     //ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
@@ -31,15 +31,12 @@ public class Ambassador {
 
 
   public void serverAbutToStart(ServerAboutToStartEvent event) {
-    /*
     String forwardingSecret = config.forwardingSecret.get();
     if(!Objects.equals(forwardingSecret, "")) {
       modernForwardingInstance = new ModernForwarding(forwardingSecret);
     }
-    */
   }
 
-/*
   static final ForgeConfigSpec configSpec;
   static {
     final Pair<Config, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Ambassador.Config::new);
@@ -62,7 +59,6 @@ public class Ambassador {
     }
 
   }
-*/
 
 
 }
