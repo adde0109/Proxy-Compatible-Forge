@@ -1,14 +1,12 @@
 //Contains code from: https://github.com/OKTW-Network/FabricProxy-Lite/blob/master/src/main/java/one/oktw/VelocityLib.java
 package org.adde0109.ambassador.forge;
 
-import com.electronwill.nightconfig.core.file.FileConfig;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
 import org.apache.logging.log4j.LogManager;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
 import javax.crypto.Mac;
@@ -38,7 +36,7 @@ public class ModernForwarding {
         LogManager.getLogger().info("Player-data validated!");
         data.readUtf(); //Never used
         GameProfile forwardedProfile = new GameProfile(data.readUUID(), data.readUtf());
-
+        readProperties(data,forwardedProfile.getProperties());
         return forwardedProfile;
       }
     }
@@ -70,8 +68,7 @@ public class ModernForwarding {
     return true;
   }
 
-  public PropertyMap readProperties(FriendlyByteBuf buf) {
-    PropertyMap properties = new PropertyMap();
+  public void readProperties(FriendlyByteBuf buf, PropertyMap propertyMap) {
     int size = buf.readVarInt();
     for (int i = 0; i < size; i++) {
       String name = buf.readUtf();
@@ -81,9 +78,7 @@ public class ModernForwarding {
       if (hasSignature) {
         signature = buf.readUtf();
       }
-      properties.put(name,new Property(name, value, signature));
+      propertyMap.put(name,new Property(name, value, signature));
     }
-    return properties;
   }
-
 }
