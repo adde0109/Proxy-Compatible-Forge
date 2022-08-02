@@ -11,7 +11,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.network.NetworkDirection;
 import org.adde0109.ambassador.forge.Ambassador;
-import org.adde0109.ambassador.forge.ModernForwarding;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,7 +37,6 @@ public class ModernForwardingMixin {
   private ServerLoginPacketListenerImpl.State state;
 
   private static final ResourceLocation VELOCITY_RESOURCE = new ResourceLocation("velocity:player_info");
-  private boolean ambassador$listen = false;
 
   @Inject(method = "handleHello", at = @At("RETURN"))
   private void onHandleHello(CallbackInfo ci) {
@@ -46,14 +44,12 @@ public class ModernForwardingMixin {
       this.state = ServerLoginPacketListenerImpl.State.HELLO;
       LogManager.getLogger().warn("Sent Forward Request");
       this.connection.send(NetworkDirection.LOGIN_TO_CLIENT.buildPacket(Pair.of(new FriendlyByteBuf(Unpooled.EMPTY_BUFFER),100),VELOCITY_RESOURCE).getThis());
-      ambassador$listen = true;
     }
   }
 
   @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
   private void onHandleCustomQueryPacket(ServerboundCustomQueryPacket p_209526_1_, CallbackInfo ci) {
-    if((Ambassador.modernForwardingInstance != null) && (p_209526_1_.getIndex() == 100) && ambassador$listen) {
-      ambassador$listen = false;
+    if((p_209526_1_.getIndex() == 100) && state == ServerLoginPacketListenerImpl.State.HELLO) {
       this.gameProfile = Ambassador.modernForwardingInstance.handleForwardingPacket(p_209526_1_);
       if(this.gameProfile == null) {
         this.disconnect(new TextComponent("Direct connections to this server are not permitted!"));
