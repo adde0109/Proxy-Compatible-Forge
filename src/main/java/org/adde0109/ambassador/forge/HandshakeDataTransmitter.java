@@ -4,10 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.status.ClientboundStatusResponsePacket;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ConfigTracker;
 import net.minecraftforge.network.ConfigSync;
 import net.minecraftforge.network.HandshakeMessages;
 import net.minecraftforge.registries.RegistryManager;
@@ -53,18 +50,18 @@ public class HandshakeDataTransmitter {
       FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
 
       //Mod List
-      packetSplitters += ":" + Integer.toString(buffer.writerIndex());
+      packetSplitters += ":" + buffer.writerIndex();
       writePacket(buffer,1,s2CModList::encode);
 
       //Registries
       for (Pair<String, HandshakeMessages.S2CRegistry> registryPacket : registryPackets) {
-        packetSplitters += ":" + Integer.toString(buffer.writerIndex());
+        packetSplitters += ":" + buffer.writerIndex();
         writePacket(buffer,3,(byteBuf -> encode(registryPacket.getRight(),byteBuf)));
       }
 
       //Configs
       for (Pair<String, HandshakeMessages.S2CConfigData> configPacket : configPackets) {
-        packetSplitters += ":" + Integer.toString(buffer.writerIndex());
+        packetSplitters += ":" + buffer.writerIndex();
         writePacket(buffer,4,(byteBuf -> encode(configPacket.getRight(),byteBuf)));
       }
 

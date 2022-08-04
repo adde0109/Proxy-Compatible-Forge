@@ -1,16 +1,13 @@
 package org.adde0109.ambassador.forge.mixin.status;
 
 
-import net.minecraft.network.protocol.status.ServerStatus;
 import net.minecraft.network.protocol.status.ClientboundStatusResponsePacket;
-import org.apache.logging.log4j.LogManager;
+import net.minecraft.network.protocol.status.ServerStatus;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.io.IOException;
 
 @Mixin(ClientboundStatusResponsePacket.class)
 public class DisableStatusResponseCache {
