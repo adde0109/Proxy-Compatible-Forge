@@ -3,7 +3,6 @@ package org.adde0109.ambassador.forge.mixin.status;
 
 import net.minecraft.network.ServerStatusResponse;
 import net.minecraft.network.status.server.SServerInfoPacket;
-import org.apache.logging.log4j.LogManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;

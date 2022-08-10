@@ -4,9 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.status.server.SServerInfoPacket;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ConfigTracker;
 import net.minecraftforge.fml.network.FMLHandshakeMessages;
 import net.minecraftforge.registries.RegistryManager;
@@ -15,6 +13,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.zip.Adler32;
 
 public class HandshakeDataTransmitter {
@@ -53,44 +52,23 @@ public class HandshakeDataTransmitter {
 
       //Mod List
       packetSplitters += ":" + Integer.toString(buffer.writerIndex());
-
-      buffer.writeResourceLocation(new ResourceLocation("fml:handshake"));
-
-      //int index = buffer.writerIndex();
-      //LogManager.getLogger().warn("Length is at index: " + String.valueOf(index));
-      buffer.writeVarInt(calculateLength(s2CModList));
-      buffer.writeVarInt(1);
-      s2CModList.encode(buffer);
-
+      writePacket(buffer,1,s2CModList::encode);
 
       //Registries
       for (Pair<String, FMLHandshakeMessages.S2CRegistry> registryPacket : registryPackets) {
         packetSplitters += ":" + Integer.toString(buffer.writerIndex());
-
-        FMLHandshakeMessages.S2CRegistry registry = registryPacket.getRight();
-
-        buffer.writeResourceLocation(new ResourceLocation("fml:handshake"));
-        buffer.writeVarInt(calculateLength(registry));
-        buffer.writeVarInt(3);
-        encode(registry, buffer);
+        writePacket(buffer,3,(byteBuf -> encode(registryPacket.getRight(),byteBuf)));
       }
 
       //Configs
       for (Pair<String, FMLHandshakeMessages.S2CConfigData> configPacket : configPackets) {
         packetSplitters += ":" + Integer.toString(buffer.writerIndex());
-
-        FMLHandshakeMessages.S2CConfigData config = configPacket.getRight();
-
-        buffer.writeResourceLocation(new ResourceLocation("fml:handshake"));
-        buffer.writeVarInt(calculateLength(config));
-        buffer.writeVarInt(4);
-        encode(config, buffer);
+        writePacket(buffer,4,(byteBuf -> encode(configPacket.getRight(),byteBuf)));
       }
 
       Adler32 adler32 = new Adler32();
       adler32.update(buffer.nioBuffer());
       checksum = adler32.getValue();
-
 
       //Place everything into an array
       //Splice into parts to fit a statusResponse
@@ -105,39 +83,17 @@ public class HandshakeDataTransmitter {
   }
 
 
+ private static void writePacket(PacketBuffer byteBuf,int packetID, Consumer<PacketBuffer> consumer) {
+   //packet id and data
+   PacketBuffer packetIDAndData = new PacketBuffer(Unpooled.buffer());
+   packetIDAndData.writeVarInt(packetID);
+   consumer.accept(packetIDAndData);
 
-
-
-
-
-
-
-  private static int calculateLength(FMLHandshakeMessages.S2CModList s2CModList) {
-    PacketBuffer buffer = new PacketBuffer(Unpooled.buffer());
-    buffer.writeVarInt(1);
-    s2CModList.encode(buffer);
-    int length = buffer.writerIndex();
-    buffer.release();
-    return length;
-  }
-
-  private static int calculateLength(FMLHandshakeMessages.S2CRegistry s2CRegistry) {
-    PacketBuffer buffer = new PacketBuffer(Unpooled.buffer());
-    buffer.writeVarInt(2);
-    encode(s2CRegistry,buffer);
-    int length = buffer.writerIndex();
-    buffer.release();
-    return length;
-  }
-
-  private static int calculateLength(FMLHandshakeMessages.S2CConfigData s2CConfigData) {
-    PacketBuffer buffer = new PacketBuffer(Unpooled.buffer());
-    buffer.writeVarInt(2);
-    encode(s2CConfigData,buffer);
-    int length = buffer.writerIndex();
-    buffer.release();
-    return length;
-  }
+   byteBuf.writeResourceLocation(new ResourceLocation("fml:handshake"));
+   byteBuf.writeVarInt(packetIDAndData.writerIndex());
+   byteBuf.writeBytes(packetIDAndData);
+   packetIDAndData.release();
+ }
 
   private static void encode(FMLHandshakeMessages.S2CRegistry config, PacketBuffer buffer) {
     buffer.writeResourceLocation(config.getRegistryName());
@@ -150,15 +106,6 @@ public class HandshakeDataTransmitter {
     buffer.writeUtf(config.getFileName());
     buffer.writeByteArray(config.getBytes());
   }
-
-
-  private static int calculateAvailableSize(JsonObject jsonObject) {
-    jsonObject.add("modinfo",serializeJson("0","1-20:0:32325:64574:99879:---------------------"));
-    int size = SServerInfoPacket.GSON.toJson(jsonObject).length();
-    jsonObject.remove("modinfo");
-    return 32767-size;
-  }
-
 
   public static JsonObject serializeJson(String data,String version) {
     JsonObject modinfo = new JsonObject();

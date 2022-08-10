@@ -11,7 +11,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.network.NetworkDirection;
 import org.adde0109.ambassador.forge.Ambassador;
-import org.adde0109.ambassador.forge.ModernForwarding;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.spongepowered.asm.mixin.Mixin;
@@ -50,7 +49,7 @@ public class ModernForwardingMixin {
 
   @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
   private void onHandleCustomQueryPacket(CCustomPayloadLoginPacket p_209526_1_, CallbackInfo ci) {
-    if((Ambassador.modernForwardingInstance != null) &&(p_209526_1_.getIndex() == 100)) {
+    if((p_209526_1_.getIndex() == 100) && state == ServerLoginNetHandler.State.HELLO) {
       this.gameProfile = Ambassador.modernForwardingInstance.handleForwardingPacket(p_209526_1_);
       if(this.gameProfile == null) {
         this.disconnect(new StringTextComponent("Direct connections to this server are not permitted!"));
