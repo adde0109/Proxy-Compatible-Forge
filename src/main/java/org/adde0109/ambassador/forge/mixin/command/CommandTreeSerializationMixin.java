@@ -5,9 +5,10 @@ package org.adde0109.ambassador.forge.mixin.command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import io.netty.buffer.Unpooled;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -79,7 +80,7 @@ public class CommandTreeSerializationMixin {
     @Inject(method = "serializeCap(Lnet/minecraft/network/FriendlyByteBuf;Lnet/minecraft/commands/synchronization/ArgumentTypeInfo;Lnet/minecraft/commands/synchronization/ArgumentTypeInfo$Template;)V",
             at = @At("HEAD"), cancellable = true)
     private static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>> void writeNode$wrapInVelocityModArgument(FriendlyByteBuf buf, ArgumentTypeInfo<A, T> serializer, ArgumentTypeInfo.Template<A> properties, CallbackInfo ci) {
-        Optional<ResourceKey<ArgumentTypeInfo<?, ?>>> entry = Registry.COMMAND_ARGUMENT_TYPE.getResourceKey(serializer);
+        Optional<ResourceKey<ArgumentTypeInfo<?, ?>>> entry = ForgeRegistries.COMMAND_ARGUMENT_TYPES.getResourceKey(serializer);
 
         if (entry.isEmpty()) {
             return;
@@ -97,8 +98,7 @@ public class CommandTreeSerializationMixin {
 
     private static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>> void serializeWrappedArgumentType(FriendlyByteBuf packetByteBuf, ArgumentTypeInfo<A, T> serializer, ArgumentTypeInfo.Template<A> properties) {
         packetByteBuf.writeVarInt(MOD_ARGUMENT_INDICATOR);
-        packetByteBuf.writeVarInt(Registry.COMMAND_ARGUMENT_TYPE.getId(serializer));
-
+        packetByteBuf.writeVarInt(BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId(serializer));
         FriendlyByteBuf extraData = new FriendlyByteBuf(Unpooled.buffer());
         serializer.serializeToNetwork((T) properties, extraData);
 
