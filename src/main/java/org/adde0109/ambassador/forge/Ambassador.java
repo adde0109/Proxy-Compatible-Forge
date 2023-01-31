@@ -6,7 +6,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Objects;
@@ -30,12 +30,13 @@ public static final Config config;
 
 
 
-  public void serverAbutToStart(ServerAboutToStartEvent event) {
+  public void serverAbutToStart(FMLServerAboutToStartEvent event) {
     String forwardingSecret = config.forwardingSecret.get();
     if(!Objects.equals(forwardingSecret, "")) {
       modernForwardingInstance = new ModernForwarding(forwardingSecret);
     }
   }
+
 
   static final ForgeConfigSpec configSpec;
   static {
@@ -59,6 +60,9 @@ public static final Config config;
     }
 
   }
+
+
+
 
 
 }

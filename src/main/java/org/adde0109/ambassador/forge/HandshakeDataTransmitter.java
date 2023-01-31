@@ -3,10 +3,10 @@ package org.adde0109.ambassador.forge;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.netty.buffer.Unpooled;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.ConfigSync;
-import net.minecraftforge.network.HandshakeMessages;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.config.ConfigTracker;
+import net.minecraftforge.fml.network.FMLHandshakeMessages;
 import net.minecraftforge.registries.RegistryManager;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -34,7 +34,6 @@ public class HandshakeDataTransmitter {
     public String packetSplitters;
     public List<byte[]> parts;
     public int totalLength;
-
     public long checksum;
     public handshakeData() {
       packetSplitters = "";
@@ -43,25 +42,27 @@ public class HandshakeDataTransmitter {
     }
 
     private void buildData() {
-      HandshakeMessages.S2CModList s2CModList = new HandshakeMessages.S2CModList();
-      List<Pair<String, HandshakeMessages.S2CRegistry>> registryPackets = RegistryManager.generateRegistryPackets(false);
-      List<Pair<String, HandshakeMessages.S2CConfigData>> configPackets = ConfigSync.INSTANCE.syncConfigs(false);
+      FMLHandshakeMessages.S2CModList s2CModList = new FMLHandshakeMessages.S2CModList();
+      List<Pair<String, FMLHandshakeMessages.S2CRegistry>> registryPackets = RegistryManager.generateRegistryPackets(false);
+      List<Pair<String, FMLHandshakeMessages.S2CConfigData>> configPackets = ConfigTracker.INSTANCE.syncConfigs(false);
 
-      FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
+
+      PacketBuffer buffer = new PacketBuffer(Unpooled.buffer());
+
 
       //Mod List
-      packetSplitters += ":" + buffer.writerIndex();
+      packetSplitters += ":" + Integer.toString(buffer.writerIndex());
       writePacket(buffer,1,s2CModList::encode);
 
       //Registries
-      for (Pair<String, HandshakeMessages.S2CRegistry> registryPacket : registryPackets) {
-        packetSplitters += ":" + buffer.writerIndex();
+      for (Pair<String, FMLHandshakeMessages.S2CRegistry> registryPacket : registryPackets) {
+        packetSplitters += ":" + Integer.toString(buffer.writerIndex());
         writePacket(buffer,3,(byteBuf -> encode(registryPacket.getRight(),byteBuf)));
       }
 
       //Configs
-      for (Pair<String, HandshakeMessages.S2CConfigData> configPacket : configPackets) {
-        packetSplitters += ":" + buffer.writerIndex();
+      for (Pair<String, FMLHandshakeMessages.S2CConfigData> configPacket : configPackets) {
+        packetSplitters += ":" + Integer.toString(buffer.writerIndex());
         writePacket(buffer,4,(byteBuf -> encode(configPacket.getRight(),byteBuf)));
       }
 
@@ -82,9 +83,9 @@ public class HandshakeDataTransmitter {
   }
 
 
- private static void writePacket(FriendlyByteBuf byteBuf,int packetID, Consumer<FriendlyByteBuf> consumer) {
+ private static void writePacket(PacketBuffer byteBuf,int packetID, Consumer<PacketBuffer> consumer) {
    //packet id and data
-   FriendlyByteBuf packetIDAndData = new FriendlyByteBuf(Unpooled.buffer());
+   PacketBuffer packetIDAndData = new PacketBuffer(Unpooled.buffer());
    packetIDAndData.writeVarInt(packetID);
    consumer.accept(packetIDAndData);
 
@@ -94,14 +95,14 @@ public class HandshakeDataTransmitter {
    packetIDAndData.release();
  }
 
-  private static void encode(HandshakeMessages.S2CRegistry config, FriendlyByteBuf buffer) {
+  private static void encode(FMLHandshakeMessages.S2CRegistry config, PacketBuffer buffer) {
     buffer.writeResourceLocation(config.getRegistryName());
     buffer.writeBoolean(config.hasSnapshot());
     if (config.hasSnapshot())
       buffer.writeBytes(config.getSnapshot().getPacketData());
   }
 
-  private static void encode(HandshakeMessages.S2CConfigData config, FriendlyByteBuf buffer) {
+  private static void encode(FMLHandshakeMessages.S2CConfigData config, PacketBuffer buffer) {
     buffer.writeUtf(config.getFileName());
     buffer.writeByteArray(config.getBytes());
   }
