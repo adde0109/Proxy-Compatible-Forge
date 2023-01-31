@@ -77,7 +77,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
     // Minecraft Forge
-    minecraft 'net.minecraftforge:forge:1.19.3-44.0.41'
+    minecraft 'net.minecraftforge:forge:1.19.3-44.1.8'
 
     // Mixin
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
