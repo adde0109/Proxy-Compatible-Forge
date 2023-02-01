@@ -22,7 +22,9 @@ import java.util.Optional;
 @Mixin(targets = "net.minecraft.network.protocol.game.ClientboundCommandsPacket$ArgumentNodeStub")
 public class CommandTreeSerializationMixin {
 
-    @Shadow @Final private ArgumentTypeInfo.Template<?> argumentType;
+    @Shadow
+    @Final
+    private ArgumentTypeInfo.Template<?> argumentType;
     private static final int MOD_ARGUMENT_INDICATOR = -256;
 
     private static final String[] ignore = {
