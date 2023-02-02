@@ -57,14 +57,18 @@ public class ModernForwardingMixin {
                 this.disconnect(Component.literal("Direct connections to this server are not permitted!"));
                 LogManager.getLogger().error("Someone tried to join directly!");
             } else {
-                arclight$preLogin();
+                try {
+                    arclight$preLogin();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 this.state = ServerLoginPacketListenerImpl.State.NEGOTIATING;
             }
             ci.cancel();
         }
     }
 
-    private void arclight$preLogin() {
+    void arclight$preLogin() throws Exception {
     }
 
 }
