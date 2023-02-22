@@ -1,4 +1,4 @@
-package org.adde0109.ambassador.forge.mixin.login;
+package org.adde0109.pcf.mixin.login;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.buffer.Unpooled;
@@ -10,11 +10,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.network.NetworkDirection;
-import org.adde0109.ambassador.forge.Ambassador;
+import org.adde0109.pcf.Initializer;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
-import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -43,9 +42,9 @@ public class ModernForwardingMixin {
   @Inject(method = "handleHello", at = @At("HEAD"), cancellable = true)
   private void onHandleHello(CallbackInfo ci) {
     Validate.validState(state == ServerLoginNetHandler.State.HELLO, "Unexpected hello packet");
-    if(Ambassador.modernForwardingInstance != null) {
+    if(Initializer.modernForwardingInstance != null) {
       this.state = ServerLoginNetHandler.State.HELLO;
-      LogManager.getLogger().warn("Sent Forward Request");
+      LogManager.getLogger().debug("Sent Forward Request");
       this.connection.send(NetworkDirection.LOGIN_TO_CLIENT.buildPacket(Pair.of(new PacketBuffer(Unpooled.EMPTY_BUFFER),100),VELOCITY_RESOURCE).getThis());
       ci.cancel();
     }
@@ -54,10 +53,10 @@ public class ModernForwardingMixin {
   @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
   private void onHandleCustomQueryPacket(CCustomPayloadLoginPacket p_209526_1_, CallbackInfo ci) {
     if((p_209526_1_.getIndex() == 100) && state == ServerLoginNetHandler.State.HELLO) {
-      this.gameProfile = Ambassador.modernForwardingInstance.handleForwardingPacket(p_209526_1_);
+      this.gameProfile = Initializer.modernForwardingInstance.handleForwardingPacket(p_209526_1_);
       if(this.gameProfile == null) {
         this.disconnect(new StringTextComponent("Direct connections to this server are not permitted!"));
-        LogManager.getLogger().error("Someone tried to join directly!");
+        LogManager.getLogger().error("Attention! Someone tried to join directly!");
       } else {
         arclight$preLogin();
         this.state = ServerLoginNetHandler.State.NEGOTIATING;

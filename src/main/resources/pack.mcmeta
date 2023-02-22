@@ -1,6 +1,6 @@
 {
     "pack": {
-        "description": "Ambassador Forge-side Version",
+        "description": "Proxy Compatible Forge",
         "pack_format": 6,
         "_comment": "With the power of Ambassador, you may connect using a Velocity proxy!"
     }
