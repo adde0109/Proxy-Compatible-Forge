@@ -4,7 +4,7 @@ This mod brings modern forwarding to Forge servers (See: https://docs.papermc.io
 ## How to get started:
 1. Download and install this as a mod to your Forge server. (Jars can be found in the releases tab.)
 2. Start the server.
-3. Close the server and open "proxy-compatible-forge-common.toml" in the config folder and put your forwarding secret in the "forwardingSecret" field.
+3. Close the server and open "proxy-compatible-forge-common.toml" or "pcf-common.toml" in the config folder and put your forwarding secret in the "forwardingSecret" field.
 4. In "server.properties" make sure online-mode is set to false.
 5. You are now ready to start the server and connect to it with Velocity!
 
