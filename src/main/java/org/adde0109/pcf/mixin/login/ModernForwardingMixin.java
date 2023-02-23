@@ -43,7 +43,7 @@ public class ModernForwardingMixin {
         Validate.validState(state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet");
         if (Initializer.modernForwardingInstance != null) {
             this.state = ServerLoginPacketListenerImpl.State.HELLO;
-            LogManager.getLogger().warn("Sent Forward Request");
+            LogManager.getLogger().debug("Sent Forward Request");
             this.connection.send(NetworkDirection.LOGIN_TO_CLIENT.buildPacket(Pair.of(new FriendlyByteBuf(Unpooled.EMPTY_BUFFER), 100), VELOCITY_RESOURCE).getThis());
             ci.cancel();
         }
@@ -64,7 +64,7 @@ public class ModernForwardingMixin {
         }
     }
 
-    private void arclight$preLogin() {
+    void arclight$preLogin() {
     }
 
 }

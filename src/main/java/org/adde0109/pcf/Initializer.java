@@ -11,7 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Objects;
 
-@Mod("proxy-compatible-forge")
+@Mod("pcf")
 public class Initializer {
 
     public static ModernForwarding modernForwardingInstance;
