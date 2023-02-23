@@ -13,8 +13,8 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
 version = '1.19.3-0.2.1'
-group = 'org.adde0109.ambassador'
-archivesBaseName = 'ambassador-forge'
+group = 'org.adde0109.pcf' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = 'proxy-compatible-forge'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -69,8 +69,8 @@ minecraft {
 }
 
 mixin {
-    add sourceSets.main, "ambassador.forge.refmap.json"
-    config 'ambassador.mixins.json'
+    add sourceSets.main, "pcf.refmap.json"
+    config 'pcf.mixins.json'
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
@@ -86,7 +86,7 @@ dependencies {
 jar {
     manifest {
         attributes([
-            "Specification-Title": "ambassador-forge",
+            "Specification-Title": "proxy-compatible-forge",
             "Specification-Vendor": "adde0109",
             "Specification-Version": "1", // We are version 1 of ourselves
             "Implementation-Title": project.name,
