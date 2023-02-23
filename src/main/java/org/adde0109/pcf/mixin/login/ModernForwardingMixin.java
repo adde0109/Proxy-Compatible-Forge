@@ -60,6 +60,6 @@ public class ModernForwardingMixin {
     }
   }
 
-  private void arclight$preLogin() {}
+  void arclight$preLogin() {}
 
 }
