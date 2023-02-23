@@ -1,4 +1,4 @@
-package org.adde0109.ambassador.forge;
+package org.adde0109.pcf;
 
 
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -13,19 +13,18 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Objects;
 
-@Mod("ambassador")
-public class Ambassador {
+@Mod("proxy-compatible-forge")
+public class Initializer {
 
 public static ModernForwarding modernForwardingInstance;
 
 public static final Config config;
 
-  public Ambassador() {
+  public Initializer() {
     ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON,configSpec);
 
     //Make sure the mod being absent on the other network side does not cause the client to display the server as incompatible
     ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
-    new HandshakeDataTransmitter();
 
     MinecraftForge.EVENT_BUS.addListener(this::serverAbutToStart);
   }
@@ -42,7 +41,7 @@ public static final Config config;
 
   static final ForgeConfigSpec configSpec;
   static {
-    final Pair<Config, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Ambassador.Config::new);
+    final Pair<Config, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Initializer.Config::new);
     configSpec = specPair.getRight();
     config = specPair.getLeft();
   }

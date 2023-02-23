@@ -1,5 +1,5 @@
 //Contains code from: https://github.com/OKTW-Network/FabricProxy-Lite/blob/master/src/main/java/one/oktw/VelocityLib.java
-package org.adde0109.ambassador.forge;
+package org.adde0109.pcf;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -30,10 +30,10 @@ public class ModernForwarding {
   public GameProfile handleForwardingPacket(ServerboundCustomQueryPacket packet) {
     FriendlyByteBuf data = packet.getInternalData();
     if(data != null) {
-      LogManager.getLogger().info("Received forwarding packet!");
+      LogManager.getLogger().debug("Received forwarding packet!");
 
       if(validate(data)) {
-        LogManager.getLogger().info("Player-data validated!");
+        LogManager.getLogger().debug("Player-data validated!");
         data.readUtf(); //Never used
         GameProfile forwardedProfile = new GameProfile(data.readUUID(), data.readUtf());
         readProperties(data,forwardedProfile.getProperties());
