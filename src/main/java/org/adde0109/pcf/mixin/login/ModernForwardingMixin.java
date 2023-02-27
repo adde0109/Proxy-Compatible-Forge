@@ -37,6 +37,7 @@ public class ModernForwardingMixin {
   private ServerLoginPacketListenerImpl.State state;
 
   private static final ResourceLocation VELOCITY_RESOURCE = new ResourceLocation("velocity:player_info");
+  private boolean ambassador$listen = false;
 
   @Inject(method = "handleHello", at = @At("HEAD"), cancellable = true)
   private void onHandleHello(CallbackInfo ci) {
@@ -44,12 +45,14 @@ public class ModernForwardingMixin {
       this.state = ServerLoginPacketListenerImpl.State.HELLO;
       LogManager.getLogger().debug("Sent Forward Request");
       this.connection.send(NetworkDirection.LOGIN_TO_CLIENT.buildPacket(Pair.of(new FriendlyByteBuf(Unpooled.EMPTY_BUFFER),100),VELOCITY_RESOURCE).getThis());
+      ambassador$listen = true;
+      ci.cancel();
     }
   }
 
   @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
   private void onHandleCustomQueryPacket(ServerboundCustomQueryPacket p_209526_1_, CallbackInfo ci) {
-    if((p_209526_1_.getIndex() == 100) && state == ServerLoginPacketListenerImpl.State.HELLO) {
+    if((p_209526_1_.getIndex() == 100) && state == ServerLoginPacketListenerImpl.State.HELLO && ambassador$listen) {
       this.gameProfile = Initializer.modernForwardingInstance.handleForwardingPacket(p_209526_1_);
       if(this.gameProfile == null) {
         this.disconnect(new TextComponent("Direct connections to this server are not permitted!"));
