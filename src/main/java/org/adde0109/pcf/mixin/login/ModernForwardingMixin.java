@@ -54,6 +54,7 @@ public class ModernForwardingMixin {
   private void onHandleCustomQueryPacket(ServerboundCustomQueryPacket p_209526_1_, CallbackInfo ci) {
     if((p_209526_1_.getIndex() == 100) && state == ServerLoginPacketListenerImpl.State.HELLO && ambassador$listen) {
       this.gameProfile = Initializer.modernForwardingInstance.handleForwardingPacket(p_209526_1_);
+      ambassador$listen = false;
       if(this.gameProfile == null) {
         this.disconnect(new TextComponent("Direct connections to this server are not permitted!"));
         LogManager.getLogger().error("Attention! Someone tried to join directly!");
