@@ -35,9 +35,8 @@ public class ModernForwarding {
       if(validate(data)) {
         LogManager.getLogger().debug("Player-data validated!");
         data.readUtf(); //Never used
-        GameProfile forwardedProfile = new GameProfile(data.readUUID(), data.readUtf());
 
-        return forwardedProfile;
+        return new GameProfile(data.readUUID(), data.readUtf());
       }
     }
     return null;

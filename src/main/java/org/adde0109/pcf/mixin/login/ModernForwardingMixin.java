@@ -14,6 +14,7 @@ import org.adde0109.pcf.Initializer;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,14 +26,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ModernForwardingMixin {
 
 
+  @Final
   @Shadow
-  private NetworkManager connection;
+  public NetworkManager connection;
 
   @Shadow
   private GameProfile gameProfile;
 
   @Shadow
-  private void disconnect(ITextComponent p_194026_1_) {}
+  public void disconnect(ITextComponent p_194026_1_) {}
 
   @Shadow
   private ServerLoginNetHandler.State state;

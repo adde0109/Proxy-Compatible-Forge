@@ -11,8 +11,6 @@ import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.network.FMLNetworkConstants;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Objects;
-
 @Mod("proxy-compatible-forge")
 public class Initializer {
 
@@ -33,7 +31,7 @@ public static final Config config;
 
   public void serverAbutToStart(FMLServerAboutToStartEvent event) {
     String forwardingSecret = config.forwardingSecret.get();
-    if(!Objects.equals(forwardingSecret, "")) {
+    if(!forwardingSecret.isEmpty()) {
       modernForwardingInstance = new ModernForwarding(forwardingSecret);
     }
   }
