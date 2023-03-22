@@ -31,7 +31,7 @@ public static final Config config;
 
   public void serverAbutToStart(ServerAboutToStartEvent event) {
     String forwardingSecret = config.forwardingSecret.get();
-    if(forwardingSecret.isBlank() || forwardingSecret.isEmpty()) {
+    if(!(forwardingSecret.isBlank() || forwardingSecret.isEmpty())) {
       modernForwardingInstance = new ModernForwarding(forwardingSecret);
     }
   }
