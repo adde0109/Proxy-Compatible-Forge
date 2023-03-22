@@ -4,7 +4,6 @@ import com.mojang.authlib.GameProfile;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -58,7 +57,7 @@ public class ModernForwardingMixin {
       this.gameProfile = Initializer.modernForwardingInstance.handleForwardingPacket(p_209526_1_);
       ambassador$listen = false;
       if(this.gameProfile == null) {
-        this.disconnect(new TextComponent("Direct connections to this server are not permitted!"));
+        this.disconnect(Component.literal("Direct connections to this server are not permitted!"));
         LogManager.getLogger().error("Attention! Someone tried to join directly!");
       }
       this.state = ServerLoginPacketListenerImpl.State.NEGOTIATING;
