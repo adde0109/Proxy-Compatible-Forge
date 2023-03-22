@@ -3,15 +3,13 @@ package org.adde0109.pcf;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.network.NetworkConstants;
 import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.Objects;
 
 @Mod("pcf")
 public class Initializer {
@@ -33,7 +31,7 @@ public static final Config config;
 
   public void serverAbutToStart(ServerAboutToStartEvent event) {
     String forwardingSecret = config.forwardingSecret.get();
-    if(!Objects.equals(forwardingSecret, "")) {
+    if(forwardingSecret.isBlank() || forwardingSecret.isEmpty()) {
       modernForwardingInstance = new ModernForwarding(forwardingSecret);
     }
   }
