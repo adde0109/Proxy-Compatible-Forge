@@ -31,20 +31,38 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import org.adde0109.pcf.command.IMixinNodeStub;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
+import org.spongepowered.asm.mixin.Shadow;
 
 
 @Mixin(targets = "net.minecraft.network.protocol.game.ClientboundCommandsPacket$ArgumentNodeStub")
-public class CommandTreeSerializationMixin {
+public class WrappableArgumentNodeStubMixin implements IMixinNodeStub {
   private static final int MOD_ARGUMENT_INDICATOR = -256;
 
-  @Inject(method = "serializeCap(Lnet/minecraft/network/FriendlyByteBuf;Lnet/minecraft/commands/synchronization/ArgumentTypeInfo;Lnet/minecraft/commands/synchronization/ArgumentTypeInfo$Template;)V",
-          at = @At("HEAD"), cancellable = true)
-  private static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>> void writeNode$wrapInVelocityModArgument(FriendlyByteBuf buf, ArgumentTypeInfo<A, T> serializer, ArgumentTypeInfo.Template<A> properties, CallbackInfo ci) {
+  @Shadow
+  @Final
+  private ArgumentTypeInfo.Template<?> argumentType;
+
+  @Shadow
+  @Final
+  private String id;
+
+  @Shadow
+  @Final
+  private ResourceLocation suggestionId;
+
+  public void wrapAndWrite(FriendlyByteBuf byteBuf) {
+    byteBuf.writeUtf(this.id);
+    wrapInVelocityModArgument(byteBuf, this.argumentType);
+    if (this.suggestionId != null) {
+      byteBuf.writeResourceLocation(this.suggestionId);
+    }
+  }
+
+  private static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>> void wrapInVelocityModArgument(FriendlyByteBuf buf, ArgumentTypeInfo.Template<A> properties) {
+    ArgumentTypeInfo<A, T> serializer = (ArgumentTypeInfo<A, T>) properties.type();
     ResourceLocation identifier = Registry.COMMAND_ARGUMENT_TYPE.getKey(serializer);
 
     if (identifier == null) {
@@ -53,7 +71,6 @@ public class CommandTreeSerializationMixin {
     if (identifier.getNamespace().equals("minecraft") || identifier.getNamespace().equals("brigadier")) {
       return;
     }
-    ci.cancel();
 
     // Not a standard Minecraft argument type - so we need to wrap it
     serializeWrappedArgumentType(buf, serializer, properties);

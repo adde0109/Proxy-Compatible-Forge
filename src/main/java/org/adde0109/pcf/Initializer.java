@@ -47,12 +47,18 @@ public class Initializer {
     public static class Config {
         public final ForgeConfigSpec.ConfigValue<? extends String> forwardingSecret;
 
+        public final ForgeConfigSpec.ConfigValue<? extends Boolean> crossStich;
         Config(ForgeConfigSpec.Builder builder) {
             builder.comment("Modern Forwarding Settings")
                     .push("modernForwarding");
 
             forwardingSecret = builder
                     .define("forwardingSecret", "");
+
+            builder.pop().comment("CrossStich")
+                    .comment("Note: Only connections through velocity will work when enabled. Some mods require this.").push("crossStich");
+            crossStich = builder.define("auto-enable", true);
+
 
             builder.pop();
         }
