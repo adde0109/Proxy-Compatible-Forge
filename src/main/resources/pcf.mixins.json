@@ -5,8 +5,11 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "pcf.refmap.json",
   "mixins": [
-    "login.ModernForwardingMixin"
-
+    "login.ModernForwardingMixin",
+    "command.WrappableArgumentNodeStubMixin",
+    "command.CommandsMixin",
+    "command.WrappableEntryMixin",
+    "command.WrappableCommandsPacketMixin"
   ],
   "client": [
   ],
