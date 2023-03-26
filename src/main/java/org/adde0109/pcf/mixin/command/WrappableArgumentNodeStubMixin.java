@@ -61,19 +61,21 @@ public class WrappableArgumentNodeStubMixin implements IMixinNodeStub {
     }
   }
 
-  private static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>> void wrapInVelocityModArgument(FriendlyByteBuf buf, ArgumentTypeInfo.Template<A> properties) {
-    ArgumentTypeInfo<A, T> serializer = (ArgumentTypeInfo<A, T>) properties.type();
-    ResourceLocation identifier = Registry.COMMAND_ARGUMENT_TYPE.getKey(serializer);
+  private static <A extends ArgumentType<?>> void wrapInVelocityModArgument(FriendlyByteBuf buf, ArgumentTypeInfo.Template<A> properties) {
+    wrapInVelocityModArgument(buf, properties.type(), properties);
+  }
 
-    if (identifier == null) {
-      return;
-    }
-    if (identifier.getNamespace().equals("minecraft") || identifier.getNamespace().equals("brigadier")) {
+  private static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>> void wrapInVelocityModArgument(FriendlyByteBuf buf, ArgumentTypeInfo<A, T> serializer, ArgumentTypeInfo.Template<A> properties) {
+    ResourceLocation identifier = Registry.COMMAND_ARGUMENT_TYPE.getKey(properties.type());
+
+    if (identifier == null || identifier.getNamespace().equals("minecraft") || identifier.getNamespace().equals("brigadier")) {
+      buf.writeVarInt(Registry.COMMAND_ARGUMENT_TYPE.getId(serializer));
+      serializer.serializeToNetwork((T)properties, buf);
       return;
     }
 
     // Not a standard Minecraft argument type - so we need to wrap it
-    serializeWrappedArgumentType(buf, serializer, properties);
+    serializeWrappedArgumentType(buf, properties.type(), properties);
   }
 
   private static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>> void serializeWrappedArgumentType(FriendlyByteBuf packetByteBuf, ArgumentTypeInfo<A, T> serializer, ArgumentTypeInfo.Template<A> properties) {
