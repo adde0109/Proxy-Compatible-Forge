@@ -31,6 +31,7 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import org.adde0109.pcf.Initializer;
 import org.adde0109.pcf.command.IMixinNodeStub;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -68,7 +69,7 @@ public class WrappableArgumentNodeStubMixin implements IMixinNodeStub {
   private static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>> void wrapInVelocityModArgument(FriendlyByteBuf buf, ArgumentTypeInfo<A, T> serializer, ArgumentTypeInfo.Template<A> properties) {
     ResourceLocation identifier = Registry.COMMAND_ARGUMENT_TYPE.getKey(properties.type());
 
-    if (identifier == null || identifier.getNamespace().equals("minecraft") || identifier.getNamespace().equals("brigadier")) {
+    if (Initializer.integratedArgumentTypes.contains(identifier.toString())) {
       buf.writeVarInt(Registry.COMMAND_ARGUMENT_TYPE.getId(serializer));
       serializer.serializeToNetwork((T)properties, buf);
       return;
