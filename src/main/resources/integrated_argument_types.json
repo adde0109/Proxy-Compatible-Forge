@@ -43,6 +43,7 @@
     "minecraft:item_enchantment",
     "minecraft:entity_summon",
     "minecraft:dimension",
+    "minecraft:time",
 
     "minecraft:resource_or_tag",
     "minecraft:resource",
