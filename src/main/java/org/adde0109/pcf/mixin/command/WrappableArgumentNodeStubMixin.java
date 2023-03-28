@@ -29,6 +29,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import io.netty.buffer.Unpooled;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import org.adde0109.pcf.Initializer;
@@ -67,10 +68,10 @@ public class WrappableArgumentNodeStubMixin implements IMixinNodeStub {
   }
 
   private static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>> void wrapInVelocityModArgument(FriendlyByteBuf buf, ArgumentTypeInfo<A, T> serializer, ArgumentTypeInfo.Template<A> properties) {
-    ResourceLocation identifier = Registry.COMMAND_ARGUMENT_TYPE.getKey(properties.type());
+    ResourceLocation identifier = BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey(properties.type());
 
     if (Initializer.integratedArgumentTypes.contains(identifier.toString())) {
-      buf.writeVarInt(Registry.COMMAND_ARGUMENT_TYPE.getId(serializer));
+      buf.writeVarInt(BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId(serializer));
       serializer.serializeToNetwork((T)properties, buf);
       return;
     }
@@ -81,7 +82,7 @@ public class WrappableArgumentNodeStubMixin implements IMixinNodeStub {
 
   private static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>> void serializeWrappedArgumentType(FriendlyByteBuf packetByteBuf, ArgumentTypeInfo<A, T> serializer, ArgumentTypeInfo.Template<A> properties) {
     packetByteBuf.writeVarInt(MOD_ARGUMENT_INDICATOR);
-    packetByteBuf.writeVarInt(Registry.COMMAND_ARGUMENT_TYPE.getId(serializer));
+    packetByteBuf.writeVarInt(BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId(serializer));
 
     FriendlyByteBuf extraData = new FriendlyByteBuf(Unpooled.buffer());
     serializer.serializeToNetwork((T) properties, extraData);
