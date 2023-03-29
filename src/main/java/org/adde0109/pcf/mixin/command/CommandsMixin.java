@@ -20,10 +20,10 @@ public class CommandsMixin {
     ConnectionData connectionData = (ConnectionData) connection.connection.channel().attr(AttributeKey.valueOf("fml:conndata")).get();
     if (connectionData.getChannels().keySet().stream().anyMatch((v) -> v.equals(new ResourceLocation("ambassador:commands")))) {
       FriendlyByteBuf byteBuf = new FriendlyByteBuf(Unpooled.buffer());
-      ((IMixinWrappableCommandPacket)(Object) packet).wrapAndWrite(byteBuf);
+      ((IMixinWrappableCommandPacket)(Object) packet).write(byteBuf, true);
       connection.send(new ClientboundCustomPayloadPacket(new ResourceLocation("ambassador:commands"), byteBuf));
     } else {
-      //connection.send(packet);
+      connection.send(packet);
     }
   }
 }

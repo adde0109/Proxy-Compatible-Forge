@@ -30,13 +30,19 @@ public class WrappableCommandsPacketMixin implements IMixinWrappableCommandPacke
   @Final
   private RootCommandNode<SharedSuggestionProvider> root;
 
-  public void wrapAndWrite(FriendlyByteBuf byteBuf) {
+  @Inject(method = "write(Lnet/minecraft/network/FriendlyByteBuf;)V", at = @At(value = "HEAD"), cancellable = true)
+  public void write(FriendlyByteBuf byteBuf, CallbackInfo ci) {
+    write(byteBuf, false);
+    ci.cancel();
+  }
+
+  public void write(FriendlyByteBuf byteBuf, boolean wrap) {
     Object2IntMap<CommandNode<SharedSuggestionProvider>> object2intmap = enumerateNodes(this.root);
     List<CommandNode<SharedSuggestionProvider>> list = getNodesInIdOrder(object2intmap);
     byteBuf.writeCollection(list, (p_178810_, p_178811_) -> {
       writeNode(p_178810_, p_178811_, object2intmap);
       if (p_178811_ instanceof ArgumentCommandNode argumentCommandNode) {
-        wrapInVelocityModArgument(byteBuf, argumentCommandNode.getType());
+          serialize(byteBuf, argumentCommandNode.getType(), wrap);
         if (argumentCommandNode.getCustomSuggestions() != null) {
           byteBuf.writeResourceLocation(SuggestionProviders.getName(argumentCommandNode.getCustomSuggestions()));
         }
@@ -60,7 +66,7 @@ public class WrappableCommandsPacketMixin implements IMixinWrappableCommandPacke
 
   private static final ResourceLocation MOD_ARGUMENT_INDICATOR = new ResourceLocation("crossstitch:mod_argument");
 
-  private static <T extends ArgumentType<?>> void wrapInVelocityModArgument(FriendlyByteBuf buf, T type) {
+  private static <T extends ArgumentType<?>> void serialize(FriendlyByteBuf buf, T type, boolean wrap) {
     ArgumentTypes.Entry<T> entry = (ArgumentTypes.Entry<T>)ArgumentTypes.get(type);
 
     if (entry == null) {
@@ -68,7 +74,7 @@ public class WrappableCommandsPacketMixin implements IMixinWrappableCommandPacke
       return;
     }
 
-    if (Initializer.integratedArgumentTypes.contains(entry.name.toString())) {
+    if (!wrap || Initializer.integratedArgumentTypes.contains(entry.name.toString())) {
       ArgumentTypes.serialize(buf, type);
       return;
     }
