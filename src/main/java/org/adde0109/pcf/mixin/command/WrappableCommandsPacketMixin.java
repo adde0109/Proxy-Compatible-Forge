@@ -82,7 +82,7 @@ public class WrappableCommandsPacketMixin implements IMixinWrappableCommandPacke
       packetByteBuf.writeResourceLocation(entry.name);
 
       FriendlyByteBuf extraData = new FriendlyByteBuf(Unpooled.buffer());
-      entry.serializer.serializeToNetwork(argumentType, packetByteBuf);
+      entry.serializer.serializeToNetwork(argumentType, extraData);
 
       packetByteBuf.writeVarInt(extraData.readableBytes());
       packetByteBuf.writeBytes(extraData);
