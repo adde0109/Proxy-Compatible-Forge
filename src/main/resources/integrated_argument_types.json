@@ -1,6 +1,7 @@
 {
   "version": "1.19.3",
   "entries": [
+    "brigadier:bool",
     "brigadier:float",
     "brigadier:double",
     "brigadier:integer",
