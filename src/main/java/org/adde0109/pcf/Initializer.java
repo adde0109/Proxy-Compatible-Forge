@@ -1,6 +1,8 @@
 package org.adde0109.pcf;
 
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ExtensionPoint;
@@ -11,10 +13,18 @@ import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.network.FMLNetworkConstants;
 import org.apache.commons.lang3.tuple.Pair;
 
-@Mod("proxy-compatible-forge")
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+@Mod("pcf")
 public class Initializer {
 
 public static ModernForwarding modernForwardingInstance;
+public static final List<String> integratedArgumentTypes = new ArrayList<>();
 
 public static final Config config;
 
@@ -25,6 +35,13 @@ public static final Config config;
     ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 
     MinecraftForge.EVENT_BUS.addListener(this::serverAbutToStart);
+    try (Reader reader = new InputStreamReader(Objects.requireNonNull(this.getClass()
+            .getResourceAsStream("/integrated_argument_types.json")))) {
+      JsonObject result = new Gson().fromJson(reader, JsonObject.class);
+      result.get("entries").getAsJsonArray().iterator().forEachRemaining((k) -> integratedArgumentTypes.add(k.getAsString()));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
 
