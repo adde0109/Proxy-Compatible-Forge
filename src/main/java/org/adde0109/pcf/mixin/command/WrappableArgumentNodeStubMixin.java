@@ -70,7 +70,7 @@ public class WrappableArgumentNodeStubMixin implements IMixinNodeStub {
   private static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>> void wrapInVelocityModArgument(FriendlyByteBuf buf, ArgumentTypeInfo<A, T> serializer, ArgumentTypeInfo.Template<A> properties) {
     ResourceLocation identifier = BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey(properties.type());
 
-    if (Initializer.integratedArgumentTypes.contains(identifier.toString())) {
+    if (identifier != null && Initializer.integratedArgumentTypes.contains(identifier.toString())) {
       buf.writeVarInt(BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId(serializer));
       serializer.serializeToNetwork((T)properties, buf);
       return;
