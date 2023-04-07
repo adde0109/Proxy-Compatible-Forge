@@ -70,7 +70,9 @@ public class WrappableCommandsPacketMixin implements IMixinWrappableCommandPacke
     ArgumentTypes.Entry<T> entry = (ArgumentTypes.Entry<T>)ArgumentTypes.get(type);
 
     if (entry == null) {
-      buf.writeResourceLocation(new ResourceLocation(""));
+      buf.writeResourceLocation(MOD_ARGUMENT_INDICATOR);
+      buf.writeResourceLocation(new ResourceLocation("")); //"minecraft:"
+      buf.writeVarInt(0);
       return;
     }
 
