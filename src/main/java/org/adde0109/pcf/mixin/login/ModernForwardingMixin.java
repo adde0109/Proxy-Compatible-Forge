@@ -19,6 +19,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.awt.*;
+
 
 @Mixin(ServerLoginPacketListenerImpl.class)
 public class ModernForwardingMixin {
@@ -54,9 +56,16 @@ public class ModernForwardingMixin {
   @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
   private void onHandleCustomQueryPacket(ServerboundCustomQueryPacket p_209526_1_, CallbackInfo ci) {
     if((p_209526_1_.getIndex() == 100) && state == ServerLoginPacketListenerImpl.State.HELLO && ambassador$listen) {
-      this.gameProfile = Initializer.modernForwardingInstance.handleForwardingPacket(p_209526_1_);
       ambassador$listen = false;
-      if(this.gameProfile == null) {
+
+      try {
+        this.gameProfile = Initializer.modernForwardingInstance.handleForwardingPacket(p_209526_1_);
+        if(this.gameProfile == null) {
+          throw new Exception();
+        }
+
+        arclight$preLogin();
+      } catch (Exception e) {
         this.disconnect(Component.literal("Direct connections to this server are not permitted!"));
         LogManager.getLogger().error("Attention! Someone tried to join directly!");
       }
@@ -65,6 +74,7 @@ public class ModernForwardingMixin {
     }
   }
 
-  void arclight$preLogin() {}
+  @Shadow
+  void arclight$preLogin() throws Exception {}
 
 }

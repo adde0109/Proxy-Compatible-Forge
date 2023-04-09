@@ -15,7 +15,7 @@ apply plugin: 'net.minecraftforge.gradle'
 // MixinGradle:
 apply plugin: 'org.spongepowered.mixin'
 
-version = '1.19.2-1.1.1'
+version = '1.19.2-1.1.2-rc3'
 group = 'org.adde0109.pcf' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'proxy-compatible-forge'
 
