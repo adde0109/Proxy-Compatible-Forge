@@ -4,6 +4,7 @@ package org.adde0109.pcf;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.login.client.CCustomPayloadLoginPacket;
 import org.apache.logging.log4j.LogManager;
@@ -11,6 +12,10 @@ import org.apache.logging.log4j.LogManager;
 import javax.annotation.Nullable;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.lang.reflect.Field;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -21,26 +26,53 @@ public class ModernForwarding {
 
   private final String forwardingSecret;
 
+  private final Field addressField;
+
   ModernForwarding(String forwardingSecret) {
     this.forwardingSecret = forwardingSecret;
+    try {
+      this.addressField = NetworkManager.class.getDeclaredField("address");
+      addressField.setAccessible(true);
+    } catch (NoSuchFieldException e) {
+      throw new RuntimeException(e);
+    }
   }
 
 
   @Nullable
-  public GameProfile handleForwardingPacket(CCustomPayloadLoginPacket packet) {
+  public GameProfile handleForwardingPacket(CCustomPayloadLoginPacket packet, NetworkManager connection) {
     PacketBuffer data = packet.getInternalData();
     if(data != null) {
-      LogManager.getLogger().debug("Received forwarding packet!");
-
-      if(validate(data)) {
-        LogManager.getLogger().debug("Player-data validated!");
-        data.readUtf(); //Never used
-
-        return new GameProfile(data.readUUID(), data.readUtf());
-      }
+      return null;
     }
-    return null;
-  }
+
+    LogManager.getLogger().debug("Received forwarding packet!");
+
+    if(!validate(data)) {
+      LogManager.getLogger().debug("Player-data validated!");
+      return null;
+    }
+
+    int version = data.readVarInt();
+    if (version != SUPPORTED_FORWARDING_VERSION) {
+      throw new IllegalStateException("Unsupported forwarding version " + version + ", wanted " + SUPPORTED_FORWARDING_VERSION);
+    }
+
+    SocketAddress address = connection.getRemoteAddress();
+    int port = 0;
+    if (address instanceof InetSocketAddress) {
+      port = ((InetSocketAddress) address).getPort();
+    }
+    try {
+      addressField.set(connection, new InetSocketAddress(data.readUtf(Short.MAX_VALUE), port));
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
+
+    GameProfile profile = new GameProfile(data.readUUID(), data.readUtf(16));
+    readProperties(data, profile);
+    return profile;
+    }
 
   public boolean validate(PacketBuffer buffer) {
     final byte[] signature = new byte[32];
@@ -59,16 +91,13 @@ public class ModernForwarding {
     } catch (final InvalidKeyException | NoSuchAlgorithmException e) {
       throw new AssertionError(e);
     }
-    int version = buffer.readVarInt();
-    if (version != SUPPORTED_FORWARDING_VERSION) {
-      throw new IllegalStateException("Unsupported forwarding version " + version + ", wanted " + SUPPORTED_FORWARDING_VERSION);
-    }
+
 
     return true;
   }
 
-  public PropertyMap readProperties(PacketBuffer buf) {
-    PropertyMap properties = new PropertyMap();
+  public void readProperties(PacketBuffer buf, GameProfile profile) {
+    PropertyMap properties = profile.getProperties();
     int size = buf.readVarInt();
     for (int i = 0; i < size; i++) {
       String name = buf.readUtf();
@@ -80,7 +109,6 @@ public class ModernForwarding {
       }
       properties.put(name,new Property(name, value, signature));
     }
-    return properties;
   }
 
 }

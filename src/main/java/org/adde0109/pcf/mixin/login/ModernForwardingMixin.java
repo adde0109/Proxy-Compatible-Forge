@@ -57,7 +57,7 @@ public class ModernForwardingMixin {
   @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
   private void onHandleCustomQueryPacket(CCustomPayloadLoginPacket p_209526_1_, CallbackInfo ci) {
     if((p_209526_1_.getIndex() == 100) && state == ServerLoginNetHandler.State.HELLO && ambassador$listen) {
-      this.gameProfile = Initializer.modernForwardingInstance.handleForwardingPacket(p_209526_1_);
+      this.gameProfile = Initializer.modernForwardingInstance.handleForwardingPacket(p_209526_1_, connection);
       ambassador$listen = false;
       if(this.gameProfile == null) {
         this.disconnect(new StringTextComponent("Direct connections to this server are not permitted!"));
