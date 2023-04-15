@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 
-@Mixin(value = ServerLoginNetHandler.class, priority = 300)
+@Mixin(ServerLoginNetHandler.class)
 public class ModernForwardingMixin {
 
 
@@ -70,6 +70,7 @@ public class ModernForwardingMixin {
     }
   }
 
+  @Shadow(remap = false)
   private void arclight$preLogin() throws Exception {}
 
 }
