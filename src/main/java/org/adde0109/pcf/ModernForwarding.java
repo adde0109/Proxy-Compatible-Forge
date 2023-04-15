@@ -26,32 +26,26 @@ public class ModernForwarding {
 
   private final String forwardingSecret;
 
-  private final Field addressField;
 
   ModernForwarding(String forwardingSecret) {
     this.forwardingSecret = forwardingSecret;
-    try {
-      this.addressField = NetworkManager.class.getDeclaredField("address");
-      addressField.setAccessible(true);
-    } catch (NoSuchFieldException e) {
-      throw new RuntimeException(e);
-    }
   }
 
 
   @Nullable
-  public GameProfile handleForwardingPacket(CCustomPayloadLoginPacket packet, NetworkManager connection) {
+  public GameProfile handleForwardingPacket(CCustomPayloadLoginPacket packet, NetworkManager connection) throws Exception {
     PacketBuffer data = packet.getInternalData();
-    if(data != null) {
-      return null;
+    if(data == null) {
+      throw  new Exception("Got empty packet");
     }
 
     LogManager.getLogger().debug("Received forwarding packet!");
 
     if(!validate(data)) {
-      LogManager.getLogger().debug("Player-data validated!");
-      return null;
+      throw new Exception("Player-data could not be validated!");
     }
+
+    LogManager.getLogger().debug("Player-data validated!");
 
     int version = data.readVarInt();
     if (version != SUPPORTED_FORWARDING_VERSION) {
@@ -63,11 +57,8 @@ public class ModernForwarding {
     if (address instanceof InetSocketAddress) {
       port = ((InetSocketAddress) address).getPort();
     }
-    try {
-      addressField.set(connection, new InetSocketAddress(data.readUtf(Short.MAX_VALUE), port));
-    } catch (IllegalAccessException e) {
-      throw new RuntimeException(e);
-    }
+
+    data.readUtf(Short.MAX_VALUE); //hostname
 
     GameProfile profile = new GameProfile(data.readUUID(), data.readUtf(16));
     readProperties(data, profile);

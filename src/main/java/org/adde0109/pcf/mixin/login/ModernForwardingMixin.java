@@ -57,19 +57,19 @@ public class ModernForwardingMixin {
   @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
   private void onHandleCustomQueryPacket(CCustomPayloadLoginPacket p_209526_1_, CallbackInfo ci) {
     if((p_209526_1_.getIndex() == 100) && state == ServerLoginNetHandler.State.HELLO && ambassador$listen) {
-      this.gameProfile = Initializer.modernForwardingInstance.handleForwardingPacket(p_209526_1_, connection);
       ambassador$listen = false;
-      if(this.gameProfile == null) {
-        this.disconnect(new StringTextComponent("Direct connections to this server are not permitted!"));
-        LogManager.getLogger().error("Attention! Someone tried to join directly!");
-      } else {
+      try {
+        this.gameProfile = Initializer.modernForwardingInstance.handleForwardingPacket(p_209526_1_, connection);
         arclight$preLogin();
         this.state = ServerLoginNetHandler.State.NEGOTIATING;
+      } catch (Exception e) {
+        this.disconnect(new StringTextComponent("Direct connections to this server are not permitted!"));
+        LogManager.getLogger().warn("Exception verifying forwarded player info", e);
       }
       ci.cancel();
     }
   }
 
-  private void arclight$preLogin() {}
+  private void arclight$preLogin() throws Exception {}
 
 }
