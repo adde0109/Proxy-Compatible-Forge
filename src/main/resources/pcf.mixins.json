@@ -6,6 +6,7 @@
   "refmap": "pcf.refmap.json",
   "mixins": [
     "login.ModernForwardingMixin",
+    "login.MethodPlaceholderMixin",
     "command.WrappableArgumentNodeStubMixin",
     "command.CommandsMixin",
     "command.WrappableEntryMixin",
