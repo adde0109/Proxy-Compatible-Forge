@@ -4,6 +4,6 @@ import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(value = ServerLoginPacketListenerImpl.class, priority = 250)
-public class MethodPlaceholderMixin {
+public class ServerLoginPacketListenerPlaceholderMixin {
     void arclight$preLogin() throws Exception {}
 }
