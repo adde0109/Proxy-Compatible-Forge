@@ -7,6 +7,7 @@ import com.mojang.authlib.properties.PropertyMap;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.login.client.CCustomPayloadLoginPacket;
+import org.adde0109.pcf.login.IMixinConnection;
 import org.apache.logging.log4j.LogManager;
 
 import javax.annotation.Nullable;
@@ -52,13 +53,14 @@ public class ModernForwarding {
       throw new IllegalStateException("Unsupported forwarding version " + version + ", wanted " + SUPPORTED_FORWARDING_VERSION);
     }
 
+    String ip = data.readUtf(Short.MAX_VALUE);
     SocketAddress address = connection.getRemoteAddress();
     int port = 0;
     if (address instanceof InetSocketAddress) {
       port = ((InetSocketAddress) address).getPort();
     }
 
-    data.readUtf(Short.MAX_VALUE); //hostname
+    ((IMixinConnection) (Object) connection).pcf$setAddress(new InetSocketAddress(ip, port));
 
     GameProfile profile = new GameProfile(data.readUUID(), data.readUtf(16));
     readProperties(data, profile);
