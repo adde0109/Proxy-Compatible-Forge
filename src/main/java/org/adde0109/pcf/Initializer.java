@@ -2,6 +2,7 @@ package org.adde0109.pcf;
 
 
 import com.google.gson.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
@@ -9,7 +10,12 @@ import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.network.HandshakeHandler;
+import net.minecraftforge.network.HandshakeMessages;
 import net.minecraftforge.network.NetworkConstants;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.IOException;
@@ -25,6 +31,8 @@ public class Initializer {
 
   public static ModernForwarding modernForwardingInstance;
   public static final List<String> integratedArgumentTypes = new ArrayList<>();
+
+  public static final SimpleChannel proxyChannel = getProxyChannel();
 
   public static final Config config;
 
@@ -45,7 +53,32 @@ public class Initializer {
 
   }
 
+  public static SimpleChannel getProxyChannel() {
+    org.adde0109.pcf.HandshakeHandler handler = new org.adde0109.pcf.HandshakeHandler();
+    SimpleChannel proxyChannel = NetworkRegistry.ChannelBuilder.
+            named(new ResourceLocation("pcf:proxy")).
+            clientAcceptedVersions(a -> true).
+            serverAcceptedVersions(a -> true).
+            networkProtocolVersion(() -> NetworkConstants.NETVERSION).
+            simpleChannel();
 
+    proxyChannel.messageBuilder(HandshakeMessages.S2CModList.class, 1, NetworkDirection.PLAY_TO_CLIENT).
+            decoder(HandshakeMessages.S2CModList::decode).
+            consumerNetworkThread(net.minecraftforge.network.HandshakeHandler.biConsumerFor(handler::handleModListProposalOnClient)).
+            add();
+
+    proxyChannel.messageBuilder(HandshakeMessages.S2CRegistry.class, 3, NetworkDirection.PLAY_TO_CLIENT).
+            decoder(HandshakeMessages.S2CRegistry::decode).
+            consumerNetworkThread(net.minecraftforge.network.HandshakeHandler.biConsumerFor(handler::handleRegistryMessage)).
+            add();
+
+    proxyChannel.messageBuilder(HandshakeMessages.S2CConfigData.class, 4, NetworkDirection.PLAY_TO_CLIENT).
+            decoder(HandshakeMessages.S2CConfigData::decode).
+            consumerNetworkThread(net.minecraftforge.network.HandshakeHandler.biConsumerFor(handler::handleConfigSync)).
+            add();
+
+    return proxyChannel;
+  }
 
   public void serverAbutToStart(ServerAboutToStartEvent event) {
     String forwardingSecret = config.forwardingSecret.get();
