@@ -20,7 +20,7 @@ public class CommandsMixin {
   @Redirect(method = "sendCommands(Lnet/minecraft/server/level/ServerPlayer;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;send(Lnet/minecraft/network/protocol/Packet;)V"))
   private void sendCommands$grabPacket(ServerGamePacketListenerImpl connection, Packet<?> packet) {
     ConnectionData connectionData = (ConnectionData) connection.connection.channel().attr(AttributeKey.valueOf("fml:conndata")).get();
-    if (connectionData.getChannels().keySet().stream().anyMatch((v) -> v.equals(new ResourceLocation("ambassador:commands")))) {
+    if (connectionData != null && connectionData.getChannels().keySet().stream().anyMatch((v) -> v.equals(new ResourceLocation("ambassador:commands")))) {
       FriendlyByteBuf byteBuf = new FriendlyByteBuf(Unpooled.buffer());
       ((IMixinWrappableCommandPacket)(Object) packet).wrapAndWrite(byteBuf);
       connection.send(new ClientboundCustomPayloadPacket(new ResourceLocation("ambassador:commands"), byteBuf));
