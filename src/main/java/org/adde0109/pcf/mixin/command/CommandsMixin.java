@@ -18,7 +18,7 @@ public class CommandsMixin {
   @Redirect(method = "sendCommands(Lnet/minecraft/entity/player/ServerPlayerEntity;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/play/ServerPlayNetHandler;send(Lnet/minecraft/network/IPacket;)V"))
   private void sendCommands$grabPacket(ServerPlayNetHandler connection, IPacket<?> packet) {
     FMLConnectionData connectionData = (FMLConnectionData) connection.connection.channel().attr(AttributeKey.valueOf("fml:conndata")).get();
-    if (connectionData.getChannels().keySet().stream().anyMatch((v) -> v.equals(new ResourceLocation("ambassador:commands")))) {
+    if (connectionData != null && connectionData.getChannels().keySet().stream().anyMatch((v) -> v.equals(new ResourceLocation("ambassador:commands")))) {
       PacketBuffer byteBuf = new PacketBuffer(Unpooled.buffer());
       ((IMixinWrappableCommandPacket)(Object) packet).write(byteBuf, true);
       connection.send(new SCustomPayloadPlayPacket(new ResourceLocation("ambassador:commands"), byteBuf));
