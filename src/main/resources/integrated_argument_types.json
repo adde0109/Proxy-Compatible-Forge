@@ -1,5 +1,5 @@
 {
-  "version": "1.19.3",
+  "version": "1.20.2",
   "entries": [
     "brigadier:bool",
     "brigadier:float",
@@ -50,6 +50,7 @@
     "minecraft:resource_key",
     "minecraft:template_mirror",
     "minecraft:template_rotation",
+    "minecraft:heightmap",
     "minecraft:uuid"
   ]
 }

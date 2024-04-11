@@ -25,22 +25,21 @@ The MIT License (MIT)
         THE SOFTWARE.
 */
 
-import com.mojang.brigadier.arguments.ArgumentType;
 import io.netty.buffer.Unpooled;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.adde0109.pcf.Initializer;
-import org.adde0109.pcf.command.IMixinNodeStub;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 
 @Mixin(targets = "net.minecraft.network.protocol.game.ClientboundCommandsPacket$ArgumentNodeStub")
-public class WrappableArgumentNodeStubMixin implements IMixinNodeStub {
+public class WrappableArgumentNodeStubMixin {
   private static final int MOD_ARGUMENT_INDICATOR = -256;
 
   @Shadow
@@ -55,39 +54,37 @@ public class WrappableArgumentNodeStubMixin implements IMixinNodeStub {
   @Final
   private ResourceLocation suggestionId;
 
-  public void wrapAndWrite(FriendlyByteBuf byteBuf) {
-    byteBuf.writeUtf(this.id);
-    wrapInVelocityModArgument(byteBuf, this.argumentType);
-    if (this.suggestionId != null) {
-      byteBuf.writeResourceLocation(this.suggestionId);
-    }
-  }
+  /**
+   * @author Daniel Voort.
+   * @reason This is easier than injecting and returning before anything is written. There are viable alternatives
+   *  available, but this is just the most straightforward and most development-time efficient. It is highly unlikely
+   *  for other mods to try to mixin this particular function.
+   */
+  @Overwrite
+  public void write(FriendlyByteBuf buffer) {
+    buffer.writeUtf(this.id);
 
-  private static <A extends ArgumentType<?>> void wrapInVelocityModArgument(FriendlyByteBuf buf, ArgumentTypeInfo.Template<A> properties) {
-    wrapInVelocityModArgument(buf, properties.type(), properties);
-  }
-
-  private static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>> void wrapInVelocityModArgument(FriendlyByteBuf buf, ArgumentTypeInfo<A, T> serializer, ArgumentTypeInfo.Template<A> properties) {
-    ResourceLocation identifier = BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey(properties.type());
+    var typeInfo = argumentType.type();
+    var identifier = ForgeRegistries.COMMAND_ARGUMENT_TYPES.getKey(typeInfo);
+    var id = BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId(typeInfo);
 
     if (identifier != null && Initializer.integratedArgumentTypes.contains(identifier.toString())) {
-      buf.writeVarInt(BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId(serializer));
-      serializer.serializeToNetwork((T)properties, buf);
-      return;
+      buffer.writeVarInt(id);
+      ((ArgumentTypeInfo) typeInfo).serializeToNetwork(argumentType, buffer);
+    } else {
+      buffer.writeVarInt(MOD_ARGUMENT_INDICATOR);
+      buffer.writeVarInt(id);
+
+      FriendlyByteBuf extraData = new FriendlyByteBuf(Unpooled.buffer());
+      ((ArgumentTypeInfo) typeInfo).serializeToNetwork(argumentType, extraData);
+
+      buffer.writeVarInt(extraData.readableBytes());
+      buffer.writeBytes(extraData);
+
+      extraData.release();
     }
 
-    // Not a standard Minecraft argument type - so we need to wrap it
-    serializeWrappedArgumentType(buf, properties.type(), properties);
-  }
-
-  private static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>> void serializeWrappedArgumentType(FriendlyByteBuf packetByteBuf, ArgumentTypeInfo<A, T> serializer, ArgumentTypeInfo.Template<A> properties) {
-    packetByteBuf.writeVarInt(MOD_ARGUMENT_INDICATOR);
-    packetByteBuf.writeVarInt(BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId(serializer));
-
-    FriendlyByteBuf extraData = new FriendlyByteBuf(Unpooled.buffer());
-    serializer.serializeToNetwork((T) properties, extraData);
-
-    packetByteBuf.writeVarInt(extraData.readableBytes());
-    packetByteBuf.writeBytes(extraData);
+    if (suggestionId != null)
+      buffer.writeResourceLocation(suggestionId);
   }
 }

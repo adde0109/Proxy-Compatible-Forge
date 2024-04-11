@@ -5,13 +5,13 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
+import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
+import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
+import net.minecraft.network.protocol.login.custom.DiscardedQueryPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
-import net.minecraftforge.network.NetworkDirection;
 import org.adde0109.pcf.Initializer;
 import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -27,7 +27,7 @@ public class ModernForwardingMixin {
     private Connection connection;
 
     @Shadow
-    private GameProfile gameProfile;
+    private GameProfile authenticatedProfile;
 
     @Shadow
     private void disconnect(Component p_194026_1_) {
@@ -45,20 +45,20 @@ public class ModernForwardingMixin {
         if (Initializer.modernForwardingInstance != null) {
             this.state = ServerLoginPacketListenerImpl.State.HELLO;
             LogManager.getLogger().debug("Sent Forward Request");
-            this.connection.send(NetworkDirection.LOGIN_TO_CLIENT.buildPacket(Pair.of(new FriendlyByteBuf(Unpooled.EMPTY_BUFFER), 100), VELOCITY_RESOURCE).getThis());
+            connection.send(new ClientboundCustomQueryPacket(100, new DiscardedQueryPayload(VELOCITY_RESOURCE, new FriendlyByteBuf(Unpooled.EMPTY_BUFFER))));
             ambassador$listen = true;
             ci.cancel();
         }
     }
 
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
-    private void onHandleCustomQueryPacket(ServerboundCustomQueryPacket p_209526_1_, CallbackInfo ci) {
-        if ((p_209526_1_.getIndex() == 100) && state == ServerLoginPacketListenerImpl.State.HELLO && ambassador$listen) {
+    private void onHandleCustomQueryPacket(ServerboundCustomQueryAnswerPacket packet, CallbackInfo ci) {
+        if ((packet.getIndex() == 100) && state == ServerLoginPacketListenerImpl.State.HELLO && ambassador$listen) {
             ambassador$listen = false;
             try {
-                this.gameProfile = Initializer.modernForwardingInstance.handleForwardingPacket(p_209526_1_, connection);
+                this.authenticatedProfile = Initializer.modernForwardingInstance.handleForwardingPacket(packet, connection);
                 arclight$preLogin();
-                this.state = ServerLoginPacketListenerImpl.State.NEGOTIATING;
+                this.state = ServerLoginPacketListenerImpl.State.VERIFYING;
             } catch (Exception e) {
                 this.disconnect(Component.literal("Direct connections to this server are not permitted!"));
                 LogManager.getLogger().warn("Exception verifying forwarded player info", e);

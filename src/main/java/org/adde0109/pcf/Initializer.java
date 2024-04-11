@@ -9,7 +9,6 @@ import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.network.NetworkConstants;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.IOException;
@@ -32,9 +31,10 @@ public class Initializer {
     ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON,configSpec);
 
     //Make sure the mod being absent on the other network side does not cause the client to display the server as incompatible
-    ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+    ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class,
+            () -> new IExtensionPoint.DisplayTest(() -> IExtensionPoint.DisplayTest.IGNORESERVERONLY, (a, b) -> true));
 
-    MinecraftForge.EVENT_BUS.addListener(this::serverAbutToStart);
+    MinecraftForge.EVENT_BUS.addListener(this::serverAboutToStart);
     try (Reader reader = new InputStreamReader(Objects.requireNonNull(this.getClass()
             .getResourceAsStream("/integrated_argument_types.json")))) {
       JsonObject result = new Gson().fromJson(reader, JsonObject.class);
@@ -47,7 +47,7 @@ public class Initializer {
 
 
 
-  public void serverAbutToStart(ServerAboutToStartEvent event) {
+  public void serverAboutToStart(ServerAboutToStartEvent event) {
     String forwardingSecret = config.forwardingSecret.get();
     if(!(forwardingSecret.isBlank() || forwardingSecret.isEmpty())) {
       modernForwardingInstance = new ModernForwarding(forwardingSecret);
