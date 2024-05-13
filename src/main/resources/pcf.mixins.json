@@ -11,8 +11,7 @@
     "command.WrappableArgumentNodeStubMixin",
     "command.CommandsMixin",
     "command.WrappableEntryMixin",
-    "command.WrappableCommandsPacketMixin",
-    "registry.RegistryBuilderMixin"
+    "command.WrappableCommandsPacketMixin"
   ],
   "client": [
   ],
