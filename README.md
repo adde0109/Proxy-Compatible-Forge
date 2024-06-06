@@ -1,6 +1,7 @@
-# Modern Forwarding and command wrapping for Forge
+# Modern Forwarding
 This mod brings modern forwarding to Forge servers (See: https://docs.papermc.io/velocity/player-information-forwarding)
 
+# Command Wrapping fix
 This mod also brings command wrapping which fixes this Velocity error: `io.netty.handler.codec.CorruptedFrameException: Error decoding class com.velocitypowered.proxy.protocol.packet.AvailableCommandsPacket`
 ## How to get started:
 1. Download and install this as a mod to your Forge server. (Jars can be found in the releases tab.)
