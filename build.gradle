@@ -12,15 +12,15 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
-version = '1.20.2-1.1.5'
+version = '1.20.6-1.1.5'
 group = 'org.adde0109.pcf' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'proxy-compatible-forge'
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
-    mappings channel: 'official', version: '1.20.2'
+    mappings channel: 'official', version: '1.20.6'
 
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -69,7 +69,6 @@ minecraft {
 }
 
 mixin {
-    add sourceSets.main, "pcf.refmap.json"
     config 'pcf.mixins.json'
 }
 
@@ -77,7 +76,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
     // Minecraft Forge
-    minecraft 'net.minecraftforge:forge:1.20.2-48.1.0'
+    minecraft 'net.minecraftforge:forge:1.20.6-50.1.0'
 
     // Mixin
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
@@ -97,4 +96,4 @@ jar {
     }
 }
 
-jar.finalizedBy('reobfJar')
+//jar.finalizedBy('reobfJar')

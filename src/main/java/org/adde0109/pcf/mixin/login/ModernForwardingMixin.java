@@ -45,7 +45,7 @@ public class ModernForwardingMixin {
         if (Initializer.modernForwardingInstance != null) {
             this.state = ServerLoginPacketListenerImpl.State.HELLO;
             LogManager.getLogger().debug("Sent Forward Request");
-            connection.send(new ClientboundCustomQueryPacket(100, new DiscardedQueryPayload(VELOCITY_RESOURCE, new FriendlyByteBuf(Unpooled.EMPTY_BUFFER))));
+            connection.send(new ClientboundCustomQueryPacket(100, new DiscardedQueryPayload(VELOCITY_RESOURCE)));
             ambassador$listen = true;
             ci.cancel();
         }
@@ -53,7 +53,7 @@ public class ModernForwardingMixin {
 
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
     private void onHandleCustomQueryPacket(ServerboundCustomQueryAnswerPacket packet, CallbackInfo ci) {
-        if ((packet.getIndex() == 100) && state == ServerLoginPacketListenerImpl.State.HELLO && ambassador$listen) {
+        if ((packet.transactionId() == 100) && state == ServerLoginPacketListenerImpl.State.HELLO && ambassador$listen) {
             ambassador$listen = false;
             try {
                 this.authenticatedProfile = Initializer.modernForwardingInstance.handleForwardingPacket(packet, connection);

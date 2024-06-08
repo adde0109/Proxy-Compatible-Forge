@@ -7,6 +7,7 @@ import com.mojang.authlib.properties.PropertyMap;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
+import net.minecraft.network.protocol.login.custom.DiscardedQueryAnswerPayload;
 import org.adde0109.pcf.login.IMixinConnection;
 import org.apache.logging.log4j.LogManager;
 
@@ -31,8 +32,8 @@ public class ModernForwarding {
 
 
     @Nullable
-    public GameProfile handleForwardingPacket(ServerboundCustomQueryAnswerPacket packet, Connection connection) throws Exception {
-        FriendlyByteBuf data = packet.getInternalData();
+    public GameProfile handleForwardingPacket(net.minecraftforge.network.ICustomPacket packet, Connection connection) throws Exception {
+        FriendlyByteBuf data =
         if(data == null) {
             throw new Exception("Got empty packet");
         }
