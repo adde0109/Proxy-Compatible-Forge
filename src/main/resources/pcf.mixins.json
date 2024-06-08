@@ -8,8 +8,7 @@
     "login.ModernForwardingMixin",
     "login.ServerLoginPacketListenerPlaceholderMixin",
     "login.ConnectionMixin",
-    "command.WrappableArgumentNodeStubMixin",
-    "registry.RegistryBuilderMixin"
+    "command.WrappableArgumentNodeStubMixin"
   ],
   "client": [
   ],
