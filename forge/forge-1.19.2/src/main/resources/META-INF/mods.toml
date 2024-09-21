@@ -1,0 +1,25 @@
+modLoader="javafml"
+loaderVersion="[43,)"
+license="LGPL-2.1"
+[[mods]]
+modId="pcf"
+version="${file.jarVersion}"
+displayName="Proxy Compatible Forge"
+credits="Thanks for this example mod goes to Java"
+authors="adde0109, JT122406"
+description='''
+With the power of Ambassador, you may connect using a Velocity proxy!
+'''
+
+[[dependencies.pcf]]
+    modId="forge"
+    mandatory=true
+    versionRange="[41,)"
+    ordering="NONE"
+    side="SERVER"
+[[dependencies.pcf]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.19, 1.19.2]"
+    ordering="NONE"
+    side="SERVER"

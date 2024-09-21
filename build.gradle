@@ -1,99 +1,66 @@
-buildscript {
+defaultTasks('build')
+
+subprojects {
+    apply(plugin: 'java')
+//    apply(plugin: libs.plugins.spotless.get().pluginId)
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
+
     repositories {
-        maven { url = 'https://maven.minecraftforge.net' }
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+        mavenLocal()
         mavenCentral()
+
+        // NeuralNexus
+        maven {
+            name = "NeuralNexus"
+            url = "https://maven.neuralnexus.dev/releases"
+        }
+
+        // NeuralNexus Mirror
+        maven {
+            name = 'NeuralNexus Mirror'
+            url = 'https://maven.neuralnexus.dev/mirror'
+        }
+
+        // Minecraft
+        maven {
+            name = "minecraft-repo"
+            url = "https://libraries.minecraft.net/"
+        }
     }
+
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '6.0.+', changing: true
-        classpath 'org.spongepowered:mixingradle:0.7.+'
+        compileOnly('org.jetbrains:annotations:24.1.0')
     }
+
+//    spotless {
+//        format 'misc', {
+//            target '*.gradle', '.gitattributes', '.gitignore'
+//
+//            trimTrailingWhitespace()
+//            indentWithSpaces()
+//            endWithNewline()
+//        }
+//        java {
+//            importOrder()
+//            removeUnusedImports()
+//            cleanthat()
+//            googleJavaFormat('1.17.0').aosp().formatJavadoc(true).reorderImports(true)
+//            formatAnnotations()
+//            licenseHeader """/**
+// * Copyright (c) \$YEAR Dylan Sperrer - dylan@sperrer.ca
+// * The project is Licensed under <a href="https://github.com/Tater-Certified/Overseer/blob/dev/LICENSE">MIT</a>
+// */
+//"""
+//        }
+//    }
+//
+//    tasks.build.dependsOn(spotlessApply)
+//    tasks.findByName('shadowJar')?.dependsOn(spotlessApply)
+//    tasks.findByName('remapShadowJar')?.dependsOn(spotlessApply)
 }
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.spongepowered.mixin'
-
-version = '1.20.6-1.1.5'
-group = 'org.adde0109.pcf' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'proxy-compatible-forge'
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
-
-println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
-minecraft {
-    mappings channel: 'official', version: '1.20.6'
-
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-
-    runs {
-        client {
-            workingDirectory project.file('run')
-
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                examplemod {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        server {
-            workingDirectory project.file('run')
-
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                examplemod {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        data {
-            workingDirectory project.file('run')
-
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-
-            args '--mod', 'ambassador', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
-            mods {
-                examplemod {
-                    source sourceSets.main
-                }
-            }
-        }
-    }
-}
-
-mixin {
-    config 'pcf.mixins.json'
-}
-
-sourceSets.main.resources { srcDir 'src/generated/resources' }
-
-dependencies {
-    // Minecraft Forge
-    minecraft 'net.minecraftforge:forge:1.20.6-50.1.0'
-
-    // Mixin
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-}
-
-jar {
-    manifest {
-        attributes([
-            "Specification-Title": "proxy-compatible-forge",
-            "Specification-Vendor": "adde0109",
-            "Specification-Version": "1", // We are version 1 of ourselves
-            "Implementation-Title": project.name,
-            "Implementation-Version": "${archiveVersion.get()}",
-            "Implementation-Vendor" :"adde0109",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
-    }
-}
-
-//jar.finalizedBy('reobfJar')
