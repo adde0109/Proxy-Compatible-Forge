@@ -37,7 +37,7 @@ description='''
 With the power of Ambassador, you may connect using a Velocity proxy!
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.proxy-compatible-forge]] #optional
+[[dependencies.pcf]] #optional
     # the modid of the dependency
     modId="forge" #mandatory
     # Does this dependency have to exist - if not, ordering below must be specified
@@ -49,10 +49,10 @@ With the power of Ambassador, you may connect using a Velocity proxy!
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
     side="SERVER"
 # Here's another dependency
-[[dependencies.proxy-compatible-forge]]
+[[dependencies.pcf]]
     modId="minecraft"
     mandatory=true
 # This version range declares a minimum of the current minecraft version up to but not including the next major version
-    versionRange="[1.19.3,1.20)"
+    versionRange="[1.19.3,1.20.1]"
     ordering="NONE"
     side="SERVER"

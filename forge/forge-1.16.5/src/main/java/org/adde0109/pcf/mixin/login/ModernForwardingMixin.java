@@ -2,75 +2,71 @@ package org.adde0109.pcf.mixin.login;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.buffer.Unpooled;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.login.ServerLoginNetHandler;
-import net.minecraft.network.login.client.CCustomPayloadLoginPacket;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraft.network.Connection;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
+import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import org.adde0109.pcf.Initializer;
+import org.adde0109.pcf.StateUtil;
 import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@Mixin(ServerLoginPacketListenerImpl.class)
+public abstract class ModernForwardingMixin {
+    @Shadow @Final Connection connection;
 
-@Mixin(ServerLoginNetHandler.class)
-public class ModernForwardingMixin {
+    @Shadow @Nullable public GameProfile gameProfile;
 
+    @Shadow public abstract void shadow$disconnect(Component reason);
 
-  @Final
-  @Shadow
-  public NetworkManager connection;
+    @Unique private static final ResourceLocation pcf$VELOCITY_RESOURCE = new ResourceLocation("velocity:player_info");
 
-  @Shadow
-  private GameProfile gameProfile;
+    @Unique private boolean pcf$listen = false;
 
-  @Shadow
-  public void disconnect(ITextComponent p_194026_1_) {}
-
-  @Shadow
-  private ServerLoginNetHandler.State state;
-
-  private static final ResourceLocation VELOCITY_RESOURCE = new ResourceLocation("velocity:player_info");
-  private boolean ambassador$listen = false;
-
-  @Inject(method = "handleHello", at = @At("HEAD"), cancellable = true)
-  private void onHandleHello(CallbackInfo ci) {
-    Validate.validState(state == ServerLoginNetHandler.State.HELLO, "Unexpected hello packet");
-    if(Initializer.modernForwardingInstance != null) {
-      this.state = ServerLoginNetHandler.State.HELLO;
-      LogManager.getLogger().debug("Sent Forward Request");
-      this.connection.send(NetworkDirection.LOGIN_TO_CLIENT.buildPacket(Pair.of(new PacketBuffer(Unpooled.EMPTY_BUFFER),100),VELOCITY_RESOURCE).getThis());
-      ambassador$listen = true;
-      ci.cancel();
+    @Inject(method = "handleHello", at = @At("HEAD"), cancellable = true)
+    private void onHandleHello(CallbackInfo ci) {
+        Validate.validState(StateUtil.stateEquals(this, 0), "Unexpected hello packet");
+        if (Initializer.modernForwardingInstance != null) {
+            StateUtil.setState(this, 0);
+            LogManager.getLogger().debug("Sent Forward Request");
+            ClientboundCustomQueryPacket packet = new ClientboundCustomQueryPacket();
+            ((ClientboundCustomQueryPacketAccessor) packet).setTransactionId(100);
+            ((ClientboundCustomQueryPacketAccessor) packet).setIdentifier(pcf$VELOCITY_RESOURCE);
+            ((ClientboundCustomQueryPacketAccessor) packet).setData(new FriendlyByteBuf(Unpooled.EMPTY_BUFFER));
+            this.connection.send(packet);
+            this.pcf$listen = true;
+            ci.cancel();
+        }
     }
-  }
 
-  @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
-  private void onHandleCustomQueryPacket(CCustomPayloadLoginPacket p_209526_1_, CallbackInfo ci) {
-    if((p_209526_1_.getIndex() == 100) && state == ServerLoginNetHandler.State.HELLO && ambassador$listen) {
-      ambassador$listen = false;
-      try {
-        this.gameProfile = Initializer.modernForwardingInstance.handleForwardingPacket(p_209526_1_, connection);
-        arclight$preLogin();
-        this.state = ServerLoginNetHandler.State.NEGOTIATING;
-      } catch (Exception e) {
-        this.disconnect(new StringTextComponent("Direct connections to this server are not permitted!"));
-        LogManager.getLogger().warn("Exception verifying forwarded player info", e);
-      }
-      ci.cancel();
+    @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
+    private void onHandleCustomQueryPacket(ServerboundCustomQueryPacket packet, CallbackInfo ci) {
+        if ((packet.getIndex() == 100) && StateUtil.stateEquals(this, 0) && this.pcf$listen) {
+            this.pcf$listen = false;
+            try {
+                this.gameProfile = Initializer.modernForwardingInstance.handleForwardingPacket(packet, connection);
+                this.arclight$preLogin();
+                StateUtil.setState(this, 3);
+            } catch (Exception e) {
+                this.shadow$disconnect(Component.nullToEmpty("Direct connections to this server are not permitted!"));
+                LogManager.getLogger().warn("Exception verifying forwarded player info", e);
+            }
+            ci.cancel();
+        }
     }
-  }
 
-  @Shadow(remap = false)
-  private void arclight$preLogin() throws Exception {}
-
+    @Shadow(remap = false)
+    @SuppressWarnings({"MixinAnnotationTarget", "RedundantThrows"})
+    void arclight$preLogin() throws Exception {}
 }

@@ -2,14 +2,15 @@
   "required": true,
   "minVersion": "0.8",
   "package": "org.adde0109.pcf.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_17",
   "refmap": "pcf.refmap.json",
   "mixins": [
-    "login.ModernForwardingMixin",
-    "login.ServerLoginPacketListenerPlaceholderMixin",
-    "login.ConnectionMixin",
     "command.CommandsMixin",
-    "command.WrappableCommandsPacketMixin"
+    "command.WrappableCommandsPacketMixin",
+    "login.ClientboundCustomQueryPacketAccessor",
+    "login.ConnectionMixin",
+    "login.ModernForwardingMixin",
+    "login.ServerLoginPacketListenerPlaceholderMixin"
   ],
   "client": [
   ],

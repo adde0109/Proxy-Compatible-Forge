@@ -20,21 +20,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+
 @Mod("pcf")
 public class Initializer {
 
-public static ModernForwarding modernForwardingInstance;
-public static final List<String> integratedArgumentTypes = new ArrayList<>();
+  public static ModernForwarding modernForwardingInstance;
+  public static final List<String> integratedArgumentTypes = new ArrayList<>();
 
-public static final Config config;
+  public static final Config config;
 
   public Initializer() {
     ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON,configSpec);
 
     //Make sure the mod being absent on the other network side does not cause the client to display the server as incompatible
-    ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+    ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST,
+            () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 
-    MinecraftForge.EVENT_BUS.addListener(this::serverAbutToStart);
+    MinecraftForge.EVENT_BUS.addListener(this::serverAboutToStart);
     try (Reader reader = new InputStreamReader(Objects.requireNonNull(this.getClass()
             .getResourceAsStream("/integrated_argument_types.json")))) {
       JsonObject result = new Gson().fromJson(reader, JsonObject.class);
@@ -45,10 +47,9 @@ public static final Config config;
   }
 
 
-
-  public void serverAbutToStart(FMLServerAboutToStartEvent event) {
+  public void serverAboutToStart(FMLServerAboutToStartEvent event) {
     String forwardingSecret = config.forwardingSecret.get();
-    if(!forwardingSecret.isEmpty()) {
+    if(!(forwardingSecret.isBlank() || forwardingSecret.isEmpty())) {
       modernForwardingInstance = new ModernForwarding(forwardingSecret);
     }
   }
@@ -56,7 +57,7 @@ public static final Config config;
 
   static final ForgeConfigSpec configSpec;
   static {
-    final Pair<Config, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Initializer.Config::new);
+    final Pair<Config, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Config::new);
     configSpec = specPair.getRight();
     config = specPair.getLeft();
   }
@@ -76,9 +77,4 @@ public static final Config config;
     }
 
   }
-
-
-
-
-
 }

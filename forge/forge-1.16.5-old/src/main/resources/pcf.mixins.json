@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "org.adde0109.pcf.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "pcf.refmap.json",
+  "mixins": [
+    "login.ModernForwardingMixin",
+    "login.ServerLoginPacketListenerPlaceholderMixin",
+    "login.ConnectionMixin",
+    "command.CommandsMixin",
+    "command.WrappableCommandsPacketMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

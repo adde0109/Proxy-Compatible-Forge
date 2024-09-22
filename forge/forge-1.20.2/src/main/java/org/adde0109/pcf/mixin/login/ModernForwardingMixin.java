@@ -45,7 +45,7 @@ public abstract class ModernForwardingMixin {
             StateUtil.setState(this, 0);
             LogManager.getLogger().debug("Sent Forward Request");
             this.connection.send(new ClientboundCustomQueryPacket(100, new DiscardedQueryPayload(pcf$VELOCITY_RESOURCE, new FriendlyByteBuf(Unpooled.EMPTY_BUFFER))));
-            pcf$listen = true;
+            this.pcf$listen = true;
             ci.cancel();
         }
     }
@@ -56,10 +56,10 @@ public abstract class ModernForwardingMixin {
             this.pcf$listen = false;
             try {
                 this.authenticatedProfile = Initializer.modernForwardingInstance.handleForwardingPacket(packet, connection);
-                arclight$preLogin();
+                this.arclight$preLogin();
                 StateUtil.setState(this, 4);
             } catch (Exception e) {
-                this.shadow$disconnect(Component.literal("Direct connections to this server are not permitted!"));
+                this.shadow$disconnect(Component.nullToEmpty("Direct connections to this server are not permitted!"));
                 LogManager.getLogger().warn("Exception verifying forwarded player info", e);
             }
             ci.cancel();
