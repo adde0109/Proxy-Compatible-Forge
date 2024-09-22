@@ -63,6 +63,7 @@ rootProject.name = 'proxy-compatible-forge'
 include(
 //        'common',
 
+        'forge:forge-1.14.4',
         'forge:forge-1.16.5',
         'forge:forge-1.17.1',
         'forge:forge-1.18',

@@ -1,8 +1,31 @@
 # General Cross-Version Notes
 
+## 1.15.2 -> 1.16.1
+
+- ModernForwardingMixin
+  - `net.minecraft.network.chat.TextComponent#<init>(String)`
+    changes to `net.minecraft.network.chat.Component#nullToEmpty()`
+
+- TODO: Implement brigadier argument wrapping
+
+- WrappableCommandsPacketMixin
+  - `net.minecraft.network.protocol.game.ClientboundCommandsPacket
+    #getNodesInIdOrder(Object2IntMap<CommandNode<SharedSuggestionProvider>>)` added
+  - `ClientboundCommandsPacket#writeNode` becomes static
+  - `ClientboundCommandsPacket#enumerateNodes(RootCommandNode<SharedSuggestionProvider>)` added
+
+## 1.16.1 -> 1.16.5
+
+- CommandsMixin
+  - `fml:conndata` doesn't exist until 1.16.5
+ModernForwarding
+  - `FriendlyByteBuf#readUtf()` is client-only, 
+  requiring the usage of `FriendlyByteBuf#readUtf(Short.MAX_VALUE)`
+
 ## 1.16.5 -> 1.17.1
 
 - Initializer
+  - `String#isBlank()` is not available until 1.17.1 due to Java 11
   - ```java
     ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST,
             () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
