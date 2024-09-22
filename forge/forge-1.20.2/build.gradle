@@ -14,11 +14,9 @@ unimined.minecraft(sourceSets.main) {
     minecraftForge {
         loader(forge_version)
         mixinConfig("pcf.mixins.json")
-        accessTransformer = file("src/main/resources/META-INF/accesstransformer.cfg")
     }
     mappings {
         mojmap()
-        devFallbackNamespace("official")
     }
     defaultRemapJar = false
     remap(jar) {

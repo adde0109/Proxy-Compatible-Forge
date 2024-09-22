@@ -1,7 +1,9 @@
 package org.adde0109.pcf.mixin.login;
 
 import com.mojang.authlib.GameProfile;
+
 import io.netty.buffer.Unpooled;
+
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -10,57 +12,54 @@ import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import net.minecraft.network.protocol.login.custom.DiscardedQueryPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
+
 import org.adde0109.pcf.Initializer;
+import org.adde0109.pcf.StateUtil;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-
 @Mixin(ServerLoginPacketListenerImpl.class)
-public class ModernForwardingMixin {
+public abstract class ModernForwardingMixin {
+    @Shadow @Final Connection connection;
 
-    @Shadow
-    private Connection connection;
+    @Shadow @Nullable private GameProfile authenticatedProfile;
 
-    @Shadow
-    private GameProfile authenticatedProfile;
+    @Shadow public abstract void shadow$disconnect(Component reason);
 
-    @Shadow
-    private void disconnect(Component p_194026_1_) {
-    }
+    @Unique private static final ResourceLocation pcf$VELOCITY_RESOURCE = new ResourceLocation("velocity:player_info");
 
-    @Shadow
-    private ServerLoginPacketListenerImpl.State state;
-
-    private static final ResourceLocation VELOCITY_RESOURCE = new ResourceLocation("velocity:player_info");
-    private boolean ambassador$listen = false;
+    @Unique private boolean pcf$listen = false;
 
     @Inject(method = "handleHello", at = @At("HEAD"), cancellable = true)
     private void onHandleHello(CallbackInfo ci) {
-        Validate.validState(state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet");
+        Validate.validState(StateUtil.stateEquals(this, 0), "Unexpected hello packet");
         if (Initializer.modernForwardingInstance != null) {
-            this.state = ServerLoginPacketListenerImpl.State.HELLO;
+            StateUtil.setState(this, 0);
             LogManager.getLogger().debug("Sent Forward Request");
-            connection.send(new ClientboundCustomQueryPacket(100, new DiscardedQueryPayload(VELOCITY_RESOURCE, new FriendlyByteBuf(Unpooled.EMPTY_BUFFER))));
-            ambassador$listen = true;
+            this.connection.send(new ClientboundCustomQueryPacket(100, new DiscardedQueryPayload(pcf$VELOCITY_RESOURCE, new FriendlyByteBuf(Unpooled.EMPTY_BUFFER))));
+            pcf$listen = true;
             ci.cancel();
         }
     }
 
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
     private void onHandleCustomQueryPacket(ServerboundCustomQueryAnswerPacket packet, CallbackInfo ci) {
-        if ((packet.getIndex() == 100) && state == ServerLoginPacketListenerImpl.State.HELLO && ambassador$listen) {
-            ambassador$listen = false;
+        if ((packet.getIndex() == 100) && StateUtil.stateEquals(this, 0) && this.pcf$listen) {
+            this.pcf$listen = false;
             try {
                 this.authenticatedProfile = Initializer.modernForwardingInstance.handleForwardingPacket(packet, connection);
                 arclight$preLogin();
-                this.state = ServerLoginPacketListenerImpl.State.VERIFYING;
+                StateUtil.setState(this, 4);
             } catch (Exception e) {
-                this.disconnect(Component.literal("Direct connections to this server are not permitted!"));
+                this.shadow$disconnect(Component.literal("Direct connections to this server are not permitted!"));
                 LogManager.getLogger().warn("Exception verifying forwarded player info", e);
             }
             ci.cancel();
@@ -68,6 +67,6 @@ public class ModernForwardingMixin {
     }
 
     @Shadow(remap = false)
+    @SuppressWarnings({"MixinAnnotationTarget", "RedundantThrows"})
     void arclight$preLogin() throws Exception {}
-
 }

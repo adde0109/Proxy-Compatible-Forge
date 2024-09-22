@@ -9,8 +9,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import org.adde0109.pcf.login.IMixinConnection;
 import org.apache.logging.log4j.LogManager;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.InetSocketAddress;
