@@ -71,7 +71,7 @@ include(
         'forge:forge-1.19.1',
         'forge:forge-1.19.3',
         'forge:forge-1.20.2',
-//        'forge:forge-1.20.6',
+        'forge:forge-1.20.6',
 
 //        'vanilla:vanilla-1.14.4',
 //        'vanilla:vanilla-1.19',

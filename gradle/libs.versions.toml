@@ -2,6 +2,7 @@
 blossom = '1.3.1'
 shadow = '8.1.7'
 spotless = '6.25.0'
+forgegradle = '[6.0,6.2)'
 unimined = '1.3.3'
 vanillagradle = '0.2.1-SNAPSHOT'
 
@@ -9,5 +10,6 @@ vanillagradle = '0.2.1-SNAPSHOT'
 blossom = { id = 'net.kyori.blossom', version.ref = 'blossom' }
 shadow = { id = 'io.github.goooler.shadow', version.ref = 'shadow' }
 spotless = { id = 'com.diffplug.spotless', version.ref = 'spotless' }
+forgegradle = { id = 'net.minecraftforge.gradle', version.ref = 'forgegradle' }
 unimined = { id = 'xyz.wagyourtail.unimined', version.ref = 'unimined' }
 vanillagradle = { id = 'org.spongepowered.gradle.vanilla', version.ref = 'vanillagradle' }

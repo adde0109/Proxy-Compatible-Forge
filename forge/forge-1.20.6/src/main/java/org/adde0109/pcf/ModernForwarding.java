@@ -4,14 +4,14 @@ package org.adde0109.pcf;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
+import io.netty.buffer.Unpooled;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
-import net.minecraft.network.protocol.login.custom.DiscardedQueryAnswerPayload;
 import org.adde0109.pcf.login.IMixinConnection;
 import org.apache.logging.log4j.LogManager;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.InetSocketAddress;
@@ -32,20 +32,42 @@ public class ModernForwarding {
 
 
     @Nullable
-    public GameProfile handleForwardingPacket(net.minecraftforge.network.ICustomPacket packet, Connection connection) throws Exception {
-        FriendlyByteBuf data =
-        if(data == null) {
+    public GameProfile handleForwardingPacket(ServerboundCustomQueryAnswerPacket packet, Connection connection) throws Exception {
+//        FriendlyByteBuf data = packet.getInternalData();
+//        if(data == null) {
+//            throw new Exception("Got empty packet");
+//        }
+        if(packet.payload() == null) {
             throw new Exception("Got empty packet");
         }
+
+        FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
+        packet.payload().write(data);
+
+        if(data.readableBytes() == 0) {
+            throw new Exception("Got empty packet (No readable bytes)");
+        }
+
+        //
+        System.out.println("boop1");
+        //
 
         // Not entirely sure what byte we're skipping here, but without this skip, the rest of this function will
         // not work properly.
         data.skipBytes(1);
 
+        //
+        System.out.println("boop2");
+        //
+
         if(!validate(data)) {
             throw new Exception("Player-data could not be validated!");
         }
         LogManager.getLogger().debug("Player-data validated!");
+
+        //
+        System.out.println("boop3");
+        //
 
         int version = data.readVarInt();
         if (version != SUPPORTED_FORWARDING_VERSION) {
@@ -59,7 +81,7 @@ public class ModernForwarding {
             port = ((InetSocketAddress) address).getPort();
         }
 
-        ((IMixinConnection) (Object) connection).pcf$setAddress(new InetSocketAddress(ip, port));
+        ((IMixinConnection) connection).pcf$setAddress(new InetSocketAddress(ip, port));
 
         GameProfile profile = new GameProfile(data.readUUID(), data.readUtf(16));
         readProperties(data, profile);
@@ -67,16 +89,31 @@ public class ModernForwarding {
     }
 
     public boolean validate(FriendlyByteBuf buffer) {
+        //
+        System.out.println("boop2.1");
+        //
+
         final byte[] signature = new byte[32];
         buffer.readBytes(signature);
 
+        //
+        System.out.println("boop2.2");
+        //
+
         final byte[] data = new byte[buffer.readableBytes()];
         buffer.getBytes(buffer.readerIndex(), data);
+
+        //
+        System.out.println("boop2.3");
+        //
 
         try {
             final Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(new SecretKeySpec(forwardingSecret.getBytes(), "HmacSHA256"));
             final byte[] mySignature = mac.doFinal(data);
+            //
+            System.out.println("boop2.4");
+            //
             if (!MessageDigest.isEqual(signature, mySignature)) {
                 return false;
             }
