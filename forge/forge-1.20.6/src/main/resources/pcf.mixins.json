@@ -4,10 +4,11 @@
   "package": "org.adde0109.pcf.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "login.ModernForwardingMixin",
-    "login.ServerLoginPacketListenerPlaceholderMixin",
+    "command.WrappableArgumentNodeStubMixin",
     "login.ConnectionMixin",
-    "command.WrappableArgumentNodeStubMixin"
+    "login.ModernForwardingMixin",
+    "login.ServerboundCustomQueryAnswerPacketMixin",
+    "login.ServerLoginPacketListenerPlaceholderMixin"
   ],
   "client": [
   ],

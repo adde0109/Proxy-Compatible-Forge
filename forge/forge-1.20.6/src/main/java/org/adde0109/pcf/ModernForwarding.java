@@ -40,34 +40,13 @@ public class ModernForwarding {
         if(packet.payload() == null) {
             throw new Exception("Got empty packet");
         }
-
         FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
         packet.payload().write(data);
-
-        if(data.readableBytes() == 0) {
-            throw new Exception("Got empty packet (No readable bytes)");
-        }
-
-        //
-        System.out.println("boop1");
-        //
-
-        // Not entirely sure what byte we're skipping here, but without this skip, the rest of this function will
-        // not work properly.
-        data.skipBytes(1);
-
-        //
-        System.out.println("boop2");
-        //
 
         if(!validate(data)) {
             throw new Exception("Player-data could not be validated!");
         }
         LogManager.getLogger().debug("Player-data validated!");
-
-        //
-        System.out.println("boop3");
-        //
 
         int version = data.readVarInt();
         if (version != SUPPORTED_FORWARDING_VERSION) {
@@ -89,31 +68,16 @@ public class ModernForwarding {
     }
 
     public boolean validate(FriendlyByteBuf buffer) {
-        //
-        System.out.println("boop2.1");
-        //
-
         final byte[] signature = new byte[32];
         buffer.readBytes(signature);
 
-        //
-        System.out.println("boop2.2");
-        //
-
         final byte[] data = new byte[buffer.readableBytes()];
         buffer.getBytes(buffer.readerIndex(), data);
-
-        //
-        System.out.println("boop2.3");
-        //
 
         try {
             final Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(new SecretKeySpec(forwardingSecret.getBytes(), "HmacSHA256"));
             final byte[] mySignature = mac.doFinal(data);
-            //
-            System.out.println("boop2.4");
-            //
             if (!MessageDigest.isEqual(signature, mySignature)) {
                 return false;
             }

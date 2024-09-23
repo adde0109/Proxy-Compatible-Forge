@@ -1,9 +1,7 @@
 package org.adde0109.pcf.mixin.login;
 
 import com.mojang.authlib.GameProfile;
-import io.netty.buffer.Unpooled;
 import net.minecraft.network.Connection;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
@@ -12,7 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import org.adde0109.pcf.Initializer;
 import org.adde0109.pcf.StateUtil;
-import org.adde0109.pcf.login.ClientBoundCustomQueryImpl;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
@@ -43,7 +40,7 @@ public abstract class ModernForwardingMixin {
             StateUtil.setState(this, 0);
             LogManager.getLogger().debug("Sent Forward Request");
 //            this.connection.send(new ClientboundCustomQueryPacket(100, new DiscardedQueryPayload(pcf$VELOCITY_RESOURCE, new FriendlyByteBuf(Unpooled.EMPTY_BUFFER))));
-            this.connection.send(new ClientboundCustomQueryPacket(100, new ClientBoundCustomQueryImpl(pcf$VELOCITY_RESOURCE, new FriendlyByteBuf(Unpooled.EMPTY_BUFFER))));
+            this.connection.send(new ClientboundCustomQueryPacket(100, new DiscardedQueryPayload(pcf$VELOCITY_RESOURCE)));
             this.pcf$listen = true;
             ci.cancel();
         }
