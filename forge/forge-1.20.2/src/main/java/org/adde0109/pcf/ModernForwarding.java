@@ -4,6 +4,7 @@ package org.adde0109.pcf;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
+import io.netty.buffer.Unpooled;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
@@ -31,14 +32,11 @@ public class ModernForwarding {
 
     @Nullable
     public GameProfile handleForwardingPacket(ServerboundCustomQueryAnswerPacket packet, Connection connection) throws Exception {
-        FriendlyByteBuf data = packet.getInternalData();
-        if(data == null) {
+        if(packet.payload() == null) {
             throw new Exception("Got empty packet");
         }
-
-        // Not entirely sure what byte we're skipping here, but without this skip, the rest of this function will
-        // not work properly.
-        data.skipBytes(1);
+        FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
+        packet.payload().write(data);
 
         if(!validate(data)) {
             throw new Exception("Player-data could not be validated!");
@@ -57,7 +55,7 @@ public class ModernForwarding {
             port = ((InetSocketAddress) address).getPort();
         }
 
-        ((IMixinConnection) (Object) connection).pcf$setAddress(new InetSocketAddress(ip, port));
+        ((IMixinConnection) connection).pcf$setAddress(new InetSocketAddress(ip, port));
 
         GameProfile profile = new GameProfile(data.readUUID(), data.readUtf(16));
         readProperties(data, profile);
