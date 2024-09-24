@@ -48,6 +48,12 @@ ModernForwarding
 - ModernForwardingMixin
   - `net.minecraft.network.protocol.login.ClientboundCustomQueryPacket#<init>()`
     changes to `ClientboundCustomQueryPacket#<init>(int, ResourceLocation, ByteBuf)`
+  - `ServerboundCustomQueryPacket#getTransactionId()`
+    replaces `ICustomPacket<ServerboundCustomQueryPacket>#getIndex()`
+
+- ModernForwarding
+  - `ServerboundCustomQueryPacket#getData()`
+  replaces `ICustomPacket<ServerboundCustomQueryPacket>#getInternalData()`
 
 - removed ClientboundCustomQueryPacketAccessor
 
@@ -144,6 +150,8 @@ ModernForwarding
   changed to
   `@Shadow @Nullable private GameProfile authenticatedProfile;`
   - `ServerLoginPacketListenerImpl.State.NEGOTIATING` ordinal changes from 3 to 4
+  - `ServerboundCustomQueryAnswerPacket#getTransactionId()`
+    changes to `ServerboundCustomQueryAnswerPacket#transactionId()`
 
 ## 1.20.2 -> 1.20.6
 
@@ -162,4 +170,3 @@ ModernForwarding
     import net.minecraft.network.protocol.login.custom.DiscardedQueryPayload;
     new ClientboundCustomQueryPacket(index, new DiscardedQueryPayload(resourceLocation));
     ```
-  - `ServerboundCustomQueryAnswerPacket#getIndex()` changes to `ServerboundCustomQueryAnswerPacket#transactionId()`

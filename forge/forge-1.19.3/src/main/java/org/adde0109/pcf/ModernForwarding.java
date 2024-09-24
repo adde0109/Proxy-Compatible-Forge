@@ -31,7 +31,7 @@ public class ModernForwarding {
 
     @Nullable
     public GameProfile handleForwardingPacket(ServerboundCustomQueryPacket packet, Connection connection) throws Exception {
-        FriendlyByteBuf data = packet.getInternalData();
+        FriendlyByteBuf data = packet.getData();
         if(data == null) {
             throw new Exception("Got empty packet");
         }

@@ -52,7 +52,7 @@ public abstract class ModernForwardingMixin {
 
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
     private void onHandleCustomQueryPacket(ServerboundCustomQueryAnswerPacket packet, CallbackInfo ci) {
-        if ((packet.getIndex() == 100) && StateUtil.stateEquals(this, 0) && this.pcf$listen) {
+        if ((packet.transactionId() == 100) && StateUtil.stateEquals(this, 0) && this.pcf$listen) {
             this.pcf$listen = false;
             try {
                 this.authenticatedProfile = Initializer.modernForwardingInstance.handleForwardingPacket(packet, connection);

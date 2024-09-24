@@ -51,7 +51,7 @@ public abstract class ModernForwardingMixin {
 
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
     private void onHandleCustomQueryPacket(ServerboundCustomQueryPacket packet, CallbackInfo ci) {
-        if ((packet.getIndex() == 100) && StateUtil.stateEquals(this, 0) && this.pcf$listen) {
+        if ((packet.getTransactionId() == 100) && StateUtil.stateEquals(this, 0) && this.pcf$listen) {
             this.pcf$listen = false;
             try {
                 this.gameProfile = Initializer.modernForwardingInstance.handleForwardingPacket(packet, connection);
