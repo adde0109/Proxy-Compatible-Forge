@@ -170,3 +170,12 @@ ModernForwarding
     import net.minecraft.network.protocol.login.custom.DiscardedQueryPayload;
     new ClientboundCustomQueryPacket(index, new DiscardedQueryPayload(resourceLocation));
     ```
+
+## 1.20.6 -> 1.21.1
+
+- ModernForwardingMixin
+  - `new ResourceLocation(String)`
+    changes to `ResourceLocation.fromNamespaceAndPath(String, String)`
+
+- Initializer
+  - `ModLoadingContext.get()` has been deprecated and replaced with a constructor parameter
