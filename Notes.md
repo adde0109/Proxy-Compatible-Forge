@@ -1,3 +1,5 @@
+// TODO: Split Neo/Forge entrypoints for 1.21 and 1.21.1
+
 # General Cross-Version Notes
 
 ## 1.15.2 -> 1.16.1
@@ -144,7 +146,7 @@ ModernForwarding
     ```java
     import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
     import net.minecraft.network.protocol.login.custom.DiscardedQueryPayload;
-    new ClientboundCustomQueryPacket(index, new DiscardedQueryPayload(resourceLocation, byteBuff));
+    new ClientboundCustomQueryPacket(index, new DiscardedQueryPayload(resourceLocation));
     ```
   - `@Shadow @Nullable public GameProfile gameProfile;`
   changed to
@@ -158,19 +160,6 @@ ModernForwarding
 - StateUtil
   - Reflection changes due to runtime Mojmaps
 
-- ModernForwardingMixin
-  - ```java
-    import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
-    import net.minecraft.network.protocol.login.custom.DiscardedQueryPayload;
-    new ClientboundCustomQueryPacket(index, new DiscardedQueryPayload(resourceLocation, byteBuff));
-    ```
-    replaced with
-    ```java
-    import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
-    import net.minecraft.network.protocol.login.custom.DiscardedQueryPayload;
-    new ClientboundCustomQueryPacket(index, new DiscardedQueryPayload(resourceLocation));
-    ```
-
 ## 1.20.6 -> 1.21.1
 
 - ModernForwardingMixin
@@ -179,3 +168,25 @@ ModernForwarding
 
 - Initializer
   - `ModLoadingContext.get()` has been deprecated and replaced with a constructor parameter
+
+
+# NEOFORGE DIFFERENCES
+
+Besides general Forge/Neo package relocations
+
+## 1.20.2
+
+- Initializer
+  - `ModConfigSpec` rather than `ForgeConfigSpec`
+  - `IExtensionPoint.DisplayTest` was removed
+
+- WrappableArgumentNodeStubMixin
+  - Uses `BuiltInRegistries.COMMAND_ARGUMENT_TYPE`
+    rather than `ForgeRegistries.COMMAND_ARGUMENT_TYPES`
+
+## 1.21.1
+
+- Initializer
+  - `ModLoadingContext.get().getActiveContainer().registerConfig`
+    rather than `ModLoadingContext.get().registerConfig`
+  - dist property added to `@Mod` annotation

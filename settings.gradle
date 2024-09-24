@@ -10,12 +10,6 @@ pluginManagement {
             url = 'https://maven.neuralnexus.dev/mirror'
         }
 
-        // Fabric
-        maven {
-            name = 'Fabric'
-            url = 'https://maven.fabricmc.net/'
-        }
-
         // Forge
         maven {
             name = 'Forge'
@@ -26,18 +20,6 @@ pluginManagement {
         maven {
             name = 'NeoForge'
             url = 'https://maven.neoforged.net/releases'
-        }
-
-        // PaperWeight UserDev
-        maven {
-            name = 'PaperMC'
-            url = 'https://repo.papermc.io/repository/maven-public/'
-        }
-
-        // Parchment Mappings
-        maven {
-            name = 'ParchmentMC'
-            url = 'https://maven.parchmentmc.org'
         }
 
         // Sponge
@@ -74,7 +56,7 @@ include(
         'forge:forge-1.20.6',
         'forge:forge-1.21.1',
 
-//        'vanilla:vanilla-1.14.4',
-//        'vanilla:vanilla-1.19',
-//        'vanilla:vanilla-1.19.4'
+        'neoforge:neoforge-1.20.2',
+        'neoforge:neoforge-1.20.6',
+        'neoforge:neoforge-1.21.1'
 )

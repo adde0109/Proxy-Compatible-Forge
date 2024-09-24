@@ -2,10 +2,7 @@ package org.adde0109.pcf.mixin.login;
 
 import com.mojang.authlib.GameProfile;
 
-import io.netty.buffer.Unpooled;
-
 import net.minecraft.network.Connection;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
@@ -44,7 +41,7 @@ public abstract class ModernForwardingMixin {
         if (Initializer.modernForwardingInstance != null) {
             StateUtil.setState(this, 0);
             LogManager.getLogger().debug("Sent Forward Request");
-            this.connection.send(new ClientboundCustomQueryPacket(100, new DiscardedQueryPayload(pcf$VELOCITY_RESOURCE, new FriendlyByteBuf(Unpooled.EMPTY_BUFFER))));
+            this.connection.send(new ClientboundCustomQueryPacket(100, new DiscardedQueryPayload(pcf$VELOCITY_RESOURCE)));
             this.pcf$listen = true;
             ci.cancel();
         }
