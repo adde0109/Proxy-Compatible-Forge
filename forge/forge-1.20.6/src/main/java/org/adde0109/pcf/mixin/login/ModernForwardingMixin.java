@@ -1,7 +1,9 @@
 package org.adde0109.pcf.mixin.login;
 
 import com.mojang.authlib.GameProfile;
+import io.netty.buffer.Unpooled;
 import net.minecraft.network.Connection;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
@@ -39,7 +41,6 @@ public abstract class ModernForwardingMixin {
         if (Initializer.modernForwardingInstance != null) {
             StateUtil.setState(this, 0);
             LogManager.getLogger().debug("Sent Forward Request");
-//            this.connection.send(new ClientboundCustomQueryPacket(100, new DiscardedQueryPayload(pcf$VELOCITY_RESOURCE, new FriendlyByteBuf(Unpooled.EMPTY_BUFFER))));
             this.connection.send(new ClientboundCustomQueryPacket(100, new DiscardedQueryPayload(pcf$VELOCITY_RESOURCE)));
             this.pcf$listen = true;
             ci.cancel();
@@ -48,7 +49,6 @@ public abstract class ModernForwardingMixin {
 
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
     private void onHandleCustomQueryPacket(ServerboundCustomQueryAnswerPacket packet, CallbackInfo ci) {
-//        if ((packet.getIndex() == 100) && StateUtil.stateEquals(this, 0) && this.pcf$listen) {
         if ((packet.transactionId() == 100) && StateUtil.stateEquals(this, 0) && this.pcf$listen) {
             this.pcf$listen = false;
             try {

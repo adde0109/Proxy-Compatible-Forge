@@ -1,7 +1,8 @@
 package org.adde0109.pcf;
 
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
@@ -57,7 +58,7 @@ public class Initializer {
 
   static final ForgeConfigSpec configSpec;
   static {
-    final Pair<Config, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Initializer.Config::new);
+    final Pair<Config, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Config::new);
     configSpec = specPair.getRight();
     config = specPair.getLeft();
   }

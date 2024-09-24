@@ -109,21 +109,57 @@ ModernForwarding
 - ModernForwarding
   - `net.minecraft.network.protocol.login.ServerboundCustomQueryPacket`
     renamed to `net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket`
+  - ```java
+    FriendlyByteBuf data = packet.getInternalData();
+    if(data == null) {
+        throw new Exception("Got empty packet");
+    }
+    ```
+    changes to
+    ```java
+    FriendlyByteBuf data = packet.getInternalData();
+    if(packet.payload() == null) {
+        throw new Exception("Got empty packet");
+    }
+    FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
+    packet.payload().write(data);
+    ```
+- CustomQueryAnswerPayloadImpl added
+- ServerboundCustomQueryAnswerPacketMixin added
 
 - ModernForwardingMixin
   - `net.minecraft.network.protocol.login.ServerboundCustomQueryPacket`
     renamed to `net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket`
-  ```java
-  import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
-  new ClientboundCustomQueryPacket(index, resourceLocation, byteBuff)
-  ```
-  replaced with
-  ```java
-  import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
-  import net.minecraft.network.protocol.login.custom.DiscardedQueryPayload;
-  new ClientboundCustomQueryPacket(index, new DiscardedQueryPayload(resourceLocation, byteBuff));
-  ```
+  - ```java
+    import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
+    new ClientboundCustomQueryPacket(index, resourceLocation, byteBuff);
+    ```
+    replaced with
+    ```java
+    import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
+    import net.minecraft.network.protocol.login.custom.DiscardedQueryPayload;
+    new ClientboundCustomQueryPacket(index, new DiscardedQueryPayload(resourceLocation, byteBuff));
+    ```
   - `@Shadow @Nullable public GameProfile gameProfile;`
   changed to
   `@Shadow @Nullable private GameProfile authenticatedProfile;`
   - `ServerLoginPacketListenerImpl.State.NEGOTIATING` ordinal changes from 3 to 4
+
+## 1.20.2 -> 1.20.6
+
+- StateUtil
+  - Reflection changes due to runtime Mojmaps
+
+- ModernForwardingMixin
+  - ```java
+    import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
+    import net.minecraft.network.protocol.login.custom.DiscardedQueryPayload;
+    new ClientboundCustomQueryPacket(index, new DiscardedQueryPayload(resourceLocation, byteBuff));
+    ```
+    replaced with
+    ```java
+    import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
+    import net.minecraft.network.protocol.login.custom.DiscardedQueryPayload;
+    new ClientboundCustomQueryPacket(index, new DiscardedQueryPayload(resourceLocation));
+    ```
+  - `ServerboundCustomQueryAnswerPacket#getIndex()` changes to `ServerboundCustomQueryAnswerPacket#transactionId()`
