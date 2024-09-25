@@ -8,12 +8,12 @@ public class StateUtil {
 
     private static void cacheField() {
         try {
-            // net.minecraft.server.network.ServerLoginPacketListenerImpl (net.minecraft.src.C_37_)
+            // net.minecraft.server.network.ServerLoginPacketListenerImpl
             Class<?> cachedSLPLClass = Class.forName("net.minecraft.server.network.ServerLoginPacketListenerImpl");
-            // private ServerLoginPacketListenerImpl#state (net.minecraft.src.C_37_#f_10019_)
-            cachedStateField = cachedSLPLClass.getDeclaredField("f_10019_");
+            // private ServerLoginPacketListenerImpl#state
+            cachedStateField = cachedSLPLClass.getDeclaredField("state");
             cachedStateField.setAccessible(true);
-            // ServerLoginPacketListenerImpl$State (net/minecraft/src/C_37_$C_38_) (enum)
+            // ServerLoginPacketListenerImpl$State
             Class<?> cachedStateClass = Class.forName("net.minecraft.server.network.ServerLoginPacketListenerImpl$State");
             cachedStateEnumConstants = (Enum<?>[]) cachedStateClass.getEnumConstants();
         } catch (NoSuchFieldException | ClassNotFoundException e) {

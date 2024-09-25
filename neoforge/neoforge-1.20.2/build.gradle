@@ -14,8 +14,7 @@ base {
 
 dependencies {
     compileOnly("net.neoforged:neoforge:${neo_version}")
-    compileOnly('dev.neuralnexus:conditional-mixins:0.1.1')
-//    compileOnly(project(':common'))
+    compileOnly(project(":common"))
 }
 
 jar {

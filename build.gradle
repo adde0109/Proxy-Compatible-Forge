@@ -1,3 +1,8 @@
+plugins {
+    id("java")
+    alias(libs.plugins.shadow)
+}
+
 defaultTasks('build')
 
 subprojects {
@@ -35,7 +40,8 @@ subprojects {
     }
 
     dependencies {
-        compileOnly('org.jetbrains:annotations:24.1.0')
+        compileOnly("org.jetbrains:annotations:24.1.0")
+        compileOnly("dev.neuralnexus:conditional-mixins:0.1.1")
     }
 
 //    spotless {
@@ -63,4 +69,26 @@ subprojects {
 //    tasks.build.dependsOn(spotlessApply)
 //    tasks.findByName('shadowJar')?.dependsOn(spotlessApply)
 //    tasks.findByName('remapShadowJar')?.dependsOn(spotlessApply)
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+
+    // NeuralNexus
+    maven {
+        name = "NeuralNexus"
+        url = "https://maven.neuralnexus.dev/releases"
+    }
+}
+
+dependencies {
+    implementation("dev.neuralnexus:conditional-mixins:0.1.1")
+    implementation(project(":common"))
+    implementation(project(":neoforge:neoforge-1.20.2"))
+    implementation(project(":neoforge:neoforge-1.21.1"))
+}
+
+shadowJar {
+    archiveFileName = "pcf-fulltest-${version}.jar"
 }

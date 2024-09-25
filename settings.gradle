@@ -43,7 +43,7 @@ plugins {
 rootProject.name = 'proxy-compatible-forge'
 
 include(
-//        'common',
+        'common',
 
         'forge:forge-1.14.4',
         'forge:forge-1.16.5',
@@ -57,6 +57,5 @@ include(
         'forge:forge-1.21.1',
 
         'neoforge:neoforge-1.20.2',
-        'neoforge:neoforge-1.20.6',
         'neoforge:neoforge-1.21.1'
 )
