@@ -1,0 +1,7 @@
+{
+    "pack": {
+        "description": "${project_id} resources",
+        "pack_format": ${pack_format_number},
+        "_comment": "${project_description}"
+    }
+}

@@ -1,5 +1,9 @@
+import xyz.wagyourtail.jvmdg.gradle.task.DowngradeJar
+import xyz.wagyourtail.jvmdg.gradle.task.ShadeJar
+
 plugins {
     id("java")
+    id("xyz.wagyourtail.jvmdowngrader") version("1.1.3")
     alias(libs.plugins.shadow)
 }
 
@@ -8,7 +12,6 @@ defaultTasks('build')
 subprojects {
     apply(plugin: 'java')
 //    apply(plugin: libs.plugins.spotless.get().pluginId)
-
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
@@ -71,6 +74,9 @@ subprojects {
 //    tasks.findByName('remapShadowJar')?.dependsOn(spotlessApply)
 }
 
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+sourceCompatibility = targetCompatibility = 21
+
 repositories {
     mavenLocal()
     mavenCentral()
@@ -83,12 +89,56 @@ repositories {
 }
 
 dependencies {
+    compileOnly("dev.neuralnexus:entrypoint-spoof:0.1.11")
     implementation("dev.neuralnexus:conditional-mixins:0.1.1")
     implementation(project(":common"))
     implementation(project(":neoforge:neoforge-1.20.2"))
-    implementation(project(":neoforge:neoforge-1.21.1"))
+    implementation(project(":neoforge:neoforge-1.21"))
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(ProcessResources).configureEach {
+    filesMatching([
+            'META-INF/mods.toml',
+            'META-INF/neoforge.mods.toml',
+            'pack.mcmeta',
+    ]) {
+        expand project.properties
+    }
 }
 
 shadowJar {
-    archiveFileName = "pcf-fulltest-${version}.jar"
+    archiveClassifier = "shaded"
+
+    manifest {
+        attributes([
+                "Specification-Title": "proxy-compatible-forge",
+                "Specification-Vendor": "adde0109",
+                "Specification-Version": "1", // We are version 1 of ourselves
+                "Implementation-Title": project.name,
+                "Implementation-Version": "${version}",
+                "Implementation-Vendor" :"adde0109",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                'MixinConfigs': "pcf.mixins.json"
+        ])
+    }
 }
+
+tasks.register("customDowngrade", DowngradeJar) {
+    inputFile = tasks.shadowJar.archiveFile
+    downgradeTo = JavaVersion.VERSION_1_8
+    classpath = sourceSets.main.compileClasspath
+    archiveClassifier = "downgraded-8"
+}
+
+tasks.register("customShadeDowngradedApi", ShadeJar) {
+    inputFile = customDowngrade.archiveFile
+    archiveFileName = "pcf-${version}.jar"
+}
+
+tasks.customDowngrade.dependsOn(shadowJar)
+tasks.customShadeDowngradedApi.dependsOn(customDowngrade)
+tasks.assemble.dependsOn(customShadeDowngradedApi)

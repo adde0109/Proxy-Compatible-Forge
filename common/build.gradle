@@ -1,0 +1,5 @@
+dependencies {
+    compileOnly("com.google.code.gson:gson:2.11.0")
+    compileOnly("com.mojang:authlib:1.5.25")
+    compileOnly("io.netty:netty-buffer:4.1.25.Final")
+}

@@ -7,5 +7,6 @@ sourceCompatibility = targetCompatibility = java_version
 
 dependencies {
     compileOnly("net.neoforged:neoforge:${neo_version}")
+    compileOnly(project(":neoforge:neoforge-1.20.2"))
     compileOnly(project(":common"))
 }

@@ -4,11 +4,14 @@
   "package": "org.adde0109.pcf.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "command.WrappableArgumentNodeStubMixin",
-    "login.ConnectionMixin",
-    "login.ModernForwardingMixin",
-    "login.ServerboundCustomQueryAnswerPacketMixin",
-    "login.ServerLoginPacketListenerPlaceholderMixin"
+    "v1_20_2.neoforge.command.WrappableArgumentNodeStubMixin",
+    "v1_20_2.neoforge.login.ModernForwardingMixin",
+    "v1_20_2.neoforge.login.ServerLoginPacketListenerPlaceholderMixin",
+    "v1_20_2.neoforge.network.ConnectionMixin",
+    "v1_20_2.neoforge.network.FriendlyByteBufMixin",
+    "v1_20_2.neoforge.network.FriendlyByteBufReadNullableMixin",
+    "v1_20_2.neoforge.network.ServerboundCustomQueryAnswerPacketMixin",
+    "v1_20_6.neoforge.network.FriendlyByteBufReadNullableMixin"
   ],
   "client": [
   ],

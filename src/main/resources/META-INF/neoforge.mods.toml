@@ -1,0 +1,37 @@
+modLoader = "javafml"
+loaderVersion = "${loader_version_range}"
+license = "${license}"
+issueTrackerURL = "${issue_tracker_url}"
+
+[[mods]]
+modId = "${project_id}"
+version = "${version}"
+displayName = "${project_name}"
+updateJSONURL = "${update_json_url}"
+displayURL = "${homepage_url}"
+logoFile = "${project_name}.png"
+credits = "${authors}"
+authors = "${authors}"
+displayTest = "IGNORE_SERVER_VERSION"
+description = '''${project_description}'''
+
+[[mixins]]
+config = "${project_id}.mixins.json"
+
+# NeoForge Dependency
+[[dependencies.${project_id}]]
+modId = "neoforge"
+mandatory = false
+type="optional"
+versionRange = "${neo_version_range}"
+ordering = "NONE"
+side = "BOTH"
+
+# Minecraft Dependency
+[[dependencies.${project_id}]]
+modId = "minecraft"
+mandatory = true
+type="required"
+versionRange = "${minecraft_version_range}"
+ordering = "NONE"
+side = "BOTH"
