@@ -1,9 +1,15 @@
 {
-  "required": true,
-  "minVersion": "0.8",
-  "package": "org.adde0109.pcf.mixin",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [
+  "minVersion": "0.8",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "required": false,
+  "plugin": "org.adde0109.pcf.mixin.plugin.PCFMixinPlugin",
+  "package": "org.adde0109.pcf.mixin",
+  "mixins": [],
+  "client": [],
+  "server": [
     "v1_20_2.neoforge.command.WrappableArgumentNodeStubMixin",
     "v1_20_2.neoforge.login.ModernForwardingMixin",
     "v1_20_2.neoforge.login.ServerLoginPacketListenerPlaceholderMixin",
@@ -12,10 +18,5 @@
     "v1_20_2.neoforge.network.FriendlyByteBufReadNullableMixin",
     "v1_20_2.neoforge.network.ServerboundCustomQueryAnswerPacketMixin",
     "v1_20_6.neoforge.network.FriendlyByteBufReadNullableMixin"
-  ],
-  "client": [
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+  ]
 }

@@ -1,22 +1,26 @@
 package org.adde0109.pcf.v1_20_2.neoforge;
 
+import net.minecraft.server.network.ServerLoginPacketListenerImpl;
+
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 
 public class StateUtil {
-    private static Field cachedStateField;
+    private static VarHandle cachedStateField;
     private static Enum<?>[] cachedStateEnumConstants;
 
     private static void cacheField() {
         try {
-            // net.minecraft.server.network.ServerLoginPacketListenerImpl
-            Class<?> cachedSLPLClass = Class.forName("net.minecraft.server.network.ServerLoginPacketListenerImpl");
             // private ServerLoginPacketListenerImpl#state
-            cachedStateField = cachedSLPLClass.getDeclaredField("state");
-            cachedStateField.setAccessible(true);
+            Field stateField = ServerLoginPacketListenerImpl.class.getDeclaredField("state");
+            stateField.setAccessible(true);
+            MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(ServerLoginPacketListenerImpl.class, MethodHandles.lookup());
+            cachedStateField = lookup.unreflectVarHandle(stateField);
             // ServerLoginPacketListenerImpl$State
             Class<?> cachedStateClass = Class.forName("net.minecraft.server.network.ServerLoginPacketListenerImpl$State");
             cachedStateEnumConstants = (Enum<?>[]) cachedStateClass.getEnumConstants();
-        } catch (NoSuchFieldException | ClassNotFoundException e) {
+        } catch (NoSuchFieldException | ClassNotFoundException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
@@ -25,11 +29,7 @@ public class StateUtil {
         if (cachedStateField == null) {
             cacheField();
         }
-        try {
-            return cachedStateField.get(slpl);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        return cachedStateField.get(slpl);
     }
 
     public static void setState(Object slpl, int ord) {
@@ -37,11 +37,7 @@ public class StateUtil {
         if (cachedStateField == null) {
             cacheField();
         }
-        try {
-            cachedStateField.set(slpl, state);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        cachedStateField.set(slpl, state);
     }
 
     public static boolean stateEquals(Object slpl, int ord) {

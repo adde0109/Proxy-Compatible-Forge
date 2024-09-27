@@ -18,10 +18,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class ModernForwarding {
-    protected static final int SUPPORTED_FORWARDING_VERSION = 1;
-    protected final String forwardingSecret;
+    private static final int SUPPORTED_FORWARDING_VERSION = 1;
+    private final String forwardingSecret;
 
-    protected ModernForwarding(String forwardingSecret) {
+    public ModernForwarding(String forwardingSecret) {
         this.forwardingSecret = forwardingSecret;
     }
 

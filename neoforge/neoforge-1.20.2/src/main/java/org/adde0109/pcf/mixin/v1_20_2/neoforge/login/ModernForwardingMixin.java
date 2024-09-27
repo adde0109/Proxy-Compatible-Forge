@@ -6,8 +6,11 @@ import dev.neuralnexus.conditionalmixins.annotations.ReqMCVersion;
 import dev.neuralnexus.conditionalmixins.annotations.ReqMappings;
 import dev.neuralnexus.taterapi.Mappings;
 import dev.neuralnexus.taterapi.MinecraftVersion;
+import dev.neuralnexus.taterapi.Platform;
 
-import net.minecraft.network.Connection;
+import io.netty.buffer.Unpooled;
+
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
@@ -16,7 +19,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.common.CommonInitializer;
-import org.adde0109.pcf.v1_20_2.neoforge.ModernForwardingImpl;
+import org.adde0109.pcf.common.abstractions.Connection;
+import org.adde0109.pcf.common.abstractions.Payload;
 import org.adde0109.pcf.v1_20_2.neoforge.StateUtil;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -33,7 +37,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @ReqMCVersion(min = MinecraftVersion.V1_20_2)
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ModernForwardingMixin {
-    @Shadow @Final Connection connection;
+    @Shadow @Final net.minecraft.network.Connection connection;
 
     @Shadow @Nullable private GameProfile authenticatedProfile;
 
@@ -44,7 +48,7 @@ public abstract class ModernForwardingMixin {
     @Inject(method = "handleHello", at = @At("HEAD"), cancellable = true)
     private void onHandleHello(CallbackInfo ci) {
         Validate.validState(StateUtil.stateEquals(this, 0), "Unexpected hello packet");
-        if (CommonInitializer.modernForwardingInstance != null) {
+        if (CommonInitializer.modernForwarding != null) {
             StateUtil.setState(this, 0);
             LogManager.getLogger().debug("Sent Forward Request");
             this.connection.send(new ClientboundCustomQueryPacket(100, new DiscardedQueryPayload((ResourceLocation) CommonInitializer.channelResource())));
@@ -53,13 +57,27 @@ public abstract class ModernForwardingMixin {
         }
     }
 
+    @SuppressWarnings("DataFlowIssue")
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
     private void onHandleCustomQueryPacket(ServerboundCustomQueryAnswerPacket packet, CallbackInfo ci) {
         if ((packet.transactionId() == CommonInitializer.QUERY_ID) && StateUtil.stateEquals(this, 0) && this.pcf$listen) {
             this.pcf$listen = false;
             try {
-                this.authenticatedProfile = ((ModernForwardingImpl) CommonInitializer.modernForwardingInstance)
-                        .handleForwardingPacket(packet, connection);
+                if(packet.payload() == null) {
+                    throw new Exception("Got empty packet");
+                }
+                FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
+                packet.payload().write(data);
+
+                // NeoForge 1.20.2 start - Work around NeoForge's SimpleQueryPayload
+                if (Platform.get().is(Platform.NEOFORGE) && MinecraftVersion.get().is(MinecraftVersion.V1_20_2)) {
+                    data.readVarInt();
+                    data.readResourceLocation();
+                }
+                // NeoForge 1.20.2 end - Work around NeoForge's SimpleQueryPayload
+
+                this.authenticatedProfile = CommonInitializer.modernForwarding
+                        .handleForwardingPacket((Payload) data, (Connection) connection);
                 this.arclight$preLogin();
                 StateUtil.setState(this, 4);
             } catch (Exception e) {

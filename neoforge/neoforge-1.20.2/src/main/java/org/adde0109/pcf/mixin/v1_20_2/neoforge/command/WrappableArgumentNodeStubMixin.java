@@ -68,7 +68,7 @@ public class WrappableArgumentNodeStubMixin {
         buffer.writeUtf(this.id);
 
         var typeInfo = argumentType.type();
-        var identifier = BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey(typeInfo);
+        var identifier = CommonInitializer.commandArgumentType(typeInfo);
         var id = BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId(typeInfo);
 
         if (identifier != null && CommonInitializer.integratedArgumentTypes.contains(identifier.toString())) {
