@@ -29,6 +29,7 @@ tasks.withType(ProcessResources).configureEach {
 shadowJar {
     relocate("dev.neuralnexus.conditionalmixins", "org.adde0109.pcf.lib.conditionalmixins")
     relocate("dev.neuralnexus.taterapi", "org.adde0109.pcf.lib.taterapi")
+
     archiveClassifier = "shaded"
 }
 

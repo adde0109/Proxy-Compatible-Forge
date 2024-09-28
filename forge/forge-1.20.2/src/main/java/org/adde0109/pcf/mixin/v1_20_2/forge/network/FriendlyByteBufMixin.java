@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.UUID;
-import java.util.function.Function;
 
 @ReqMappings(Mappings.SEARGE)
 @ReqMCVersion(MinecraftVersion.V1_20_2)
@@ -36,8 +35,6 @@ public abstract class FriendlyByteBufMixin {
 //    @Shadow public abstract int readerIndex();
 
     @Shadow public abstract FriendlyByteBuf getBytes(int index, byte[] bytes);
-
-    @Shadow public abstract <T> T readNullable(FriendlyByteBuf.Reader<T> par1);
 
     public int payload$readVarInt() {
         return this.readVarInt();
@@ -69,9 +66,5 @@ public abstract class FriendlyByteBufMixin {
 
     public void payload$getBytes(int index, byte[] bytes) {
         this.getBytes(index, bytes);
-    }
-
-    public Payload payload$readNullable(Function<Payload, Payload> function) {
-        return this.readNullable((buf) -> function.apply((Payload) buf));
     }
 }

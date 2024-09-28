@@ -29,6 +29,9 @@ public interface Payload {
 
     void getBytes(int index, byte[] bytes);
 
+    @SuppressWarnings("unused")
     @Nullable
-    Payload readNullable(Function<Payload, Payload> function);
+    default Payload readNullable(Function<Payload, Payload> function) {
+        throw new UnsupportedOperationException();
+    }
 }

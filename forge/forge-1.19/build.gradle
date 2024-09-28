@@ -21,4 +21,4 @@ unimined.minecraft(sourceSets.main) {
     }
 }
 
-tasks.assemble.dependsOn(remapJar)
+tasks.build.dependsOn(remapJar)

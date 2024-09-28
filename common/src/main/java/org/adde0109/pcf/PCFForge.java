@@ -10,7 +10,9 @@ public class PCFForge {
     public PCFForge() {
         String className = "";
         MinecraftVersion mcv = MinecraftVersion.get();
-        if (mcv.isInRange(MinecraftVersion.V1_19, MinecraftVersion.V1_19)) {
+        if (mcv.isInRange(MinecraftVersion.V1_18, MinecraftVersion.V1_18_2)) {
+            className = "org.adde0109.pcf.v1_18.forge.Initializer";
+        } else if (mcv.is(MinecraftVersion.V1_19)) {
             className = "org.adde0109.pcf.v1_19.forge.Initializer";
         } else if (mcv.isInRange(MinecraftVersion.V1_19_1, MinecraftVersion.V1_19_2)) {
             className = "org.adde0109.pcf.v1_19_1.forge.Initializer";

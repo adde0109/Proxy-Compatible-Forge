@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v1_19.forge.login;
+package org.adde0109.pcf.mixin.v1_18.forge.login;
 
 import com.mojang.authlib.GameProfile;
 
@@ -32,7 +32,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @ReqMappings(Mappings.SEARGE)
-@ReqMCVersion(min = MinecraftVersion.V1_19, max = MinecraftVersion.V1_20_1)
+@ReqMCVersion(min = MinecraftVersion.V1_18, max = MinecraftVersion.V1_20_1)
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ModernForwardingMixin {
     @Shadow @Final public net.minecraft.network.Connection connection;

@@ -1,12 +1,13 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-
 import xyz.wagyourtail.jvmdg.gradle.task.DowngradeJar
 import xyz.wagyourtail.jvmdg.gradle.task.ShadeJar
 
 plugins {
     id("java")
     id("xyz.wagyourtail.jvmdowngrader") version("1.1.3")
+    alias(libs.plugins.shadow)
     alias(libs.plugins.unimined) apply(false)
 }
 
@@ -161,10 +162,10 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
 }
 
-// gradle :common:shadowJar :forge:forge-1.19:build :forge:forge-1.19.1:build :forge:forge-1.19.3:build :forge:forge-1.20.2:build :forge:forge-1.20.6:build :forge:forge-1.21:build :neoforge:neoforge-1.20.2:build :neoforge:neoforge-1.21:build
+// gradle :common:shadowJar :forge:forge-1.18:build :forge:forge-1.19:build :forge:forge-1.19.1:build :forge:forge-1.19.3:build :forge:forge-1.20.2:build :forge:forge-1.20.6:build :forge:forge-1.21:build :neoforge:neoforge-1.20.2:build :neoforge:neoforge-1.21:build
 
 var platformVersions = [:]
-platformVersions.put("forge", Arrays.asList("1.19", "1.19.1", "1.19.3", "1.20.2", "1.20.6", "1.21"))
+platformVersions.put("forge", Arrays.asList("1.18", "1.19", "1.19.1", "1.19.3", "1.20.2", "1.20.6", "1.21"))
 platformVersions.put("neoforge", Arrays.asList("1.20.2", "1.21"))
 
 // --------------------------- Build MonoJar --------------------------------
@@ -176,7 +177,7 @@ tasks.register('monojar', Jar) {
         }
     }
 
-    String mc_version = '1.14-1.21'
+    String mc_version = '1.14-1.21.1'
     archiveFileName = "proxy-compatible-forge-${version}-mono.jar"
     destinationDirectory = file("./build/libs")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE

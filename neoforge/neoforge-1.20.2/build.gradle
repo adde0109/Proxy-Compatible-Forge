@@ -1,5 +1,5 @@
-base {
-    archivesName = "${project_id}-neoforge-${minecraft_version}"
+plugins {
+    alias(libs.plugins.shadow)
 }
 
 dependencies {
@@ -17,3 +17,12 @@ unimined.minecraft(sourceSets.main) {
     }
     defaultRemapJar = true
 }
+
+shadowJar {
+    relocate("dev.neuralnexus.conditionalmixins", "org.adde0109.pcf.lib.conditionalmixins")
+    relocate("dev.neuralnexus.taterapi", "org.adde0109.pcf.lib.taterapi")
+
+    archiveFileName = "${project_id}-neoforge-${minecraft_version}-${version}.jar"
+}
+
+tasks.build.dependsOn(shadowJar)

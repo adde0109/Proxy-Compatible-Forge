@@ -1,4 +1,4 @@
-package org.adde0109.pcf.command;
+package org.adde0109.pcf.v1_18.forge.command;
 
 import net.minecraft.network.FriendlyByteBuf;
 

@@ -21,7 +21,7 @@ unimined.minecraft(sourceSets.main) {
     }
 }
 
-tasks.assemble.dependsOn(remapJar)
+tasks.build.dependsOn(remapJar)
 
 dependencies {
     compileOnly('org.spongepowered:mixin:0.8.5')
