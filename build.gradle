@@ -162,20 +162,22 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
 }
 
-// gradle :common:shadowJar :forge:forge-1.18:build :forge:forge-1.19:build :forge:forge-1.19.1:build :forge:forge-1.19.3:build :forge:forge-1.20.2:build :forge:forge-1.20.6:build :forge:forge-1.21:build :neoforge:neoforge-1.20.2:build :neoforge:neoforge-1.21:build
+// gradle :common:build :forge:forge-1.18:build :forge:forge-1.19:build :forge:forge-1.19.1:build :forge:forge-1.19.3:build :forge:forge-1.20.2:build :forge:forge-1.20.6:build :forge:forge-1.21:build :neoforge:neoforge-1.20.2:build :neoforge:neoforge-1.21:build
 
 var platformVersions = [:]
 platformVersions.put("forge", Arrays.asList("1.18", "1.19", "1.19.1", "1.19.3", "1.20.2", "1.20.6", "1.21"))
 platformVersions.put("neoforge", Arrays.asList("1.20.2", "1.21"))
 
-// --------------------------- Build MonoJar --------------------------------
-tasks.register('monojar', Jar) {
+tasks.register("shadeAndRelocate", ShadowJar) {
     dependsOn(":common:shadowJar")
     platformVersions.each { platform, versions ->
         versions.each { mcVersion ->
             dependsOn(":${platform}:${platform}-${mcVersion}:build")
         }
     }
+
+    relocate("dev.neuralnexus.conditionalmixins", "org.adde0109.pcf.lib.conditionalmixins")
+    relocate("dev.neuralnexus.taterapi", "org.adde0109.pcf.lib.taterapi")
 
     String mc_version = '1.14-1.21.1'
     archiveFileName = "proxy-compatible-forge-${version}-mono.jar"
@@ -203,7 +205,7 @@ tasks.register('monojar', Jar) {
 }
 
 tasks.register("customDowngrade", DowngradeJar) {
-    inputFile = tasks.monojar.archiveFile
+    inputFile = tasks.shadeAndRelocate.archiveFile
     downgradeTo = JavaVersion.VERSION_1_8
     classpath = sourceSets.main.compileClasspath
     archiveClassifier = "downgraded-8"
@@ -214,7 +216,7 @@ tasks.register("customShadeDowngradedApi", ShadeJar) {
     archiveFileName = "pcf-${version}.jar"
 }
 
-tasks.customDowngrade.dependsOn(monojar)
+tasks.customDowngrade.dependsOn(shadeAndRelocate)
 tasks.customShadeDowngradedApi.dependsOn(customDowngrade)
 tasks.assemble.dependsOn(customShadeDowngradedApi)
 

@@ -1,11 +1,6 @@
-/**
- * Copyright (c) 2024 Dylan Sperrer - dylan@sperrer.ca
- * The project is Licensed under <a href="https://github.com/Tater-Certified/Overseer/blob/dev/LICENSE">MIT</a>
- */
 package org.adde0109.pcf.mixin.plugin;
 
 import dev.neuralnexus.conditionalmixins.ConditionalMixins;
-
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;

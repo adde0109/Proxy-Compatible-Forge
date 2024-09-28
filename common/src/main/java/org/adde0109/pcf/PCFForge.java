@@ -2,12 +2,20 @@ package org.adde0109.pcf;
 
 import dev.neuralnexus.taterapi.MinecraftVersion;
 
+import dev.neuralnexus.taterapi.Platform;
+import dev.neuralnexus.taterapi.metadata.PlatformData;
+
 import net.minecraftforge.fml.common.Mod;
 
 @SuppressWarnings("unused")
 @Mod(modid = "pcf", value = "pcf", acceptableRemoteVersions = "", useMetadata = true, serverSideOnly = true)
 public class PCFForge {
     public PCFForge() {
+        PlatformData pd = PlatformData.instance();
+        pd.logger("pcf").info("Initializing Proxy Compatible Forge on "
+                + "Minecraft " + pd.minecraftVersion().toString()
+                + " (" + Platform.get() + " " + pd.modLoaderVersion() + ")");
+
         String className = "";
         MinecraftVersion mcv = MinecraftVersion.get();
         if (mcv.isInRange(MinecraftVersion.V1_18, MinecraftVersion.V1_18_2)) {
