@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v1_20_2.neoforge.command;
+package org.adde0109.pcf.mixin.v1_19.forge.command;
 
 /*
 The MIT License (MIT)
@@ -43,9 +43,8 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
-@ReqMappings(Mappings.MOJMAP)
-@ReqMCVersion(min = MinecraftVersion.V1_20_2)
+@ReqMappings(Mappings.SEARGE)
+@ReqMCVersion(min = MinecraftVersion.V1_19, max = MinecraftVersion.V1_20_4)
 @Mixin(targets = "net.minecraft.network.protocol.game.ClientboundCommandsPacket$ArgumentNodeStub")
 public class WrappableArgumentNodeStubMixin {
     @Unique private static final int MOD_ARGUMENT_INDICATOR = -256;
@@ -62,6 +61,7 @@ public class WrappableArgumentNodeStubMixin {
      *  available, but this is just the most straightforward and most development-time efficient. It is highly unlikely
      *  for other mods to try to mixin this particular function.
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Overwrite
     public void write(FriendlyByteBuf buffer) {
         buffer.writeUtf(this.id);

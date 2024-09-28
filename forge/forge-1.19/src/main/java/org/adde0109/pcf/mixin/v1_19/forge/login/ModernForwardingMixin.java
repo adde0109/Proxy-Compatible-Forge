@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v1_20_2.forge.login;
+package org.adde0109.pcf.mixin.v1_19.forge.login;
 
 import com.mojang.authlib.GameProfile;
 
@@ -12,8 +12,7 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
-import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
-import net.minecraft.network.protocol.login.custom.DiscardedQueryPayload;
+import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
@@ -33,12 +32,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @ReqMappings(Mappings.SEARGE)
-@ReqMCVersion(MinecraftVersion.V1_20_2)
+@ReqMCVersion(min = MinecraftVersion.V1_19, max = MinecraftVersion.V1_20_1)
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ModernForwardingMixin {
-    @Shadow @Final net.minecraft.network.Connection connection;
+    @Shadow @Final public net.minecraft.network.Connection connection;
 
-    @Shadow @Nullable private GameProfile authenticatedProfile;
+    @Shadow @Nullable public GameProfile gameProfile;
 
     @Shadow public abstract void shadow$disconnect(Component reason);
 
@@ -51,26 +50,26 @@ public abstract class ModernForwardingMixin {
             StateUtil.setState(this, 0);
             LogManager.getLogger().debug("Sent Forward Request");
             this.connection.send(new ClientboundCustomQueryPacket(100,
-                    new DiscardedQueryPayload((ResourceLocation) CommonInitializer.channelResource())));
+                    (ResourceLocation) CommonInitializer.channelResource(),
+                    new FriendlyByteBuf(Unpooled.EMPTY_BUFFER)));
             this.pcf$listen = true;
             ci.cancel();
         }
     }
 
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
-    private void onHandleCustomQueryPacket(ServerboundCustomQueryAnswerPacket packet, CallbackInfo ci) {
-        if ((packet.transactionId() == CommonInitializer.QUERY_ID) && StateUtil.stateEquals(this, 0) && this.pcf$listen) {
+    private void onHandleCustomQueryPacket(ServerboundCustomQueryPacket packet, CallbackInfo ci) {
+        if ((packet.getTransactionId() == CommonInitializer.QUERY_ID) && StateUtil.stateEquals(this, 0) && this.pcf$listen) {
             this.pcf$listen = false;
             try {
-                if(packet.payload() == null) {
+                FriendlyByteBuf data = packet.getData();
+                if(data == null) {
                     throw new Exception("Got empty packet");
                 }
-                FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
-                packet.payload().write(data);
-
-                this.authenticatedProfile = CommonInitializer.modernForwarding.handleForwardingPacket((Payload) data, (Connection) connection);
+                this.gameProfile = CommonInitializer.modernForwarding
+                        .handleForwardingPacket((Payload) data, (Connection) connection);
                 this.arclight$preLogin();
-                StateUtil.setState(this, 4);
+                StateUtil.setState(this, 3);
             } catch (Exception e) {
                 this.shadow$disconnect(Component.nullToEmpty("Direct connections to this server are not permitted!"));
                 LogManager.getLogger().warn("Exception verifying forwarded player info", e);

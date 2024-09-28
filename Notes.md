@@ -114,6 +114,12 @@ ModernForwarding
 
 ## 1.19.3 -> 1.20.2
 
+- FriendlyByteBufMixin
+  - `net.minecraft.network.FriendlyByteBuf#readBytes(byte[])`
+    now returns `FriendlyByteBuf` rather than `ByteBuf`
+  - `net.minecraft.network.FriendlyByteBuf#getBytes(int,byte[])`
+    now returns `FriendlyByteBuf` rather than `ByteBuf`
+
 - ModernForwarding
   - `net.minecraft.network.protocol.login.ServerboundCustomQueryPacket`
     renamed to `net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket`

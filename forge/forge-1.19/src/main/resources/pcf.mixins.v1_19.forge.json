@@ -8,8 +8,9 @@
   "plugin": "org.adde0109.pcf.mixin.plugin.PCFMixinPlugin",
   "package": "org.adde0109.pcf.mixin",
   "server": [
-    "v1_20_2.forge.login.ModernForwardingMixin",
-    "v1_20_2.forge.network.FriendlyByteBufMixin",
-    "v1_20_2.forge.network.ServerboundCustomQueryAnswerPacketMixin"
+    "v1_19.forge.command.WrappableArgumentNodeStubMixin",
+    "v1_19.forge.login.ModernForwardingMixin",
+    "v1_19.forge.network.ConnectionMixin",
+    "v1_19.forge.network.FriendlyByteBufMixin"
   ]
 }

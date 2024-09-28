@@ -9,10 +9,12 @@ import net.neoforged.neoforge.common.NeoForge;
 
 import org.adde0109.pcf.common.CommonInitializer;
 
+@SuppressWarnings("unused")
 public class Initializer {
     public static void init() {
         CommonInitializer.resourceLocation = ResourceLocation::parse;
-        CommonInitializer.COMMAND_ARGUMENT_TYPE = (type) -> BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey((ArgumentTypeInfo<?, ?>) type);
+        CommonInitializer.COMMAND_ARGUMENT_TYPE_KEY = (type) -> BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey((ArgumentTypeInfo<?, ?>) type);
+        CommonInitializer.COMMAND_ARGUMENT_TYPE_ID = (type) -> BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId((ArgumentTypeInfo<?, ?>) type);
         CommonInitializer.setupIntegratedArgumentTypes();
 
         ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.COMMON, org.adde0109.pcf.v1_20_2.neoforge.Initializer.configSpec);

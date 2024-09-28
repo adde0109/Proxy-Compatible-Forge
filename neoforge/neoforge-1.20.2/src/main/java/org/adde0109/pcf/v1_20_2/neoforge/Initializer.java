@@ -13,12 +13,14 @@ import org.adde0109.pcf.common.CommonInitializer;
 import org.adde0109.pcf.common.ModernForwarding;
 import org.apache.commons.lang3.tuple.Pair;
 
+@SuppressWarnings("unused")
 public class Initializer {
     private static final Config config;
 
     public static void init() {
         CommonInitializer.resourceLocation = ResourceLocation::new;
-        CommonInitializer.COMMAND_ARGUMENT_TYPE = (type) -> BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey((ArgumentTypeInfo<?, ?>) type);
+        CommonInitializer.COMMAND_ARGUMENT_TYPE_KEY = (type) -> BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey((ArgumentTypeInfo<?, ?>) type);
+        CommonInitializer.COMMAND_ARGUMENT_TYPE_ID = (type) -> BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId((ArgumentTypeInfo<?, ?>) type);
         CommonInitializer.setupIntegratedArgumentTypes();
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, configSpec);

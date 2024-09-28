@@ -23,10 +23,16 @@ public class CommonInitializer {
         return resourceLocation.apply(velocityChannel);
     }
 
-    public static Function<Object, Object> COMMAND_ARGUMENT_TYPE;
+    public static Function<Object, Object> COMMAND_ARGUMENT_TYPE_KEY;
 
-    public static Object commandArgumentType(Object type) {
-        return COMMAND_ARGUMENT_TYPE.apply(type);
+    public static Object commandArgumentTypeKey(Object type) {
+        return COMMAND_ARGUMENT_TYPE_KEY.apply(type);
+    }
+
+    public static Function<Object, Integer> COMMAND_ARGUMENT_TYPE_ID;
+
+    public static int commandArgumentTypeId(Object type) {
+        return COMMAND_ARGUMENT_TYPE_ID.apply(type);
     }
 
     public static final List<String> integratedArgumentTypes = new ArrayList<>();

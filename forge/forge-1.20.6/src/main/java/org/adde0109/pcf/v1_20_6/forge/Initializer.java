@@ -1,6 +1,7 @@
 package org.adde0109.pcf.v1_20_6.forge;
 
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
@@ -14,12 +15,14 @@ import org.adde0109.pcf.common.CommonInitializer;
 import org.adde0109.pcf.common.ModernForwarding;
 import org.apache.commons.lang3.tuple.Pair;
 
+@SuppressWarnings("unused")
 public class Initializer {
   public static final Config config;
 
   public static void init() {
       CommonInitializer.resourceLocation = ResourceLocation::new;
-      CommonInitializer.COMMAND_ARGUMENT_TYPE = (type) -> ForgeRegistries.COMMAND_ARGUMENT_TYPES.getKey((ArgumentTypeInfo<?, ?>) type);
+      CommonInitializer.COMMAND_ARGUMENT_TYPE_KEY = (type) -> ForgeRegistries.COMMAND_ARGUMENT_TYPES.getKey((ArgumentTypeInfo<?, ?>) type);
+      CommonInitializer.COMMAND_ARGUMENT_TYPE_ID = (type) -> BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId((ArgumentTypeInfo<?, ?>) type);
       CommonInitializer.setupIntegratedArgumentTypes();
 
       ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON,configSpec);
