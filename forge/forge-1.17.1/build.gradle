@@ -1,13 +1,5 @@
-plugins {
-    alias(libs.plugins.unimined)
-}
-
 version = '1.1.5'
 group = 'org.adde0109.pcf' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(java_version)
-sourceCompatibility = targetCompatibility = java_version
-
 unimined.minecraft(sourceSets.main) {
     version(minecraft_version)
     minecraftForge {
@@ -28,12 +20,12 @@ unimined.minecraft(sourceSets.main) {
     }
 }
 
-tasks.build.dependsOn(remapJar)
+tasks.assemble.dependsOn(remapJar)
 
 dependencies {
     compileOnly('org.spongepowered:mixin:0.8.5')
     compileOnly('dev.neuralnexus:conditional-mixins:0.1.1')
-//    compileOnly(project(':common'))
+    compileOnly(project(':common'))
 }
 
 jar {

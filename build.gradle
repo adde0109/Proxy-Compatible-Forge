@@ -1,19 +1,92 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+
 import xyz.wagyourtail.jvmdg.gradle.task.DowngradeJar
 import xyz.wagyourtail.jvmdg.gradle.task.ShadeJar
 
 plugins {
     id("java")
     id("xyz.wagyourtail.jvmdowngrader") version("1.1.3")
-    alias(libs.plugins.shadow)
+    alias(libs.plugins.unimined) apply(false)
 }
 
-defaultTasks('build')
+// --------------------------- Merge mixin configs --------------------------------
+ext.mergeMixinConfigs = { List<File> mixinConfigs ->
+    File merged = file('./build/tmp/pcf.mixins.json')
+    def mixinConfigJson = [:]
+    mixinConfigJson.put("compatibilityLevel", "JAVA_8")
+    mixinConfigJson.put("minVersion", "0.8")
+    def injectors = [:]
+    injectors.put("defaultRequire", 1)
+    mixinConfigJson.put("injectors", injectors)
+    mixinConfigJson.put("required", false) // TODO: Change this back when done
+    mixinConfigJson.put("plugin", "org.adde0109.pcf.mixin.plugin.PCFMixinPlugin")
+    mixinConfigJson.put("package", "org.adde0109.pcf.mixin")
+    mixinConfigJson.put("mixins", [])
+    mixinConfigJson.put("client", [])
+    mixinConfigJson.put("server", [])
+
+    JsonSlurper json = new JsonSlurper()
+    def mixins = []
+    def client = []
+    def server = []
+    mixinConfigs.each { mixinConfig ->
+        def mixinConfigJsonFile = json.parse(mixinConfig)
+        if (mixinConfigJsonFile.get("mixins") != null) {
+            mixins += mixinConfigJsonFile.get("mixins")
+        }
+        if (mixinConfigJsonFile.get("client") != null) {
+            client += mixinConfigJsonFile.get("client")
+        }
+        if (mixinConfigJsonFile.get("server") != null) {
+            server += mixinConfigJsonFile.get("server")
+        }
+    }
+    mixins.sort { a, b -> a.compareTo(b) }
+    client.sort { a, b -> a.compareTo(b) }
+    server.sort { a, b -> a.compareTo(b) }
+    mixinConfigJson.put("mixins", mixins)
+    mixinConfigJson.put("client", client)
+    mixinConfigJson.put("server", server)
+    merged.text = JsonOutput.prettyPrint(JsonOutput.toJson(mixinConfigJson))
+    return fileTree(merged)
+}
+
+// --------------------------- Jar file helper method --------------------------------
+ext.bundleJars = { Map<String, List<String>> platformVersions ->
+    def jarFiles = [
+            file("./common/build/libs/${project_id}-common-${version}-shaded.jar")
+    ]
+    platformVersions.each { platform, versions ->
+        versions.each { mcVersion ->
+            jarFiles.add(file("${platform}/${platform}-${mcVersion}/build/libs/${project_id}-${platform}-${mcVersion}-${version}.jar") as File)
+        }
+    }
+    def zipped = jarFiles.collect {
+        zipTree(it).matching {
+            exclude('pcf.mixins.*')
+        }
+    }
+    def mixinConfigs = []
+    jarFiles.collect {
+        zipTree(it).files.each { file ->
+            if (file.name.startsWith("pcf.mixins.")) {
+                mixinConfigs.add(file)
+            }
+        }
+    }
+    zipped.add(mergeMixinConfigs(mixinConfigs))
+    return zipped
+}
 
 subprojects {
     apply(plugin: 'java')
+    apply(plugin: libs.plugins.unimined.get().pluginId)
 //    apply(plugin: libs.plugins.spotless.get().pluginId)
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+
+    java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+    sourceCompatibility = 21
+    targetCompatibility = 21
 
     tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8'
@@ -44,6 +117,7 @@ subprojects {
 
     dependencies {
         compileOnly("org.jetbrains:annotations:24.1.0")
+        compileOnly("org.spongepowered:mixin:0.8.5")
         compileOnly("dev.neuralnexus:conditional-mixins:0.1.1")
     }
 
@@ -61,11 +135,6 @@ subprojects {
 //            cleanthat()
 //            googleJavaFormat('1.17.0').aosp().formatJavadoc(true).reorderImports(true)
 //            formatAnnotations()
-//            licenseHeader """/**
-// * Copyright (c) \$YEAR Dylan Sperrer - dylan@sperrer.ca
-// * The project is Licensed under <a href="https://github.com/Tater-Certified/Overseer/blob/dev/LICENSE">MIT</a>
-// */
-//"""
 //        }
 //    }
 //
@@ -86,142 +155,104 @@ repositories {
         name = "NeuralNexus"
         url = "https://maven.neuralnexus.dev/releases"
     }
-
-    // Sponge
-    maven {
-        name = 'Sponge'
-        url = 'https://repo.spongepowered.org/maven'
-    }
-}
-
-dependencies {
-    compileOnly("org.spongepowered:mixin:0.8.5")
-    compileOnly("org.ow2.asm:asm-tree:6.2")
-    compileOnly("dev.neuralnexus:entrypoint-spoof:0.1.11")
-    implementation("dev.neuralnexus:conditional-mixins:0.1.1")
-    implementation(project(":common"))
-    implementation(project(":forge:forge-1.20.6"))
-    implementation(project(":forge:forge-1.21"))
-    implementation(project(":neoforge:neoforge-1.20.2"))
-    implementation(project(":neoforge:neoforge-1.21"))
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
 }
 
-tasks.withType(ProcessResources).configureEach {
-    filesMatching([
-            "META-INF/mods.toml",
-            "META-INF/neoforge.mods.toml",
-            "pack.mcmeta",
-    ]) {
-        expand project.properties
+var platformVersions = [:]
+platformVersions.put("forge", Arrays.asList("1.20.2", "1.20.6", "1.21"))
+platformVersions.put("neoforge", Arrays.asList("1.20.2", "1.21"))
+
+// --------------------------- Build MonoJar --------------------------------
+tasks.register('monojar', Jar) {
+    dependsOn(":common:shadowJar")
+    platformVersions.each { platform, versions ->
+        versions.each { mcVersion ->
+            dependsOn(":${platform}:${platform}-${mcVersion}:build")
+        }
     }
-}
 
-shadowJar {
-    relocate("dev.neuralnexus.conditionalmixins", "org.adde0109.pcf.lib.conditionalmixins")
-    relocate("dev.neuralnexus.taterapi", "org.adde0109.pcf.lib.taterapi")
-
-    archiveClassifier = "shaded"
+    String mc_version = '1.14-1.21'
+    archiveFileName = "proxy-compatible-forge-${version}-mono.jar"
+    destinationDirectory = file("./build/libs")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     manifest {
         attributes([
-                "Specification-Title": "proxy-compatible-forge",
+                "Specification-Title": "${project_name} ${mc_version}",
+                "Specification-Version": "1",
                 "Specification-Vendor": "adde0109",
-                "Specification-Version": "1", // We are version 1 of ourselves
-                "Implementation-Title": project.name,
-                "Implementation-Version": "${version}",
-                "Implementation-Vendor" :"adde0109",
+                "Implementation-Version": version,
+                "Implementation-Vendor": "adde0109",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                'MixinConfigs': "pcf.mixins.json"
+                "MixinConfigs": "pcf.mixins.json"
         ])
+    }
+
+    from(["README.md", "LICENSE"]) {
+        into("META-INF")
+    }
+    from {
+        bundleJars(platformVersions)
     }
 }
 
 tasks.register("customDowngrade", DowngradeJar) {
-    inputFile = tasks.shadowJar.archiveFile
+    inputFile = tasks.monojar.archiveFile
     downgradeTo = JavaVersion.VERSION_1_8
     classpath = sourceSets.main.compileClasspath
     archiveClassifier = "downgraded-8"
 }
 
 tasks.register("customShadeDowngradedApi", ShadeJar) {
-    inputFile = customDowngrade.archiveFile
+    inputFile = tasks.customDowngrade.archiveFile
     archiveFileName = "pcf-${version}.jar"
 }
 
-tasks.customDowngrade.dependsOn(shadowJar)
+tasks.customDowngrade.dependsOn(monojar)
 tasks.customShadeDowngradedApi.dependsOn(customDowngrade)
 tasks.assemble.dependsOn(customShadeDowngradedApi)
 
-
-// // --------------------------- Merge mixin configs --------------------------------
-//ext.mergeMixinConfigs = { List<File> mixinConfigs ->
-//    File merged = file('./build/tmp/overseer.mixins.json')
-//    def mixinConfigJson = [:]
-//    mixinConfigJson.put("compatibilityLevel", "JAVA_8")
-//    mixinConfigJson.put("minVersion", "0.8")
-//    def injectors = [:]
-//    injectors.put("defaultRequire", 1)
-//    mixinConfigJson.put("injectors", injectors)
-//    mixinConfigJson.put("required", false)
-//    mixinConfigJson.put("plugin", "ca.taterland.tatercertified.overseer.mixin.plugin.OverseerMixinPlugin")
-//    mixinConfigJson.put("package", "ca.taterland.tatercertified.overseer.mixin")
-//    mixinConfigJson.put("mixins", [])
-//    mixinConfigJson.put("client", [])
-//    mixinConfigJson.put("server", [])
+//tasks.register("finalJar", Jar) {
+//    var inputFile = tasks.customShadeDowngradedApi.archiveFile.get().asFile
 //
-//    JsonSlurper json = new JsonSlurper()
-//    def mixins = []
-//    def client = []
-//    def server = []
-//    mixinConfigs.each { mixinConfig ->
-//        def mixinConfigJsonFile = json.parse(mixinConfig)
-//        if (mixinConfigJsonFile.get("mixins") != null) {
-//            mixins += mixinConfigJsonFile.get("mixins")
-//        }
-//        if (mixinConfigJsonFile.get("client") != null) {
-//            client += mixinConfigJsonFile.get("client")
-//        }
-//        if (mixinConfigJsonFile.get("server") != null) {
-//            server += mixinConfigJsonFile.get("server")
-//        }
-//    }
-//    mixins.sort { a, b -> a.compareTo(b) }
-//    client.sort { a, b -> a.compareTo(b) }
-//    server.sort { a, b -> a.compareTo(b) }
-//    mixinConfigJson.put("mixins", mixins)
-//    mixinConfigJson.put("client", client)
-//    mixinConfigJson.put("server", server)
-//    merged.text = JsonOutput.prettyPrint(JsonOutput.toJson(mixinConfigJson))
-//    return fileTree(merged)
-//}
+//    def tempDir = new File("${projectDir}/build", "tempJar")
+//    tempDir.mkdirs()
 //
-//// --------------------------- Jar file helper method --------------------------------
-//ext.bundleJars = { Map<String, List<String>> platformVersions ->
-//    def jarFiles = [
-//            file("./common/build/libs/${project_id}-common-full-${version}.jar")
-//    ]
-//    platformVersions.each { platform, versions ->
-//        versions.each { mcVersion ->
-//            jarFiles.add(file("${platform}/${platform}-${mcVersion}/build/libs/${project_id}-${platform}-${mcVersion}-${version}.jar") as File)
+//    doFirst {
+//        copy {
+//            from zipTree(inputFile)
+//            into tempDir
+//            exclude("pcf.mixins.*")
+//        }
+//
+//        def mixinConfigs = []
+//        zipTree(inputFile).matching {
+//            include("pcf.mixins.*")  // Include mixin files from the original jar
+//        }.files.each { file ->
+//            mixinConfigs.add(file)
+//        }
+//
+//        copy {
+//            from mergeMixinConfigs(mixinConfigs)
+//            into new File(tempDir, "./")
 //        }
 //    }
-//    def zipped = jarFiles.collect {
-//        zipTree(it).matching {
-//            exclude('overseer.mixins.*')
-//        }
+//
+//    from(tempDir)
+//
+//    manifest {
+//        attributes([
+//                "Specification-Title": "proxy-compatible-forge",
+//                "Specification-Vendor": "adde0109",
+//                "Specification-Version": "1",
+//                "Implementation-Title": project.name,
+//                "Implementation-Version": "${version}",
+//                "Implementation-Vendor" :"adde0109",
+//                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+//                'MixinConfigs': "pcf.mixins.json"
+//        ])
 //    }
-//    def mixinConfigs = []
-//    jarFiles.collect {
-//        zipTree(it).files.each { file ->
-//            if (file.name.startsWith("overseer.mixins.")) {
-//                mixinConfigs.add(file)
-//            }
-//        }
-//    }
-//    zipped.add(mergeMixinConfigs(mixinConfigs))
-//    return zipped
 //}

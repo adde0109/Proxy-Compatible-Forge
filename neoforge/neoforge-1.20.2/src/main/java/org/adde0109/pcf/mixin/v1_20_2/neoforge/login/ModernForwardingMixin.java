@@ -21,7 +21,7 @@ import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import org.adde0109.pcf.common.CommonInitializer;
 import org.adde0109.pcf.common.abstractions.Connection;
 import org.adde0109.pcf.common.abstractions.Payload;
-import org.adde0109.pcf.v1_20_2.neoforge.StateUtil;
+import org.adde0109.pcf.common.StateUtil;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
@@ -70,7 +70,7 @@ public abstract class ModernForwardingMixin {
                 packet.payload().write(data);
 
                 // NeoForge 1.20.2 start - Work around NeoForge's SimpleQueryPayload
-                if (Platform.get().is(Platform.NEOFORGE) && MinecraftVersion.get().is(MinecraftVersion.V1_20_2)) {
+                if (Platform.get().isNeoForgeBased() && MinecraftVersion.get().is(MinecraftVersion.V1_20_2)) {
                     data.readVarInt();
                     data.readResourceLocation();
                 }

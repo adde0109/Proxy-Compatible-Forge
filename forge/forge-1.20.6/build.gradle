@@ -1,9 +1,6 @@
-plugins {
-    alias(libs.plugins.unimined)
+base {
+    archivesName = "${project_id}-forge-${minecraft_version}"
 }
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(java_version)
-sourceCompatibility = targetCompatibility = java_version
 
 dependencies {
     compileOnly(project(":common"))

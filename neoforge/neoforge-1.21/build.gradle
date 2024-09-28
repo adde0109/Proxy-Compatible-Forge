@@ -1,12 +1,20 @@
-plugins {
-    alias(libs.plugins.neogradle)
+base {
+    archivesName = "${project_id}-neoforge-${minecraft_version}"
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(java_version)
-sourceCompatibility = targetCompatibility = java_version
-
 dependencies {
-    compileOnly("net.neoforged:neoforge:${neo_version}")
+    compileOnly("net.neoforged:neoforge:21.0.${neo_version}")
     compileOnly(project(":neoforge:neoforge-1.20.2"))
     compileOnly(project(":common"))
+}
+
+unimined.minecraft(sourceSets.main) {
+    version(minecraft_version)
+    neoForge {
+        loader(neo_version)
+    }
+    mappings {
+        mojmap()
+    }
+    defaultRemapJar = true
 }

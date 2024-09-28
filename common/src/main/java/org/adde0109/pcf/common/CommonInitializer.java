@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class CommonInitializer {
     public static ModernForwarding modernForwarding;
@@ -38,7 +37,8 @@ public class CommonInitializer {
             JsonObject result = new Gson().fromJson(reader, JsonObject.class);
             result.get("entries").getAsJsonArray().iterator().forEachRemaining((k) -> integratedArgumentTypes.add(k.getAsString()));
         } catch (IOException e) {
-            LogManager.getLogger().warn("Exception reading integrated argument types JSON", e);
+            // TODO: Add method to entrypoint-spoof
+            LogManager.getLogger().warn("Exception reading integrated argument types JSON");//, e);
         }
     }
 }

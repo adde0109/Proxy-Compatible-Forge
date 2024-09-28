@@ -34,7 +34,7 @@ public class ServerboundCustomQueryAnswerPacketMixin {
     @Shadow @Final private static int MAX_PAYLOAD_SIZE;
 
     @SuppressWarnings("DataFlowIssue")
-    @Inject(method = "readPayload*", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "readPayload", at = @At("HEAD"), cancellable = true)
     private static void onReadPayload(int queryId, FriendlyByteBuf buf, CallbackInfoReturnable<CustomQueryAnswerPayload> cir) {
         if (queryId == CommonInitializer.QUERY_ID) {
             // Paper start - MC Utils - default query payloads
@@ -50,7 +50,7 @@ public class ServerboundCustomQueryAnswerPacketMixin {
             cir.setReturnValue(buffer == null ? null : new QueryAnswerPayload(buffer));
             // Paper end - MC Utils - default query payloads
             // NeoForge 1.20.2 start - Work around NeoForge's SimpleQueryPayload
-            if (Platform.get().is(Platform.NEOFORGE) && MinecraftVersion.get().is(MinecraftVersion.V1_20_2)) {
+            if (Platform.get().isNeoForgeBased() && MinecraftVersion.get().is(MinecraftVersion.V1_20_2)) {
                 try {
                     Class<?> SimpleQueryPayload = Class.forName("net.neoforged.neoforge.network.custom.payload.SimpleQueryPayload");
                     Constructor<?> constructor = SimpleQueryPayload.getDeclaredConstructor(FriendlyByteBuf.class, int.class, ResourceLocation.class);

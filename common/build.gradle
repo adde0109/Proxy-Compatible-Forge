@@ -1,5 +1,35 @@
+plugins {
+    alias(libs.plugins.shadow)
+}
+
+base {
+    archivesName = "${project_id}-common"
+}
+
 dependencies {
     compileOnly("com.google.code.gson:gson:2.11.0")
     compileOnly("com.mojang:authlib:1.5.25")
     compileOnly("io.netty:netty-buffer:4.1.25.Final")
+    compileOnly("org.ow2.asm:asm-tree:6.2")
+
+    compileOnly("dev.neuralnexus:entrypoint-spoof:0.1.11")
+    implementation("dev.neuralnexus:conditional-mixins:0.1.1")
 }
+
+tasks.withType(ProcessResources).configureEach {
+    filesMatching([
+            "META-INF/mods.toml",
+            "META-INF/neoforge.mods.toml",
+            "pack.mcmeta",
+    ]) {
+        expand project.properties
+    }
+}
+
+shadowJar {
+    relocate("dev.neuralnexus.conditionalmixins", "org.adde0109.pcf.lib.conditionalmixins")
+    relocate("dev.neuralnexus.taterapi", "org.adde0109.pcf.lib.taterapi")
+    archiveClassifier = "shaded"
+}
+
+tasks.build.dependsOn(shadowJar)
