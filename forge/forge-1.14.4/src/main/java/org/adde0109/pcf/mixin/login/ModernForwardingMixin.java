@@ -1,7 +1,9 @@
 package org.adde0109.pcf.mixin.login;
 
 import com.mojang.authlib.GameProfile;
+
 import io.netty.buffer.Unpooled;
+
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -10,6 +12,7 @@ import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
+
 import org.adde0109.pcf.Initializer;
 import org.adde0109.pcf.StateUtil;
 import org.apache.commons.lang3.Validate;
@@ -29,9 +32,11 @@ public abstract class ModernForwardingMixin {
 
     @Shadow @Nullable public GameProfile gameProfile;
 
-    @Shadow public abstract void shadow$disconnect(Component reason);
+    @Shadow
+    public abstract void shadow$disconnect(Component reason);
 
-    @Unique private static final ResourceLocation pcf$VELOCITY_RESOURCE = new ResourceLocation("velocity:player_info");
+    @Unique private static final ResourceLocation pcf$VELOCITY_RESOURCE =
+            new ResourceLocation("velocity:player_info");
 
     @Unique private boolean pcf$listen = false;
 
@@ -44,7 +49,8 @@ public abstract class ModernForwardingMixin {
             ClientboundCustomQueryPacket packet = new ClientboundCustomQueryPacket();
             ((ClientboundCustomQueryPacketAccessor) packet).setTransactionId(100);
             ((ClientboundCustomQueryPacketAccessor) packet).setIdentifier(pcf$VELOCITY_RESOURCE);
-            ((ClientboundCustomQueryPacketAccessor) packet).setData(new FriendlyByteBuf(Unpooled.EMPTY_BUFFER));
+            ((ClientboundCustomQueryPacketAccessor) packet)
+                    .setData(new FriendlyByteBuf(Unpooled.EMPTY_BUFFER));
             this.connection.send(packet);
             this.pcf$listen = true;
             ci.cancel();
@@ -56,11 +62,14 @@ public abstract class ModernForwardingMixin {
         if ((packet.getIndex() == 100) && StateUtil.stateEquals(this, 0) && this.pcf$listen) {
             this.pcf$listen = false;
             try {
-                this.gameProfile = Initializer.modernForwardingInstance.handleForwardingPacket(packet, connection);
+                this.gameProfile =
+                        Initializer.modernForwardingInstance.handleForwardingPacket(
+                                packet, connection);
                 this.arclight$preLogin();
                 StateUtil.setState(this, 3);
             } catch (Exception e) {
-                this.shadow$disconnect(new TextComponent("Direct connections to this server are not permitted!"));
+                this.shadow$disconnect(
+                        new TextComponent("Direct connections to this server are not permitted!"));
                 LogManager.getLogger().warn("Exception verifying forwarded player info", e);
             }
             ci.cancel();

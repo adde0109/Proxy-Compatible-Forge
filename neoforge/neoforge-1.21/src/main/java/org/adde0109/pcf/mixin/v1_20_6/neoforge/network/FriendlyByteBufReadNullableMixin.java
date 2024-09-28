@@ -4,8 +4,10 @@ import dev.neuralnexus.conditionalmixins.annotations.ReqMCVersion;
 import dev.neuralnexus.conditionalmixins.annotations.ReqMappings;
 import dev.neuralnexus.taterapi.Mappings;
 import dev.neuralnexus.taterapi.MinecraftVersion;
+
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamDecoder;
+
 import org.adde0109.pcf.common.abstractions.Payload;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
@@ -19,7 +21,8 @@ import java.util.function.Function;
 @Mixin(FriendlyByteBuf.class)
 @Implements(@Interface(iface = Payload.class, prefix = "payload$", remap = Interface.Remap.NONE))
 public abstract class FriendlyByteBufReadNullableMixin {
-    @Shadow public abstract <T> T readNullable(StreamDecoder<? super FriendlyByteBuf, T> par1);
+    @Shadow
+    public abstract <T> T readNullable(StreamDecoder<? super FriendlyByteBuf, T> par1);
 
     public Payload payload$readNullable(Function<Payload, Payload> function) {
         return this.readNullable((buf) -> function.apply((Payload) buf));

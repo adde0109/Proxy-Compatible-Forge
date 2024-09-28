@@ -9,6 +9,7 @@ plugins {
     id("xyz.wagyourtail.jvmdowngrader") version("1.1.3")
     alias(libs.plugins.shadow)
     alias(libs.plugins.unimined) apply(false)
+    alias(libs.plugins.spotless) apply(false)
 }
 
 // --------------------------- Merge mixin configs --------------------------------
@@ -20,7 +21,7 @@ ext.mergeMixinConfigs = { List<File> mixinConfigs ->
     def injectors = [:]
     injectors.put("defaultRequire", 1)
     mixinConfigJson.put("injectors", injectors)
-    mixinConfigJson.put("required", false) // TODO: Change this back when done
+    mixinConfigJson.put("required", true)
     mixinConfigJson.put("plugin", "org.adde0109.pcf.mixin.plugin.PCFMixinPlugin")
     mixinConfigJson.put("package", "org.adde0109.pcf.mixin")
     mixinConfigJson.put("mixins", [])
@@ -83,7 +84,7 @@ ext.bundleJars = { Map<String, List<String>> platformVersions ->
 subprojects {
     apply(plugin: 'java')
     apply(plugin: libs.plugins.unimined.get().pluginId)
-//    apply(plugin: libs.plugins.spotless.get().pluginId)
+    apply(plugin: libs.plugins.spotless.get().pluginId)
 
     java.toolchain.languageVersion = JavaLanguageVersion.of(21)
     sourceCompatibility = 21
@@ -122,26 +123,25 @@ subprojects {
         compileOnly("dev.neuralnexus:conditional-mixins:0.1.1")
     }
 
-//    spotless {
-//        format 'misc', {
-//            target '*.gradle', '.gitattributes', '.gitignore'
-//
-//            trimTrailingWhitespace()
-//            indentWithSpaces()
-//            endWithNewline()
-//        }
-//        java {
-//            importOrder()
-//            removeUnusedImports()
-//            cleanthat()
-//            googleJavaFormat('1.17.0').aosp().formatJavadoc(true).reorderImports(true)
-//            formatAnnotations()
-//        }
-//    }
-//
-//    tasks.build.dependsOn(spotlessApply)
-//    tasks.findByName('shadowJar')?.dependsOn(spotlessApply)
-//    tasks.findByName('remapShadowJar')?.dependsOn(spotlessApply)
+    spotless {
+        format 'misc', {
+            target '*.gradle', '.gitattributes', '.gitignore'
+
+            trimTrailingWhitespace()
+            indentWithSpaces()
+            endWithNewline()
+        }
+        java {
+            toggleOffOn()
+            importOrder()
+            removeUnusedImports()
+            cleanthat()
+            googleJavaFormat('1.17.0').aosp().formatJavadoc(true).reorderImports(true)
+            formatAnnotations()
+        }
+    }
+
+    tasks.assemble.dependsOn(spotlessApply)
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
@@ -162,10 +162,8 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
 }
 
-// gradle :common:build :forge:forge-1.18:build :forge:forge-1.19:build :forge:forge-1.19.1:build :forge:forge-1.19.3:build :forge:forge-1.20.2:build :forge:forge-1.20.6:build :forge:forge-1.21:build :neoforge:neoforge-1.20.2:build :neoforge:neoforge-1.21:build
-
 var platformVersions = [:]
-platformVersions.put("forge", Arrays.asList("1.18", "1.19", "1.19.1", "1.19.3", "1.20.2", "1.20.6", "1.21"))
+platformVersions.put("forge", Arrays.asList("1.17.1", "1.18", "1.19", "1.19.1", "1.19.3", "1.20.2", "1.20.6", "1.21"))
 platformVersions.put("neoforge", Arrays.asList("1.20.2", "1.21"))
 
 tasks.register("shadeAndRelocate", ShadowJar) {
@@ -219,45 +217,3 @@ tasks.register("customShadeDowngradedApi", ShadeJar) {
 tasks.customDowngrade.dependsOn(shadeAndRelocate)
 tasks.customShadeDowngradedApi.dependsOn(customDowngrade)
 tasks.assemble.dependsOn(customShadeDowngradedApi)
-
-//tasks.register("finalJar", Jar) {
-//    var inputFile = tasks.customShadeDowngradedApi.archiveFile.get().asFile
-//
-//    def tempDir = new File("${projectDir}/build", "tempJar")
-//    tempDir.mkdirs()
-//
-//    doFirst {
-//        copy {
-//            from zipTree(inputFile)
-//            into tempDir
-//            exclude("pcf.mixins.*")
-//        }
-//
-//        def mixinConfigs = []
-//        zipTree(inputFile).matching {
-//            include("pcf.mixins.*")  // Include mixin files from the original jar
-//        }.files.each { file ->
-//            mixinConfigs.add(file)
-//        }
-//
-//        copy {
-//            from mergeMixinConfigs(mixinConfigs)
-//            into new File(tempDir, "./")
-//        }
-//    }
-//
-//    from(tempDir)
-//
-//    manifest {
-//        attributes([
-//                "Specification-Title": "proxy-compatible-forge",
-//                "Specification-Vendor": "adde0109",
-//                "Specification-Version": "1",
-//                "Implementation-Title": project.name,
-//                "Implementation-Version": "${version}",
-//                "Implementation-Vendor" :"adde0109",
-//                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-//                'MixinConfigs': "pcf.mixins.json"
-//        ])
-//    }
-//}

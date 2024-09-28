@@ -11,7 +11,7 @@ import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload;
 import net.minecraft.resources.ResourceLocation;
 
-import org.adde0109.pcf.common.CommonInitializer;
+import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.abstractions.Payload;
 import org.adde0109.pcf.v1_20_2.neoforge.login.QueryAnswerPayload;
 import org.spongepowered.asm.mixin.Final;
@@ -25,7 +25,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * <a href="https://github.com/PaperMC/Paper/blob/bd5867a96f792f0eb32c1d249bb4bbc1d8338d14/patches/server/0009-MC-Utils.patch#L6040-L6050">Adapted from Paper</a>
+ * <a
+ * href="https://github.com/PaperMC/Paper/blob/bd5867a96f792f0eb32c1d249bb4bbc1d8338d14/patches/server/0009-MC-Utils.patch#L6040-L6050">Adapted
+ * from Paper</a>
  */
 @ReqMappings(Mappings.MOJMAP)
 @ReqMCVersion(min = MinecraftVersion.V1_20_2)
@@ -35,8 +37,12 @@ public class ServerboundCustomQueryAnswerPacketMixin {
 
     @SuppressWarnings("DataFlowIssue")
     @Inject(method = "readPayload", at = @At("HEAD"), cancellable = true)
-    private static void onReadPayload(int queryId, FriendlyByteBuf buf, CallbackInfoReturnable<CustomQueryAnswerPayload> cir) {
-        if (queryId == CommonInitializer.QUERY_ID) {
+    private static void onReadPayload(
+            int queryId,
+            FriendlyByteBuf buf,
+            CallbackInfoReturnable<CustomQueryAnswerPayload> cir) {
+        if (queryId == PCF.QUERY_ID) {
+            // spotless:off
             // Paper start - MC Utils - default query payloads
             // Note: Added interface cast to make it cross-version compatible
             FriendlyByteBuf buffer = (FriendlyByteBuf) ((Payload) buf).readNullable((buf2) -> {
@@ -56,13 +62,14 @@ public class ServerboundCustomQueryAnswerPacketMixin {
                     Constructor<?> constructor = SimpleQueryPayload.getDeclaredConstructor(FriendlyByteBuf.class, int.class, ResourceLocation.class);
                     constructor.setAccessible(true);
                     cir.setReturnValue(buffer == null ? null : (CustomQueryAnswerPayload) constructor.newInstance(
-                            buffer, CommonInitializer.QUERY_ID, CommonInitializer.channelResource()));
+                            buffer, PCF.QUERY_ID, PCF.channelResource()));
                 } catch (ClassNotFoundException | IllegalAccessException | InstantiationException |
                          InvocationTargetException | NoSuchMethodException e) {
                     e.printStackTrace();
                 }
             }
             // NeoForge 1.20.2 end - Work around NeoForge's SimpleQueryPayload
+            // spotless:on
             cir.cancel();
         }
     }

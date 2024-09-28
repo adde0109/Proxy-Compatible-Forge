@@ -1,4 +1,4 @@
-package org.adde0109.pcf.common;
+package org.adde0109.pcf.common.reflection;
 
 import dev.neuralnexus.taterapi.MinecraftVersion;
 

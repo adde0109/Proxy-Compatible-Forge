@@ -1,6 +1,7 @@
 package org.adde0109.pcf;
 
 import com.mojang.brigadier.arguments.ArgumentType;
+
 import net.minecraft.commands.synchronization.ArgumentSerializer;
 import net.minecraft.resources.ResourceLocation;
 
@@ -14,14 +15,18 @@ public class ArgumentTypesEntryUtil {
 
     private static void cacheReflection() {
         try {
-            // net.minecraft.commands.synchronization.ArgumentTypes (net.minecraft.command.arguments.ArgumentTypes)
+            // net.minecraft.commands.synchronization.ArgumentTypes
+            // (net.minecraft.command.arguments.ArgumentTypes)
             Class<?> ATClass = Class.forName("net.minecraft.command.arguments.ArgumentTypes");
-            // static ArgumentTypes$Entry<?> ArgumentTypes.get(ArgumentType<?>) (ArgumentTypes#func_201040_a)
+            // static ArgumentTypes$Entry<?> ArgumentTypes.get(ArgumentType<?>)
+            // (ArgumentTypes#func_201040_a)
             cachedATGet = ATClass.getDeclaredMethod("func_201040_a", ArgumentType.class);
             cachedATGet.setAccessible(true);
             // ArgumentTypes$Entry
-            Class<?> ATEntryClass = Class.forName("net.minecraft.command.arguments.ArgumentTypes$Entry");
-            // ArgumentSerializer<T> ArgumentTypes$Entry#serializer (ArgumentTypes$Entry#field_197480_b)
+            Class<?> ATEntryClass =
+                    Class.forName("net.minecraft.command.arguments.ArgumentTypes$Entry");
+            // ArgumentSerializer<T> ArgumentTypes$Entry#serializer
+            // (ArgumentTypes$Entry#field_197480_b)
             cachedATEntrySerializer = ATEntryClass.getDeclaredField("field_197480_b");
             // ResourceLocation ArgumentTypes$Entry#name (C_4657_$C_4659_#field_197481_c)
             cachedATEntryName = ATEntryClass.getDeclaredField("field_197481_c");

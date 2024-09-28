@@ -16,33 +16,38 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.util.UUID;
 
 @ReqMappings(Mappings.SEARGE)
-@ReqMCVersion(MinecraftVersion.V1_20_2)
+@ReqMCVersion(min = MinecraftVersion.V1_20_2, max = MinecraftVersion.V1_20_4)
 @Mixin(FriendlyByteBuf.class)
 @Implements(@Interface(iface = Payload.class, prefix = "payload$", remap = Interface.Remap.NONE))
 public abstract class FriendlyByteBufMixin {
-    @Shadow public abstract int readVarInt();
+    @Shadow
+    public abstract int readVarInt();
 
-//    @Shadow public abstract boolean readBoolean();
+    //    @Shadow public abstract boolean readBoolean();
 
-    @Shadow public abstract String readUtf(int maxLength);
+    @Shadow
+    public abstract String readUtf(int maxLength);
 
-    @Shadow public abstract UUID readUUID();
+    @Shadow
+    public abstract UUID readUUID();
 
-    @Shadow public abstract FriendlyByteBuf readBytes(byte[] bytes);
+    @Shadow
+    public abstract FriendlyByteBuf readBytes(byte[] bytes);
 
-//    @Shadow public abstract int readableBytes();
+    //    @Shadow public abstract int readableBytes();
 
-//    @Shadow public abstract int readerIndex();
+    //    @Shadow public abstract int readerIndex();
 
-    @Shadow public abstract FriendlyByteBuf getBytes(int index, byte[] bytes);
+    @Shadow
+    public abstract FriendlyByteBuf getBytes(int index, byte[] bytes);
 
     public int payload$readVarInt() {
         return this.readVarInt();
     }
 
-//    public boolean payload$readBoolean() {
-//        return this.readBoolean();
-//    }
+    //    public boolean payload$readBoolean() {
+    //        return this.readBoolean();
+    //    }
 
     public String payload$readUtf(int maxLength) {
         return this.readUtf(maxLength);
@@ -56,13 +61,13 @@ public abstract class FriendlyByteBufMixin {
         this.readBytes(bytes);
     }
 
-//    public int payload$readableBytes() {
-//        return this.readableBytes();
-//    }
+    //    public int payload$readableBytes() {
+    //        return this.readableBytes();
+    //    }
 
-//    public int payload$readerIndex() {
-//        return this.readerIndex();
-//    }
+    //    public int payload$readerIndex() {
+    //        return this.readerIndex();
+    //    }
 
     public void payload$getBytes(int index, byte[] bytes) {
         this.getBytes(index, bytes);

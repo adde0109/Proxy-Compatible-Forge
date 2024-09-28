@@ -20,7 +20,8 @@ import java.util.function.Function;
 @Mixin(FriendlyByteBuf.class)
 @Implements(@Interface(iface = Payload.class, prefix = "payload$", remap = Interface.Remap.NONE))
 public abstract class FriendlyByteBufReadNullableMixin {
-    @Shadow public abstract <T> T readNullable(FriendlyByteBuf.Reader<T> par1);
+    @Shadow
+    public abstract <T> T readNullable(FriendlyByteBuf.Reader<T> par1);
 
     public Payload payload$readNullable(Function<Payload, Payload> function) {
         return this.readNullable((buf) -> function.apply((Payload) buf));

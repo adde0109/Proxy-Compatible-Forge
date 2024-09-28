@@ -9,7 +9,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 
-import org.adde0109.pcf.common.CommonInitializer;
+import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.ModernForwarding;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -18,10 +18,15 @@ public class Initializer {
     private static final Config config;
 
     public static void init() {
-        CommonInitializer.resourceLocation = ResourceLocation::new;
-        CommonInitializer.COMMAND_ARGUMENT_TYPE_KEY = (type) -> BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey((ArgumentTypeInfo<?, ?>) type);
-        CommonInitializer.COMMAND_ARGUMENT_TYPE_ID = (type) -> BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId((ArgumentTypeInfo<?, ?>) type);
-        CommonInitializer.setupIntegratedArgumentTypes();
+        PCF.resourceLocation = ResourceLocation::new;
+        PCF.COMMAND_ARGUMENT_TYPE_KEY =
+                (type) ->
+                        BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey(
+                                (ArgumentTypeInfo<?, ?>) type);
+        PCF.COMMAND_ARGUMENT_TYPE_ID =
+                (type) ->
+                        BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId(
+                                (ArgumentTypeInfo<?, ?>) type);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, configSpec);
 
@@ -30,14 +35,16 @@ public class Initializer {
 
     public static void serverAboutToStart(ServerAboutToStartEvent event) {
         String forwardingSecret = config.forwardingSecret.get();
-        if(!(forwardingSecret.isBlank() || forwardingSecret.isEmpty())) {
-            CommonInitializer.modernForwarding = new ModernForwarding(forwardingSecret);
+        if (!(forwardingSecret.isBlank() || forwardingSecret.isEmpty())) {
+            PCF.modernForwarding = new ModernForwarding(forwardingSecret);
         }
     }
 
     public static final ModConfigSpec configSpec;
+
     static {
-        final Pair<Config, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(Config::new);
+        final Pair<Config, ModConfigSpec> specPair =
+                new ModConfigSpec.Builder().configure(Config::new);
         configSpec = specPair.getRight();
         config = specPair.getLeft();
     }
@@ -46,11 +53,9 @@ public class Initializer {
         public final ModConfigSpec.ConfigValue<? extends String> forwardingSecret;
 
         Config(ModConfigSpec.Builder builder) {
-            builder.comment("Modern Forwarding Settings")
-                    .push("modernForwarding");
+            builder.comment("Modern Forwarding Settings").push("modernForwarding");
 
-            forwardingSecret = builder
-                    .define("forwardingSecret", "");
+            forwardingSecret = builder.define("forwardingSecret", "");
 
             builder.pop();
         }

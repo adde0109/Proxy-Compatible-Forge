@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v1_18.forge.command;
+package org.adde0109.pcf.mixin.v1_17_1.forge.command;
 
 import dev.neuralnexus.conditionalmixins.annotations.ReqMCVersion;
 import dev.neuralnexus.conditionalmixins.annotations.ReqMappings;
@@ -13,8 +13,8 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraftforge.network.ConnectionData;
-import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.fmllegacy.network.FMLConnectionData;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
 import org.adde0109.pcf.v1_17_1.forge.command.IMixinWrappableCommandPacket;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @ReqMappings(Mappings.SEARGE)
-@ReqMCVersion(min = MinecraftVersion.V1_18, max = MinecraftVersion.V1_18_2)
+@ReqMCVersion(min = MinecraftVersion.V1_17, max = MinecraftVersion.V1_17_1)
 @Mixin(Commands.class)
 public class CommandsMixin {
     @Unique private static final ResourceLocation pcf$AMBASSADOR_COMMANDS =
@@ -35,7 +35,7 @@ public class CommandsMixin {
     // spotless:on
     private void sendCommands$grabPacket(
             ServerGamePacketListenerImpl connection, Packet<?> packet) {
-        ConnectionData connectionData = NetworkHooks.getConnectionData(connection.connection);
+        FMLConnectionData connectionData = NetworkHooks.getConnectionData(connection.connection);
         if (connectionData != null
                 && connectionData.getChannels().keySet().stream()
                         .anyMatch((v) -> v.equals(pcf$AMBASSADOR_COMMANDS))) {

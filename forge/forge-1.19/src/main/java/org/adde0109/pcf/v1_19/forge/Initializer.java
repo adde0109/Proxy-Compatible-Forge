@@ -10,7 +10,7 @@ import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 
-import org.adde0109.pcf.common.CommonInitializer;
+import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.ModernForwarding;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -19,29 +19,37 @@ public class Initializer {
     public static final Config config;
 
     public static void init() {
-        CommonInitializer.resourceLocation = ResourceLocation::new;
-        CommonInitializer.COMMAND_ARGUMENT_TYPE_KEY = (type) -> Registry.COMMAND_ARGUMENT_TYPE.getKey((ArgumentTypeInfo<?, ?>) type);
-        CommonInitializer.COMMAND_ARGUMENT_TYPE_ID = (type) -> Registry.COMMAND_ARGUMENT_TYPE.getId((ArgumentTypeInfo<?, ?>) type);
-        CommonInitializer.setupIntegratedArgumentTypes();
+        PCF.resourceLocation = ResourceLocation::new;
+        PCF.COMMAND_ARGUMENT_TYPE_KEY =
+                (type) -> Registry.COMMAND_ARGUMENT_TYPE.getKey((ArgumentTypeInfo<?, ?>) type);
+        PCF.COMMAND_ARGUMENT_TYPE_ID =
+                (type) -> Registry.COMMAND_ARGUMENT_TYPE.getId((ArgumentTypeInfo<?, ?>) type);
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON,configSpec);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, configSpec);
 
-        ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class,
-                () -> new IExtensionPoint.DisplayTest(() -> IExtensionPoint.DisplayTest.IGNORESERVERONLY, (a, b) -> true));
+        ModLoadingContext.get()
+                .registerExtensionPoint(
+                        IExtensionPoint.DisplayTest.class,
+                        () ->
+                                new IExtensionPoint.DisplayTest(
+                                        () -> IExtensionPoint.DisplayTest.IGNORESERVERONLY,
+                                        (a, b) -> true));
 
         MinecraftForge.EVENT_BUS.addListener(Initializer::serverAboutToStart);
     }
 
     public static void serverAboutToStart(ServerAboutToStartEvent event) {
         String forwardingSecret = config.forwardingSecret.get();
-        if(!(forwardingSecret.isBlank() || forwardingSecret.isEmpty())) {
-            CommonInitializer.modernForwarding = new ModernForwarding(forwardingSecret);
+        if (!(forwardingSecret.isBlank() || forwardingSecret.isEmpty())) {
+            PCF.modernForwarding = new ModernForwarding(forwardingSecret);
         }
     }
 
     static final ForgeConfigSpec configSpec;
+
     static {
-        final Pair<Config, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Config::new);
+        final Pair<Config, ForgeConfigSpec> specPair =
+                new ForgeConfigSpec.Builder().configure(Config::new);
         configSpec = specPair.getRight();
         config = specPair.getLeft();
     }
@@ -50,13 +58,11 @@ public class Initializer {
         public final ForgeConfigSpec.ConfigValue<? extends String> forwardingSecret;
 
         Config(ForgeConfigSpec.Builder builder) {
-          builder.comment("Modern Forwarding Settings")
-                  .push("modernForwarding");
+            builder.comment("Modern Forwarding Settings").push("modernForwarding");
 
-          forwardingSecret = builder
-                  .define("forwardingSecret", "");
+            forwardingSecret = builder.define("forwardingSecret", "");
 
-          builder.pop();
+            builder.pop();
         }
     }
 }

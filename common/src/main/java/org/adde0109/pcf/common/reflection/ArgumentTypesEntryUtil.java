@@ -1,4 +1,4 @@
-package org.adde0109.pcf.common;
+package org.adde0109.pcf.common.reflection;
 
 import dev.neuralnexus.taterapi.MinecraftVersion;
 
@@ -33,8 +33,10 @@ public class ArgumentTypesEntryUtil {
             // net.minecraft.commands.synchronization.ArgumentTypes
             Class<?> atClass = Class.forName(atClassName);
             // static ArgumentTypes$Entry<?> ArgumentTypes.get(ArgumentType<?>)
-            Method atGetMethod = atClass.getDeclaredMethod(atGetMethodName,
-                    Class.forName("com.mojang.brigadier.arguments.ArgumentType"));
+            Method atGetMethod =
+                    atClass.getDeclaredMethod(
+                            atGetMethodName,
+                            Class.forName("com.mojang.brigadier.arguments.ArgumentType"));
             atGetMethod.setAccessible(true);
             MethodHandles.Lookup privLookup = MethodHandles.privateLookupIn(atClass, lookup);
             cachedATGet = privLookup.unreflect(atGetMethod);
@@ -42,12 +44,16 @@ public class ArgumentTypesEntryUtil {
             Class<?> atEntryClass = Class.forName(atEntryClassName);
             privLookup = MethodHandles.privateLookupIn(atEntryClass, lookup);
             // ArgumentSerializer<T> ArgumentTypes$Entry#serializer
-            Field atEntrySerializerField = atEntryClass.getDeclaredField(atEntrySerializerFieldName);
+            Field atEntrySerializerField =
+                    atEntryClass.getDeclaredField(atEntrySerializerFieldName);
             cachedATEntrySerializer = privLookup.unreflectVarHandle(atEntrySerializerField);
             // ResourceLocation ArgumentTypes$Entry#name
             Field atEntryNameField = atEntryClass.getDeclaredField(atEntryNameFieldName);
             cachedATEntryName = privLookup.unreflectVarHandle(atEntryNameField);
-        } catch (ClassNotFoundException | IllegalAccessException | NoSuchFieldException | NoSuchMethodException e) {
+        } catch (ClassNotFoundException
+                | IllegalAccessException
+                | NoSuchFieldException
+                | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }

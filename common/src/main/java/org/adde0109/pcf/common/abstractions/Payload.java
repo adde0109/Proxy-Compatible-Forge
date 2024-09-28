@@ -1,6 +1,7 @@
 package org.adde0109.pcf.common.abstractions;
 
 import io.netty.buffer.ByteBuf;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -30,8 +31,7 @@ public interface Payload {
     void getBytes(int index, byte[] bytes);
 
     @SuppressWarnings("unused")
-    @Nullable
-    default Payload readNullable(Function<Payload, Payload> function) {
+    @Nullable default Payload readNullable(Function<Payload, Payload> function) {
         throw new UnsupportedOperationException();
     }
 }

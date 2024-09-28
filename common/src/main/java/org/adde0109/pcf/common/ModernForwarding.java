@@ -1,21 +1,24 @@
-//Contains code from: https://github.com/OKTW-Network/FabricProxy-Lite/blob/master/src/main/java/one/oktw/VelocityLib.java
+// Contains code from:
+// https://github.com/OKTW-Network/FabricProxy-Lite/blob/master/src/main/java/one/oktw/VelocityLib.java
 package org.adde0109.pcf.common;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
+
 import org.adde0109.pcf.common.abstractions.Connection;
 import org.adde0109.pcf.common.abstractions.Payload;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 public class ModernForwarding {
     private static final int SUPPORTED_FORWARDING_VERSION = 1;
@@ -25,16 +28,19 @@ public class ModernForwarding {
         this.forwardingSecret = forwardingSecret;
     }
 
-    @Nullable
-    public GameProfile handleForwardingPacket(Payload data, Connection conn) throws Exception {
-        if(!this.validate(data)) {
+    @Nullable public GameProfile handleForwardingPacket(Payload data, Connection conn) throws Exception {
+        if (!this.validate(data)) {
             throw new Exception("Player-data could not be validated!");
         }
         LogManager.getLogger().debug("Player-data validated!");
 
         int version = data.readVarInt();
         if (version != SUPPORTED_FORWARDING_VERSION) {
-            throw new IllegalStateException("Unsupported forwarding version " + version + ", wanted " + SUPPORTED_FORWARDING_VERSION);
+            throw new IllegalStateException(
+                    "Unsupported forwarding version "
+                            + version
+                            + ", wanted "
+                            + SUPPORTED_FORWARDING_VERSION);
         }
 
         String ip = data.readUtf();

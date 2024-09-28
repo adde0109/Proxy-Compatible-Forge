@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v1_18.forge.network;
+package org.adde0109.pcf.mixin.v1_17_1.forge.network;
 
 import dev.neuralnexus.conditionalmixins.annotations.ReqMCVersion;
 import dev.neuralnexus.conditionalmixins.annotations.ReqMappings;
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.net.SocketAddress;
 
 @ReqMappings(Mappings.SEARGE)
-@ReqMCVersion(min = MinecraftVersion.V1_18, max = MinecraftVersion.V1_20_4)
+@ReqMCVersion(min = MinecraftVersion.V1_17, max = MinecraftVersion.V1_20_4)
 @Mixin(net.minecraft.network.Connection.class)
 @Implements(@Interface(iface = Connection.class, prefix = "conn$", remap = Interface.Remap.NONE))
 public abstract class ConnectionMixin {

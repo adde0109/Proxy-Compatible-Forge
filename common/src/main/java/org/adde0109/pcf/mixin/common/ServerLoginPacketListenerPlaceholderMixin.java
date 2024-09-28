@@ -10,5 +10,6 @@ import org.spongepowered.asm.mixin.Unique;
 @ReqMCVersion(min = MinecraftVersion.V1_14)
 @Mixin(targets = "net.minecraft.server.network.ServerLoginPacketListenerImpl", priority = 250)
 public class ServerLoginPacketListenerPlaceholderMixin {
-    @Unique void arclight$preLogin() throws Exception {}
+    @Unique
+    void arclight$preLogin() throws Exception {}
 }

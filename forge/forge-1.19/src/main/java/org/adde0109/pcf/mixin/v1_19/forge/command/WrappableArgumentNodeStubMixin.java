@@ -36,7 +36,7 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
-import org.adde0109.pcf.common.CommonInitializer;
+import org.adde0109.pcf.PCF;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -57,9 +57,10 @@ public class WrappableArgumentNodeStubMixin {
 
     /**
      * @author Daniel Voort.
-     * @reason This is easier than injecting and returning before anything is written. There are viable alternatives
-     *  available, but this is just the most straightforward and most development-time efficient. It is highly unlikely
-     *  for other mods to try to mixin this particular function.
+     * @reason This is easier than injecting and returning before anything is written. There are
+     *     viable alternatives available, but this is just the most straightforward and most
+     *     development-time efficient. It is highly unlikely for other mods to try to mixin this
+     *     particular function.
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Overwrite
@@ -67,10 +68,10 @@ public class WrappableArgumentNodeStubMixin {
         buffer.writeUtf(this.id);
 
         var typeInfo = argumentType.type();
-        var identifier = CommonInitializer.commandArgumentTypeKey(typeInfo);
-        var id = CommonInitializer.commandArgumentTypeId(typeInfo);
+        var identifier = PCF.commandArgumentTypeKey(typeInfo);
+        var id = PCF.commandArgumentTypeId(typeInfo);
 
-        if (identifier != null && CommonInitializer.integratedArgumentTypes.contains(identifier.toString())) {
+        if (identifier != null && PCF.integratedArgumentTypes.contains(identifier.toString())) {
             buffer.writeVarInt(id);
             ((ArgumentTypeInfo) typeInfo).serializeToNetwork(argumentType, buffer);
         } else {

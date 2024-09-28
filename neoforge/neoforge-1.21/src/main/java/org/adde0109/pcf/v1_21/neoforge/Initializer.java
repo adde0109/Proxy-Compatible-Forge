@@ -7,18 +7,28 @@ import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 
-import org.adde0109.pcf.common.CommonInitializer;
+import org.adde0109.pcf.PCF;
 
 @SuppressWarnings("unused")
 public class Initializer {
     public static void init() {
-        CommonInitializer.resourceLocation = ResourceLocation::parse;
-        CommonInitializer.COMMAND_ARGUMENT_TYPE_KEY = (type) -> BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey((ArgumentTypeInfo<?, ?>) type);
-        CommonInitializer.COMMAND_ARGUMENT_TYPE_ID = (type) -> BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId((ArgumentTypeInfo<?, ?>) type);
-        CommonInitializer.setupIntegratedArgumentTypes();
+        PCF.resourceLocation = ResourceLocation::parse;
+        PCF.COMMAND_ARGUMENT_TYPE_KEY =
+                (type) ->
+                        BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey(
+                                (ArgumentTypeInfo<?, ?>) type);
+        PCF.COMMAND_ARGUMENT_TYPE_ID =
+                (type) ->
+                        BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId(
+                                (ArgumentTypeInfo<?, ?>) type);
 
-        ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.COMMON, org.adde0109.pcf.v1_20_2.neoforge.Initializer.configSpec);
+        ModLoadingContext.get()
+                .getActiveContainer()
+                .registerConfig(
+                        ModConfig.Type.COMMON,
+                        org.adde0109.pcf.v1_20_2.neoforge.Initializer.configSpec);
 
-        NeoForge.EVENT_BUS.addListener(org.adde0109.pcf.v1_20_2.neoforge.Initializer::serverAboutToStart);
+        NeoForge.EVENT_BUS.addListener(
+                org.adde0109.pcf.v1_20_2.neoforge.Initializer::serverAboutToStart);
     }
 }

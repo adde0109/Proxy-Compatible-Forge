@@ -1,24 +1,27 @@
-//Contains code from: https://github.com/OKTW-Network/FabricProxy-Lite/blob/master/src/main/java/one/oktw/VelocityLib.java
+// Contains code from:
+// https://github.com/OKTW-Network/FabricProxy-Lite/blob/master/src/main/java/one/oktw/VelocityLib.java
 package org.adde0109.pcf;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
-import io.netty.buffer.Unpooled;
+
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
+
 import org.adde0109.pcf.login.IMixinConnection;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 public class ModernForwarding {
 
@@ -30,22 +33,25 @@ public class ModernForwarding {
         this.forwardingSecret = forwardingSecret;
     }
 
-
-    @Nullable
-    public GameProfile handleForwardingPacket(ServerboundCustomQueryPacket packet, Connection connection) throws Exception {
+    @Nullable public GameProfile handleForwardingPacket(
+            ServerboundCustomQueryPacket packet, Connection connection) throws Exception {
         FriendlyByteBuf data = packet.getInternalData();
-        if(data == null) {
+        if (data == null) {
             throw new Exception("Got empty packet");
         }
 
-        if(!validate(data)) {
+        if (!validate(data)) {
             throw new Exception("Player-data could not be validated!");
         }
         LogManager.getLogger().debug("Player-data validated!");
 
         int version = data.readVarInt();
         if (version != SUPPORTED_FORWARDING_VERSION) {
-            throw new IllegalStateException("Unsupported forwarding version " + version + ", wanted " + SUPPORTED_FORWARDING_VERSION);
+            throw new IllegalStateException(
+                    "Unsupported forwarding version "
+                            + version
+                            + ", wanted "
+                            + SUPPORTED_FORWARDING_VERSION);
         }
 
         String ip = data.readUtf(Short.MAX_VALUE);

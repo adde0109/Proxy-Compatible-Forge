@@ -1,7 +1,9 @@
-package org.adde0109.pcf.common;
+package org.adde0109.pcf;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+
+import org.adde0109.pcf.common.ModernForwarding;
 import org.apache.logging.log4j.LogManager;
 
 import java.io.IOException;
@@ -12,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-public class CommonInitializer {
+public class PCF {
     public static ModernForwarding modernForwarding;
 
     public static final int QUERY_ID = 100;
@@ -38,13 +40,20 @@ public class CommonInitializer {
     public static final List<String> integratedArgumentTypes = new ArrayList<>();
 
     public static void setupIntegratedArgumentTypes() {
-        try (Reader reader = new InputStreamReader(Objects.requireNonNull(CommonInitializer.class
-                .getResourceAsStream("/integrated_argument_types.json")))) {
+        try (Reader reader =
+                new InputStreamReader(
+                        Objects.requireNonNull(
+                                PCF.class.getResourceAsStream(
+                                        "/integrated_argument_types.json")))) {
             JsonObject result = new Gson().fromJson(reader, JsonObject.class);
-            result.get("entries").getAsJsonArray().iterator().forEachRemaining((k) -> integratedArgumentTypes.add(k.getAsString()));
+            result.get("entries")
+                    .getAsJsonArray()
+                    .iterator()
+                    .forEachRemaining((k) -> integratedArgumentTypes.add(k.getAsString()));
         } catch (IOException e) {
             // TODO: Add method to entrypoint-spoof
-            LogManager.getLogger().warn("Exception reading integrated argument types JSON");//, e);
+            LogManager.getLogger()
+                    .warn("Exception reading integrated argument types JSON"); // , e);
         }
     }
 }
