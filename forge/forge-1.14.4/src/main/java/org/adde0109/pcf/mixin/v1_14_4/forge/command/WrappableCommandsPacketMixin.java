@@ -1,5 +1,6 @@
-package org.adde0109.pcf.mixin.v1_17_1.forge.command;
+package org.adde0109.pcf.mixin.v1_14_4.forge.command;
 
+import com.google.common.collect.Queues;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
@@ -13,6 +14,9 @@ import dev.neuralnexus.taterapi.MinecraftVersion;
 import io.netty.buffer.Unpooled;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMaps;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.synchronization.ArgumentSerializer;
@@ -23,9 +27,8 @@ import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
 import net.minecraft.resources.ResourceLocation;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.common.reflection.ArgumentTypesEntryUtil;
-import org.adde0109.pcf.v1_17_1.forge.command.IMixinWrappableCommandPacket;
-import org.spongepowered.asm.mixin.Final;
+import org.adde0109.pcf.v1_14_4.forge.command.IMixinWrappableCommandPacket;
+import org.adde0109.pcf.v1_14_4.forge.reflection.ArgumentTypesEntryUtil;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,11 +38,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
+// TODO: Needs to be back ported to 1.14.4
 @ReqMappings(Mappings.SEARGE)
-@ReqMCVersion(min = MinecraftVersion.V1_17, max = MinecraftVersion.V1_18_2)
+@ReqMCVersion(min = MinecraftVersion.V1_14_4, max = MinecraftVersion.V1_16_4)
 @Mixin(ClientboundCommandsPacket.class)
 @Implements(
         @Interface(
@@ -47,7 +51,7 @@ import java.util.Map;
                 prefix = "wcp$",
                 remap = Interface.Remap.NONE))
 public class WrappableCommandsPacketMixin {
-    @Shadow @Final private RootCommandNode<SharedSuggestionProvider> root;
+    @Shadow private RootCommandNode<SharedSuggestionProvider> root;
 
     @Inject(
             method = "write(Lnet/minecraft/network/FriendlyByteBuf;)V",
@@ -58,41 +62,70 @@ public class WrappableCommandsPacketMixin {
         ci.cancel();
     }
 
-    @SuppressWarnings({"DataFlowIssue", "deprecation", "rawtypes", "unchecked"})
+    @SuppressWarnings({"deprecation", "rawtypes", "unchecked"})
     public void wcp$write(FriendlyByteBuf byteBuf, boolean wrap) {
         Object2IntMap<CommandNode<SharedSuggestionProvider>> object2intmap =
-                enumerateNodes(this.root);
-        List<CommandNode<SharedSuggestionProvider>> list = getNodesInIdOrder(object2intmap);
-        byteBuf.writeCollection(
-                list,
-                (p_178810_, p_178811_) -> {
-                    writeNode(p_178810_, p_178811_, object2intmap);
-                    if (p_178811_ instanceof ArgumentCommandNode argumentCommandNode) {
-                        pcf$serialize(byteBuf, argumentCommandNode.getType(), wrap);
-                        if (argumentCommandNode.getCustomSuggestions() != null) {
-                            byteBuf.writeResourceLocation(
-                                    SuggestionProviders.getName(
-                                            argumentCommandNode.getCustomSuggestions()));
-                        }
-                    }
-                });
+                pcf$enumerateNodes(this.root);
+        CommandNode<SharedSuggestionProvider>[] commandnode = pcf$getNodesInIdOrder(object2intmap);
+        byteBuf.writeVarInt(commandnode.length);
+
+        for (CommandNode<SharedSuggestionProvider> commandnode1 : commandnode) {
+            writeNode(byteBuf, commandnode1, object2intmap);
+            if (commandnode1 instanceof ArgumentCommandNode argumentCommandNode) {
+                pcf$serialize(byteBuf, argumentCommandNode.getType(), wrap);
+                if (argumentCommandNode.getCustomSuggestions() != null) {
+                    byteBuf.writeResourceLocation(
+                            SuggestionProviders.getName(
+                                    argumentCommandNode.getCustomSuggestions()));
+                }
+            }
+        }
+
         byteBuf.writeVarInt(object2intmap.get(this.root));
     }
 
-    @Shadow
-    private static Object2IntMap<CommandNode<SharedSuggestionProvider>> enumerateNodes(
-            RootCommandNode<SharedSuggestionProvider> root) {
-        return null;
+    // Borrowed from Vanilla 1.16.x
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Unique private static Object2IntMap<CommandNode<SharedSuggestionProvider>> pcf$enumerateNodes(
+            RootCommandNode<SharedSuggestionProvider> p_244292_0_) {
+        Object2IntMap<CommandNode<SharedSuggestionProvider>> object2intmap =
+                new Object2IntOpenHashMap();
+        Queue<CommandNode<SharedSuggestionProvider>> queue = Queues.newArrayDeque();
+        queue.add(p_244292_0_);
+
+        CommandNode commandnode;
+        while ((commandnode = queue.poll()) != null) {
+            if (!object2intmap.containsKey(commandnode)) {
+                int i = object2intmap.size();
+                object2intmap.put(commandnode, i);
+                queue.addAll(commandnode.getChildren());
+                if (commandnode.getRedirect() != null) {
+                    queue.add(commandnode.getRedirect());
+                }
+            }
+        }
+
+        return object2intmap;
+    }
+
+    // Borrowed from Vanilla 1.16.x
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Unique private static CommandNode<SharedSuggestionProvider>[] pcf$getNodesInIdOrder(
+            Object2IntMap<CommandNode<SharedSuggestionProvider>> p_244293_0_) {
+        CommandNode<SharedSuggestionProvider>[] commandnode = new CommandNode[p_244293_0_.size()];
+
+        Object2IntMap.Entry entry;
+        for (ObjectIterator var2 = Object2IntMaps.fastIterable(p_244293_0_).iterator();
+                var2.hasNext();
+                commandnode[entry.getIntValue()] = (CommandNode) entry.getKey()) {
+            entry = (Object2IntMap.Entry) var2.next();
+        }
+
+        return commandnode;
     }
 
     @Shadow
-    private static List<CommandNode<SharedSuggestionProvider>> getNodesInIdOrder(
-            Object2IntMap<CommandNode<SharedSuggestionProvider>> p_178807_) {
-        return null;
-    }
-
-    @Shadow
-    private static void writeNode(
+    private void writeNode(
             FriendlyByteBuf p_131872_,
             CommandNode<SharedSuggestionProvider> p_131873_,
             Map<CommandNode<SharedSuggestionProvider>, Integer> p_131874_) {}
@@ -100,7 +133,7 @@ public class WrappableCommandsPacketMixin {
     // spotless:off
     @Inject(method = "writeNode(Lnet/minecraft/network/FriendlyByteBuf;Lcom/mojang/brigadier/tree/CommandNode;Ljava/util/Map;)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/commands/synchronization/ArgumentTypes;serialize(Lnet/minecraft/network/FriendlyByteBuf;Lcom/mojang/brigadier/arguments/ArgumentType;)V"), cancellable = true)
-    private static void writeNode$cancelArgumentSerialization(CallbackInfo ci) {
+    private void writeNode$cancelArgumentSerialization(CallbackInfo ci) {
         ci.cancel();
     }
     // spotless:on

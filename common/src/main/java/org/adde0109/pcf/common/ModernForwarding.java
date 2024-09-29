@@ -6,9 +6,9 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 
+import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.abstractions.Connection;
 import org.adde0109.pcf.common.abstractions.Payload;
-import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.InetSocketAddress;
@@ -32,7 +32,7 @@ public class ModernForwarding {
         if (!this.validate(data)) {
             throw new Exception("Player-data could not be validated!");
         }
-        LogManager.getLogger().debug("Player-data validated!");
+        PCF.logger.debug("Player-data validated!");
 
         int version = data.readVarInt();
         if (version != SUPPORTED_FORWARDING_VERSION) {

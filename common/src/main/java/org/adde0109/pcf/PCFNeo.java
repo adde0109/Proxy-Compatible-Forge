@@ -28,7 +28,7 @@ public class PCFNeo {
         try {
             Class.forName(className).getMethod("init").invoke(null);
         } catch (Exception e) {
-            e.printStackTrace();
+            PCF.logger.error("Failed to initialize PCF", e);
         }
     }
 }

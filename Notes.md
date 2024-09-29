@@ -1,5 +1,3 @@
-// TODO: Split Neo/Forge entrypoints for 1.21 and 1.21.1
-
 # General Cross-Version Notes
 
 ## 1.15.2 -> 1.16.1

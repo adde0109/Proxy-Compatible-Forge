@@ -26,7 +26,11 @@ public class PCFForge {
 
         String className = "";
         MinecraftVersion mcv = MinecraftVersion.get();
-        if (mcv.isInRange(MinecraftVersion.V1_17, MinecraftVersion.V1_17_1)) {
+        if (mcv.isInRange(MinecraftVersion.V1_14, MinecraftVersion.V1_16_1)) {
+            className = "org.adde0109.pcf.v1_14_4.forge.Initializer";
+        } else if (mcv.isInRange(MinecraftVersion.V1_16_1, MinecraftVersion.V1_16_5)) {
+            className = "org.adde0109.pcf.v1_16_5.forge.Initializer";
+        } else if (mcv.isInRange(MinecraftVersion.V1_17, MinecraftVersion.V1_17_1)) {
             className = "org.adde0109.pcf.v1_17_1.forge.Initializer";
         } else if (mcv.isInRange(MinecraftVersion.V1_18, MinecraftVersion.V1_18_2)) {
             className = "org.adde0109.pcf.v1_18.forge.Initializer";
@@ -44,7 +48,7 @@ public class PCFForge {
         try {
             Class.forName(className).getMethod("init").invoke(null);
         } catch (Exception e) {
-            e.printStackTrace();
+            PCF.logger.error("Failed to initialize PCF", e);
         }
     }
 }

@@ -1,51 +1,38 @@
-package org.adde0109.pcf.v1_19_3.forge;
+package org.adde0109.pcf.v1_16_5.forge;
 
-import net.minecraft.commands.synchronization.ArgumentTypeInfo;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.server.ServerAboutToStartEvent;
-import net.minecraftforge.fml.IExtensionPoint;
+import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.network.FMLNetworkConstants;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.ModernForwarding;
 import org.apache.commons.lang3.tuple.Pair;
 
-@SuppressWarnings({"deprecation", "unused"})
+@SuppressWarnings("unused")
 public class Initializer {
     public static final Config config;
 
     public static void init() {
         PCF.resourceLocation = ResourceLocation::new;
         PCF.component = Component::nullToEmpty;
-        PCF.COMMAND_ARGUMENT_TYPE_KEY =
-                (type) ->
-                        ForgeRegistries.COMMAND_ARGUMENT_TYPES.getKey(
-                                (ArgumentTypeInfo<?, ?>) type);
-        PCF.COMMAND_ARGUMENT_TYPE_ID =
-                (type) ->
-                        BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId(
-                                (ArgumentTypeInfo<?, ?>) type);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, configSpec);
 
         ModLoadingContext.get()
                 .registerExtensionPoint(
-                        IExtensionPoint.DisplayTest.class,
-                        () ->
-                                new IExtensionPoint.DisplayTest(
-                                        () -> IExtensionPoint.DisplayTest.IGNORESERVERONLY,
-                                        (a, b) -> true));
+                        ExtensionPoint.DISPLAYTEST,
+                        () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 
         MinecraftForge.EVENT_BUS.addListener(Initializer::serverAboutToStart);
     }
 
-    public static void serverAboutToStart(ServerAboutToStartEvent event) {
+    public static void serverAboutToStart(FMLServerAboutToStartEvent event) {
         String forwardingSecret = config.forwardingSecret.get();
         if (!(forwardingSecret.isBlank() || forwardingSecret.isEmpty())) {
             PCF.modernForwarding = new ModernForwarding(forwardingSecret);

@@ -2,6 +2,7 @@ package org.adde0109.pcf.v1_20_2.neoforge;
 
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.config.ModConfig;
@@ -19,6 +20,7 @@ public class Initializer {
 
     public static void init() {
         PCF.resourceLocation = ResourceLocation::new;
+        PCF.component = Component::nullToEmpty;
         PCF.COMMAND_ARGUMENT_TYPE_KEY =
                 (type) ->
                         BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey(

@@ -65,7 +65,7 @@ public class ServerboundCustomQueryAnswerPacketMixin {
                             buffer, PCF.QUERY_ID, PCF.channelResource()));
                 } catch (ClassNotFoundException | IllegalAccessException | InstantiationException |
                          InvocationTargetException | NoSuchMethodException e) {
-                    e.printStackTrace();
+                    PCF.logger.error("Failed to create SimpleQueryPayload", e);
                 }
             }
             // NeoForge 1.20.2 end - Work around NeoForge's SimpleQueryPayload

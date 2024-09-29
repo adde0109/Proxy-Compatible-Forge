@@ -3,8 +3,9 @@ package org.adde0109.pcf;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import dev.neuralnexus.taterapi.logger.Logger;
+
 import org.adde0109.pcf.common.ModernForwarding;
-import org.apache.logging.log4j.LogManager;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,11 +16,21 @@ import java.util.Objects;
 import java.util.function.Function;
 
 public class PCF {
+    public static final Logger logger = Logger.create("pcf");
+
     public static ModernForwarding modernForwarding;
 
     public static final int QUERY_ID = 100;
     public static final String velocityChannel = "velocity:player_info";
     public static Function<String, Object> resourceLocation;
+
+    public static final String directConnErr =
+            "Direct connections to this server are not permitted!";
+    public static Function<String, Object> component;
+
+    public static Object directConnErrComponent() {
+        return component.apply(directConnErr);
+    }
 
     public static Object channelResource() {
         return resourceLocation.apply(velocityChannel);
@@ -51,9 +62,7 @@ public class PCF {
                     .iterator()
                     .forEachRemaining((k) -> integratedArgumentTypes.add(k.getAsString()));
         } catch (IOException e) {
-            // TODO: Add method to entrypoint-spoof
-            LogManager.getLogger()
-                    .warn("Exception reading integrated argument types JSON"); // , e);
+            logger.warn("Exception reading integrated argument types JSON", e);
         }
     }
 }

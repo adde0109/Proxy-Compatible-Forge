@@ -2,6 +2,7 @@ package org.adde0109.pcf.v1_21.forge;
 
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.IExtensionPoint;
@@ -16,6 +17,7 @@ public class Initializer {
     //    public static void init(FMLJavaModLoadingContext context) {
     public static void init() {
         PCF.resourceLocation = ResourceLocation::parse;
+        PCF.component = Component::nullToEmpty;
         PCF.COMMAND_ARGUMENT_TYPE_KEY =
                 (type) ->
                         ForgeRegistries.COMMAND_ARGUMENT_TYPES.getKey(

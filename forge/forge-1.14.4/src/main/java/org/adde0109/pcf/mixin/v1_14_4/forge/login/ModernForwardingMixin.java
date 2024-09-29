@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v1_20_2.forge.login;
+package org.adde0109.pcf.mixin.v1_14_4.forge.login;
 
 import com.mojang.authlib.GameProfile;
 
@@ -12,15 +12,14 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
-import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
-import net.minecraft.network.protocol.login.custom.DiscardedQueryPayload;
+import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.abstractions.Connection;
 import org.adde0109.pcf.common.abstractions.Payload;
-import org.adde0109.pcf.common.reflection.StateUtil;
+import org.adde0109.pcf.v1_14_4.forge.reflection.StateUtil;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -32,52 +31,54 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @ReqMappings(Mappings.SEARGE)
-@ReqMCVersion(min = MinecraftVersion.V1_20_2, max = MinecraftVersion.V1_20_4)
+@ReqMCVersion(min = MinecraftVersion.V1_14, max = MinecraftVersion.V1_16_5)
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ModernForwardingMixin {
-    @Shadow @Final net.minecraft.network.Connection connection;
+    @Shadow @Final public net.minecraft.network.Connection connection;
 
-    @Shadow @Nullable private GameProfile authenticatedProfile;
+    @Shadow @Nullable private GameProfile gameProfile;
 
     @Shadow
     public abstract void shadow$disconnect(Component reason);
 
     @Unique private boolean pcf$listen = false;
 
+    // spotless:off
+    @SuppressWarnings("DataFlowIssue")
     @Inject(method = "handleHello", at = @At("HEAD"), cancellable = true)
     private void onHandleHello(CallbackInfo ci) {
         Validate.validState(StateUtil.stateEquals(this, 0), "Unexpected hello packet");
         if (PCF.modernForwarding != null) {
             StateUtil.setState(this, 0);
             PCF.logger.debug("Sent Forward Request");
-            this.connection.send(
-                    new ClientboundCustomQueryPacket(
-                            PCF.QUERY_ID,
-                            new DiscardedQueryPayload((ResourceLocation) PCF.channelResource())));
+            ClientboundCustomQueryPacket packet = new ClientboundCustomQueryPacket();
+            ((ClientboundCustomQueryPacketAccessor) packet).setTransactionId(100);
+            ((ClientboundCustomQueryPacketAccessor) packet).setIdentifier((ResourceLocation) PCF.channelResource());
+            ((ClientboundCustomQueryPacketAccessor) packet).setData(new FriendlyByteBuf(Unpooled.EMPTY_BUFFER));
+            this.connection.send(packet);
             this.pcf$listen = true;
             ci.cancel();
         }
     }
+    // spotless:on
 
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
-    private void onHandleCustomQueryPacket(
-            ServerboundCustomQueryAnswerPacket packet, CallbackInfo ci) {
-        if ((packet.transactionId() == PCF.QUERY_ID)
+    private void onHandleCustomQueryPacket(ServerboundCustomQueryPacket packet, CallbackInfo ci) {
+        if ((((ServerboundCustomQueryPacketAccessor) packet).getTransactionId() == PCF.QUERY_ID)
                 && StateUtil.stateEquals(this, 0)
                 && this.pcf$listen) {
             this.pcf$listen = false;
             try {
-                if (packet.payload() == null) {
+                FriendlyByteBuf data = ((ServerboundCustomQueryPacketAccessor) packet).getData();
+                if (data == null) {
                     throw new Exception("Got empty packet");
                 }
-                FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
-                packet.payload().write(data);
 
-                this.authenticatedProfile =
+                this.gameProfile =
                         PCF.modernForwarding.handleForwardingPacket(
                                 (Payload) data, (Connection) connection);
                 this.arclight$preLogin();
-                StateUtil.setState(this, 4);
+                StateUtil.setState(this, 3);
             } catch (Exception e) {
                 this.shadow$disconnect((Component) PCF.directConnErrComponent());
                 PCF.logger.warn("Exception verifying forwarded player info", e);

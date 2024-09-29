@@ -1,5 +1,6 @@
 package org.adde0109.pcf.v1_17_1.forge;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
@@ -19,6 +20,7 @@ public class Initializer {
 
     public static void init() {
         PCF.resourceLocation = ResourceLocation::new;
+        PCF.component = Component::nullToEmpty;
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, configSpec);
 

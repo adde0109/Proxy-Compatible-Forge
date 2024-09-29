@@ -2,6 +2,7 @@ package org.adde0109.pcf.v1_19.forge;
 
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.Registry;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
@@ -20,6 +21,7 @@ public class Initializer {
 
     public static void init() {
         PCF.resourceLocation = ResourceLocation::new;
+        PCF.component = Component::nullToEmpty;
         PCF.COMMAND_ARGUMENT_TYPE_KEY =
                 (type) -> Registry.COMMAND_ARGUMENT_TYPE.getKey((ArgumentTypeInfo<?, ?>) type);
         PCF.COMMAND_ARGUMENT_TYPE_ID =

@@ -21,7 +21,6 @@ import org.adde0109.pcf.common.abstractions.Connection;
 import org.adde0109.pcf.common.abstractions.Payload;
 import org.adde0109.pcf.common.reflection.StateUtil;
 import org.apache.commons.lang3.Validate;
-import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -49,7 +48,7 @@ public abstract class ModernForwardingMixin {
         Validate.validState(StateUtil.stateEquals(this, 0), "Unexpected hello packet");
         if (PCF.modernForwarding != null) {
             StateUtil.setState(this, 0);
-            LogManager.getLogger().debug("Sent Forward Request");
+            PCF.logger.debug("Sent Forward Request");
             this.connection.send(
                     new ClientboundCustomQueryPacket(
                             PCF.QUERY_ID,
@@ -78,10 +77,8 @@ public abstract class ModernForwardingMixin {
                 this.arclight$preLogin();
                 StateUtil.setState(this, 3);
             } catch (Exception e) {
-                this.shadow$disconnect(
-                        Component.nullToEmpty(
-                                "Direct connections to this server are not permitted!"));
-                LogManager.getLogger().warn("Exception verifying forwarded player info", e);
+                this.shadow$disconnect((Component) PCF.directConnErrComponent());
+                PCF.logger.warn("Exception verifying forwarded player info", e);
             }
             ci.cancel();
         }

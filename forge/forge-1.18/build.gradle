@@ -1,6 +1,6 @@
 dependencies {
     compileOnly(project(':forge:forge-1.17.1'))
-    compileOnly(project(':common'))
+    compileOnly(project(":common"))
 }
 
 unimined.minecraft(sourceSets.main) {
