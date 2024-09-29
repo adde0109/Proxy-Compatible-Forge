@@ -22,7 +22,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-// TODO: Needs to be back ported to 1.14.4
 @ReqMappings(Mappings.SEARGE)
 @ReqMCVersion(MinecraftVersion.V1_16_5)
 @Mixin(Commands.class)

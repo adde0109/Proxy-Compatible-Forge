@@ -36,7 +36,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Map;
 
-// TODO: Needs to be back ported to 1.14.4
 @ReqMappings(Mappings.SEARGE)
 @ReqMCVersion(MinecraftVersion.V1_16_5)
 @Mixin(ClientboundCommandsPacket.class)

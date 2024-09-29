@@ -29,13 +29,13 @@ import java.lang.reflect.InvocationTargetException;
  * href="https://github.com/PaperMC/Paper/blob/bd5867a96f792f0eb32c1d249bb4bbc1d8338d14/patches/server/0009-MC-Utils.patch#L6040-L6050">Adapted
  * from Paper</a>
  */
+@SuppressWarnings({"DataFlowIssue", "RedundantCast"})
 @ReqMappings(Mappings.MOJMAP)
 @ReqMCVersion(min = MinecraftVersion.V1_20_2)
 @Mixin(ServerboundCustomQueryAnswerPacket.class)
 public class ServerboundCustomQueryAnswerPacketMixin {
     @Shadow @Final private static int MAX_PAYLOAD_SIZE;
 
-    @SuppressWarnings("DataFlowIssue")
     @Inject(method = "readPayload", at = @At("HEAD"), cancellable = true)
     private static void onReadPayload(
             int queryId,
@@ -62,7 +62,7 @@ public class ServerboundCustomQueryAnswerPacketMixin {
                     Constructor<?> constructor = SimpleQueryPayload.getDeclaredConstructor(FriendlyByteBuf.class, int.class, ResourceLocation.class);
                     constructor.setAccessible(true);
                     cir.setReturnValue(buffer == null ? null : (CustomQueryAnswerPayload) constructor.newInstance(
-                            buffer, PCF.QUERY_ID, PCF.channelResource()));
+                            buffer, PCF.QUERY_ID, (ResourceLocation) PCF.channelResource()));
                 } catch (ClassNotFoundException | IllegalAccessException | InstantiationException |
                          InvocationTargetException | NoSuchMethodException e) {
                     PCF.logger.error("Failed to create SimpleQueryPayload", e);
