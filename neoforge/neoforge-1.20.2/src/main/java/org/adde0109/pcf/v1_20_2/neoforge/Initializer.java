@@ -6,18 +6,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.common.ModernForwarding;
-import org.apache.commons.lang3.tuple.Pair;
 
 @SuppressWarnings("unused")
 public class Initializer {
-    private static final Config config;
-
     public static void init() {
         PCF.resourceLocation = ResourceLocation::new;
         PCF.component = Component::nullToEmpty;
@@ -30,36 +25,8 @@ public class Initializer {
                         BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId(
                                 (ArgumentTypeInfo<?, ?>) type);
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, configSpec);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.spec);
 
-        NeoForge.EVENT_BUS.addListener(Initializer::serverAboutToStart);
-    }
-
-    public static void serverAboutToStart(ServerAboutToStartEvent event) {
-        String forwardingSecret = config.forwardingSecret.get();
-        if (!(forwardingSecret.isBlank() || forwardingSecret.isEmpty())) {
-            PCF.modernForwarding = new ModernForwarding(forwardingSecret);
-        }
-    }
-
-    public static final ModConfigSpec configSpec;
-
-    static {
-        final Pair<Config, ModConfigSpec> specPair =
-                new ModConfigSpec.Builder().configure(Config::new);
-        configSpec = specPair.getRight();
-        config = specPair.getLeft();
-    }
-
-    public static class Config {
-        public final ModConfigSpec.ConfigValue<? extends String> forwardingSecret;
-
-        Config(ModConfigSpec.Builder builder) {
-            builder.comment("Modern Forwarding Settings").push("modernForwarding");
-
-            forwardingSecret = builder.define("forwardingSecret", "");
-
-            builder.pop();
-        }
+        NeoForge.EVENT_BUS.addListener((ServerAboutToStartEvent event) -> Config.setupForwarding());
     }
 }

@@ -7,8 +7,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 
 import org.adde0109.pcf.PCF;
+import org.adde0109.pcf.v1_20_2.neoforge.Config;
 
 @SuppressWarnings("unused")
 public class Initializer {
@@ -26,11 +28,8 @@ public class Initializer {
 
         ModLoadingContext.get()
                 .getActiveContainer()
-                .registerConfig(
-                        ModConfig.Type.COMMON,
-                        org.adde0109.pcf.v1_20_2.neoforge.Initializer.configSpec);
+                .registerConfig(ModConfig.Type.COMMON, Config.spec);
 
-        NeoForge.EVENT_BUS.addListener(
-                org.adde0109.pcf.v1_20_2.neoforge.Initializer::serverAboutToStart);
+        NeoForge.EVENT_BUS.addListener((ServerAboutToStartEvent event) -> Config.setupForwarding());
     }
 }

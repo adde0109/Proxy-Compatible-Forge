@@ -59,6 +59,7 @@ public abstract class ModernForwardingMixin {
         }
     }
 
+    @SuppressWarnings("DataFlowIssue")
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
     private void onHandleCustomQueryPacket(
             ServerboundCustomQueryAnswerPacket packet, CallbackInfo ci) {

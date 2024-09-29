@@ -7,7 +7,7 @@ import dev.neuralnexus.taterapi.metadata.PlatformData;
 import net.neoforged.fml.common.Mod;
 
 @SuppressWarnings("unused")
-@Mod(value = "pcf") // , dist = Dist.DEDICATED_SERVER)
+@Mod(value = "pcf")
 public class PCFNeo {
     public PCFNeo() {
         PlatformData pd = PlatformData.instance();

@@ -36,7 +36,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ModernForwardingMixin {
     @Shadow @Final public net.minecraft.network.Connection connection;
 
-    @Shadow @Nullable public GameProfile gameProfile;
+    @Shadow @Nullable GameProfile gameProfile;
 
     @Shadow
     public abstract void shadow$disconnect(Component reason);
@@ -59,6 +59,7 @@ public abstract class ModernForwardingMixin {
         }
     }
 
+    @SuppressWarnings("ConstantValue")
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
     private void onHandleCustomQueryPacket(ServerboundCustomQueryPacket packet, CallbackInfo ci) {
         if ((packet.getTransactionId() == PCF.QUERY_ID)

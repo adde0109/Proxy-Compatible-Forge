@@ -1,6 +1,7 @@
 package org.adde0109.pcf.common.reflection;
 
 import dev.neuralnexus.taterapi.MinecraftVersion;
+import dev.neuralnexus.taterapi.Platform;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
@@ -12,12 +13,15 @@ public class StateUtil {
 
     static {
         MinecraftVersion mcv = MinecraftVersion.get();
+        Platform p = Platform.get();
         String slplClassName = "net.minecraft.server.network.ServerLoginPacketListenerImpl";
         String stateFieldName = "state";
         if (mcv.isInRange(MinecraftVersion.V1_14_4, MinecraftVersion.V1_16_5)) {
             stateFieldName = "field_147328_g";
             slplClassName = "net.minecraft.network.login.ServerLoginNetHandler";
-        } else if (mcv.isInRange(MinecraftVersion.V1_17, MinecraftVersion.V1_20_4)) {
+        } else if (mcv.isInRange(MinecraftVersion.V1_17, MinecraftVersion.V1_20_4)
+                && p.isForgeBased()
+                && !p.isNeoForgeBased()) {
             stateFieldName = "f_10019_";
         }
         String slplStateClassName = slplClassName + "$State";

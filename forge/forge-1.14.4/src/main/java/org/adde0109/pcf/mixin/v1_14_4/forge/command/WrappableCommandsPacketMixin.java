@@ -41,7 +41,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Map;
 import java.util.Queue;
 
-// TODO: Needs to be back ported to 1.14.4
 @ReqMappings(Mappings.SEARGE)
 @ReqMCVersion(min = MinecraftVersion.V1_14_4, max = MinecraftVersion.V1_16_4)
 @Mixin(ClientboundCommandsPacket.class)
@@ -163,7 +162,7 @@ public class WrappableCommandsPacketMixin {
         pcf$serializeWrappedArgumentType(buf, type, entry);
     }
 
-    @SuppressWarnings({"unchecked", "VulnerableCodeUsages"})
+    @SuppressWarnings({"unchecked", "RedundantCast", "VulnerableCodeUsages"})
     @Unique private static <T extends ArgumentType<?>> void pcf$serializeWrappedArgumentType(
             FriendlyByteBuf packetByteBuf, T argumentType, Object entry) {
         packetByteBuf.writeResourceLocation(pcf$MOD_ARGUMENT_INDICATOR);

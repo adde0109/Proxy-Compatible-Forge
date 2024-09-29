@@ -30,6 +30,7 @@ public class CommandsMixin {
             new ResourceLocation("ambassador:commands");
 
     // spotless:off
+    @SuppressWarnings("VulnerableCodeUsages")
     @Redirect(method = "sendCommands(Lnet/minecraft/server/level/ServerPlayer;)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;send(Lnet/minecraft/network/protocol/Packet;)V"))
     // spotless:on

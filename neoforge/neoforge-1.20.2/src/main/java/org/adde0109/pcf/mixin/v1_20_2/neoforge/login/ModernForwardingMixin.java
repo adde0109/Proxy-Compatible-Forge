@@ -38,7 +38,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ModernForwardingMixin {
     @Shadow @Final net.minecraft.network.Connection connection;
 
-    @Shadow @Nullable private GameProfile authenticatedProfile;
+    @Shadow @Nullable public GameProfile authenticatedProfile;
 
     @Shadow
     public abstract void shadow$disconnect(Component reason);

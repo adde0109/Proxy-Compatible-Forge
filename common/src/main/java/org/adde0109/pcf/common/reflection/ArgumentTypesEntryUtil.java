@@ -20,7 +20,7 @@ public class ArgumentTypesEntryUtil {
         String atGetMethodName = "m_121616_";
         String atEntrySerializerFieldName = "f_121619_";
         String atEntryNameFieldName = "f_121620_";
-        if (mcv.isInRange(MinecraftVersion.V1_14_4, MinecraftVersion.V1_16_5)) {
+        if (mcv.isInRange(MinecraftVersion.V1_14, MinecraftVersion.V1_16_5)) {
             atClassName = "net.minecraft.command.arguments.ArgumentTypes";
             atEntryClassName = "net.minecraft.command.arguments.ArgumentTypes$Entry";
             atGetMethodName = "func_201040_a";

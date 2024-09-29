@@ -5,12 +5,14 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import org.adde0109.pcf.PCF;
+import org.adde0109.pcf.v1_14_4.forge.Config;
 
 @SuppressWarnings("unused")
 public class Initializer {
@@ -30,11 +32,8 @@ public class Initializer {
         // TODO: Upstream the additions into entrypoint-spoof
         ModLoadingContext context = ModLoadingContext.get();
 
-        context.registerConfig(
-                ModConfig.Type.COMMON, org.adde0109.pcf.v1_20_6.forge.Initializer.configSpec);
+        context.registerConfig(ModConfig.Type.COMMON, Config.spec);
 
-        // Make sure the mod being absent on the other network side does not cause the client to
-        // display the server as incompatible
         context.registerExtensionPoint(
                 IExtensionPoint.DisplayTest.class,
                 () ->
@@ -43,6 +42,6 @@ public class Initializer {
                                 (a, b) -> true));
 
         MinecraftForge.EVENT_BUS.addListener(
-                org.adde0109.pcf.v1_20_6.forge.Initializer::serverAboutToStart);
+                (ServerAboutToStartEvent event) -> Config.setupForwarding());
     }
 }
