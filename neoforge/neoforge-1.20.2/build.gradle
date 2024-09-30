@@ -1,0 +1,19 @@
+base {
+    archivesName = "${project_id}-neoforge-${minecraft_version}"
+}
+
+dependencies {
+    compileOnly("net.neoforged:neoforge:20.2.${neo_version}")
+    compileOnly(project(":common"))
+}
+
+unimined.minecraft(sourceSets.main) {
+    version(minecraft_version)
+    neoForge {
+        loader(neo_version)
+    }
+    mappings {
+        mojmap()
+    }
+    defaultRemapJar = true
+}
