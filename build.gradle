@@ -167,14 +167,16 @@ platformVersions.put("forge", Arrays.asList("1.14.4", "1.16.5", "1.17.1", "1.18"
         "1.19", "1.19.1", "1.19.3", "1.20.2", "1.20.6", "1.21"))
 platformVersions.put("neoforge", Arrays.asList("1.20.2", "1.21"))
 
-tasks.register("shadeAndRelocate", ShadowJar) {
-    dependsOn(":common:shadowJar")
+tasks.register("buildAllTheStuffNowBcGradleIsDumb", Task) {
+    dependsOn(":common:build")
     platformVersions.each { platform, versions ->
         versions.each { mcVersion ->
             dependsOn(":${platform}:${platform}-${mcVersion}:build")
         }
     }
+}
 
+tasks.register("shadeAndRelocate", ShadowJar) {
     relocate("dev.neuralnexus.conditionalmixins", "org.adde0109.pcf.lib.conditionalmixins")
     relocate("dev.neuralnexus.taterapi", "org.adde0109.pcf.lib.taterapi")
 
@@ -185,13 +187,13 @@ tasks.register("shadeAndRelocate", ShadowJar) {
 
     manifest {
         attributes([
-                "Specification-Title": "${project_name} ${mc_version}",
-                "Specification-Version": "1",
-                "Specification-Vendor": "adde0109",
-                "Implementation-Version": version,
-                "Implementation-Vendor": "adde0109",
+                "Specification-Title"     : "${project_name} ${mc_version}",
+                "Specification-Version"   : "1",
+                "Specification-Vendor"    : "adde0109",
+                "Implementation-Version"  : version,
+                "Implementation-Vendor"   : "adde0109",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                "MixinConfigs": "pcf.mixins.json"
+                "MixinConfigs"            : "pcf.mixins.json"
         ])
     }
 
@@ -227,6 +229,7 @@ tasks.register("renameJar", Copy) {
     }
 }
 
+tasks.shadeAndRelocate.dependsOn(buildAllTheStuffNowBcGradleIsDumb)
 tasks.customDowngrade.dependsOn(shadeAndRelocate)
 tasks.customShadeDowngradedApi.dependsOn(customDowngrade)
 tasks.renameJar.dependsOn(customShadeDowngradedApi)
