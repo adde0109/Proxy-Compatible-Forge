@@ -11,6 +11,7 @@
     "v1_17_1.forge.command.CommandsMixin",
     "v1_17_1.forge.command.WrappableCommandsPacketMixin",
     "v1_17_1.forge.login.ModernForwardingMixin",
+    "v1_17_1.forge.login.ServerLoginPacketListenerPlaceholderMixin",
     "v1_17_1.forge.network.ConnectionMixin",
     "v1_17_1.forge.network.FriendlyByteBufMixin"
   ]

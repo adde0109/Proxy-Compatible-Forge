@@ -12,10 +12,9 @@
     "v1_14_4.forge.command.WrappableCommandsPacketMixin",
     "v1_14_4.forge.login.ClientboundCustomQueryPacketAccessor",
     "v1_14_4.forge.login.ModernForwardingMixin",
+    "v1_14_4.forge.login.ServerboundCustomQueryPacketAccessor",
+    "v1_14_4.forge.login.ServerLoginPacketListenerPlaceholderMixin",
     "v1_14_4.forge.network.ConnectionMixin",
     "v1_14_4.forge.network.FriendlyByteBufMixin"
-  ],
-  "mixins": [
-    "v1_14_4.forge.login.ServerboundCustomQueryPacketAccessor"
   ]
 }
