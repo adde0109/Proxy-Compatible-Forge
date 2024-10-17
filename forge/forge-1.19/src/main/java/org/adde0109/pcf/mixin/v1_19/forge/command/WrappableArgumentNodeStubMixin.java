@@ -71,10 +71,11 @@ public class WrappableArgumentNodeStubMixin {
         var identifier = PCF.commandArgumentTypeKey(typeInfo);
         var id = PCF.commandArgumentTypeId(typeInfo);
 
-        if (identifier != null && PCF.integratedArgumentTypes.contains(identifier.toString())) {
+        if (identifier != null && PCF.isIntegratedArgument(identifier.toString())) {
             buffer.writeVarInt(id);
             ((ArgumentTypeInfo) typeInfo).serializeToNetwork(argumentType, buffer);
         } else {
+            PCF.logger.debug("Wrapping argument node stub with identifier: " + identifier);
             buffer.writeVarInt(MOD_ARGUMENT_INDICATOR);
             buffer.writeVarInt(id);
 

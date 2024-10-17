@@ -39,6 +39,9 @@ public class Initializer {
                                         (a, b) -> true));
 
         MinecraftForge.EVENT_BUS.addListener(
-                (ServerAboutToStartEvent event) -> Config.setupForwarding());
+                (ServerAboutToStartEvent event) -> {
+                    Config.setupForwarding();
+                    Config.setupModdedArgumentTypes();
+                });
     }
 }

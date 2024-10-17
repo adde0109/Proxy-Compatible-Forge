@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import dev.neuralnexus.taterapi.logger.Logger;
+import dev.neuralnexus.taterapi.metadata.PlatformData;
 
 import org.adde0109.pcf.common.ModernForwarding;
 
@@ -49,6 +50,19 @@ public class PCF {
     }
 
     public static final List<String> integratedArgumentTypes = new ArrayList<>();
+
+    public static final List<String> moddedArgumentTypes = new ArrayList<>();
+
+    public static boolean isIntegratedArgument(String identifier) {
+        return integratedArgumentTypes.contains(identifier)
+                && !moddedArgumentTypes.contains(identifier)
+                && !isArgumentEdgeCase(identifier);
+    }
+
+    public static boolean isArgumentEdgeCase(String identifier) {
+        return PlatformData.instance().isModLoaded("livingthings")
+                && identifier.equals("minecraft:entity");
+    }
 
     public static void setupIntegratedArgumentTypes() {
         try (Reader reader =

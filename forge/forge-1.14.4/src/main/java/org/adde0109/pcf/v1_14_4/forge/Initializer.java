@@ -26,6 +26,9 @@ public class Initializer {
                         () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 
         MinecraftForge.EVENT_BUS.addListener(
-                (FMLServerAboutToStartEvent event) -> Config.setupForwarding());
+                (FMLServerAboutToStartEvent event) -> {
+                    Config.setupForwarding();
+                    Config.setupModdedArgumentTypes();
+                });
     }
 }

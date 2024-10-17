@@ -119,14 +119,14 @@ public class WrappableCommandsPacketMixin {
             return;
         }
 
-        if (!wrap
-                || PCF.integratedArgumentTypes.contains(
-                        ArgumentTypesEntryUtil.getName(entry).toString())) {
+        String identifier = ArgumentTypesEntryUtil.getName(entry).toString();
+        if (!wrap || PCF.isIntegratedArgument(identifier)) {
             ArgumentTypes.serialize(buf, type);
             return;
         }
 
         // Not a standard Minecraft argument type - so we need to wrap it
+        PCF.logger.debug("Wrapping argument node stub with identifier: " + identifier);
         pcf$serializeWrappedArgumentType(buf, type, entry);
     }
 
