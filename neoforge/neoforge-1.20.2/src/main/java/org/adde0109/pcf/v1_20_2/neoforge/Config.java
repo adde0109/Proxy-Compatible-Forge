@@ -26,7 +26,7 @@ public class Config {
         builder.comment("Modern Forwarding Settings").push("modernForwarding");
         forwardingSecret = builder.define("forwardingSecret", "");
         builder.pop();
-
+  
         builder.push("commandWrapping");
         moddedArgumentTypes =
                 builder.comment(

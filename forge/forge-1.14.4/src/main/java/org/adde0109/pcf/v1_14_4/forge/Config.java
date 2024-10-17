@@ -20,7 +20,7 @@ public class Config {
     }
 
     public final ForgeConfigSpec.ConfigValue<? extends String> forwardingSecret;
-    public final ForgeConfigSpec.ConfigValue moddedArgumentTypes;
+    public final ForgeConfigSpec.ConfigValue<List<? extends String>> moddedArgumentTypes;
 
     Config(ForgeConfigSpec.Builder builder) {
         builder.comment("Modern Forwarding Settings").push("modernForwarding");
