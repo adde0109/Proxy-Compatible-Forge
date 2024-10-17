@@ -20,18 +20,21 @@ public class Config {
     }
 
     public final ModConfigSpec.ConfigValue<? extends String> forwardingSecret;
-    public final ModConfigSpec.ConfigValue<? extends List<String>> moddedArgumentTypes;
+    public final ModConfigSpec.ConfigValue<List<? extends String>> moddedArgumentTypes;
 
     Config(ModConfigSpec.Builder builder) {
         builder.comment("Modern Forwarding Settings").push("modernForwarding");
         forwardingSecret = builder.define("forwardingSecret", "");
+        builder.pop();
 
-        builder.comment(
-                        "List of argument types that are not vanilla but are integrated into the server (found in the Vanilla registry)")
-                .push("integratedArgumentTypes");
+        builder.push("commandWrapping");
         moddedArgumentTypes =
-                builder.define("moddedArgumentTypes", List.of("livingthings:sampler_types"));
-
+                builder.comment(
+                                "List of argument types that are not vanilla but are integrated into the server (found in the Vanilla registry)")
+                        .defineList(
+                                "moddedArgumentTypes",
+                                List.of("livingthings:sampler_types"),
+                                (obj) -> true);
         builder.pop();
     }
 
@@ -42,8 +45,9 @@ public class Config {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static void setupModdedArgumentTypes() {
-        List<String> moddedArgumentTypes = Config.config.moddedArgumentTypes.get();
+        List<String> moddedArgumentTypes = (List<String>) Config.config.moddedArgumentTypes.get();
         PCF.moddedArgumentTypes.addAll(moddedArgumentTypes);
     }
 }
