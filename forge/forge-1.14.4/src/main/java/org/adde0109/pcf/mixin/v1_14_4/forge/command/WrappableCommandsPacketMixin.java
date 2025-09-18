@@ -6,10 +6,10 @@ import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 
-import dev.neuralnexus.conditionalmixins.annotations.ReqMCVersion;
-import dev.neuralnexus.conditionalmixins.annotations.ReqMappings;
-import dev.neuralnexus.taterapi.Mappings;
-import dev.neuralnexus.taterapi.MinecraftVersion;
+import dev.neuralnexus.taterapi.meta.Mappings;
+import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
+import dev.neuralnexus.taterapi.muxins.annotations.ReqMCVersion;
+import dev.neuralnexus.taterapi.muxins.annotations.ReqMappings;
 
 import io.netty.buffer.Unpooled;
 
@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.Queue;
 
 @ReqMappings(Mappings.SEARGE)
-@ReqMCVersion(min = MinecraftVersion.V1_14_4, max = MinecraftVersion.V1_16_4)
+@ReqMCVersion(min = MinecraftVersion.V14_4, max = MinecraftVersion.V16_4)
 @Mixin(ClientboundCommandsPacket.class)
 @Implements(
         @Interface(

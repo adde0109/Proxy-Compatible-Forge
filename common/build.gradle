@@ -12,8 +12,10 @@ dependencies {
     compileOnly("io.netty:netty-buffer:4.1.25.Final")
     compileOnly("org.ow2.asm:asm-tree:6.2")
 
-    compileOnly("dev.neuralnexus:entrypoint-spoof:0.1.11")
-    implementation("dev.neuralnexus:conditional-mixins:0.1.1")
+    compileOnly("dev.neuralnexus:entrypoint-spoof:0.1.26")
+    implementation("dev.neuralnexus.taterlib.lite:base:0.1.0-SNAPSHOT")
+    implementation("dev.neuralnexus.taterlib.lite:metadata:0.1.0-SNAPSHOT")
+    implementation("dev.neuralnexus.taterlib.lite:muxins:0.1.0-SNAPSHOT")
 }
 
 tasks.withType(ProcessResources).configureEach {

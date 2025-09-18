@@ -1,9 +1,9 @@
 package org.adde0109.pcf.mixin.v1_20_6.neoforge.network;
 
-import dev.neuralnexus.conditionalmixins.annotations.ReqMCVersion;
-import dev.neuralnexus.conditionalmixins.annotations.ReqMappings;
-import dev.neuralnexus.taterapi.Mappings;
-import dev.neuralnexus.taterapi.MinecraftVersion;
+import dev.neuralnexus.taterapi.meta.Mappings;
+import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
+import dev.neuralnexus.taterapi.muxins.annotations.ReqMCVersion;
+import dev.neuralnexus.taterapi.muxins.annotations.ReqMappings;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamDecoder;
@@ -16,8 +16,8 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.function.Function;
 
-@ReqMappings(Mappings.MOJMAP)
-@ReqMCVersion(min = MinecraftVersion.V1_20_5)
+@ReqMappings(Mappings.MOJANG)
+@ReqMCVersion(min = MinecraftVersion.V20_5)
 @Mixin(FriendlyByteBuf.class)
 @Implements(@Interface(iface = Payload.class, prefix = "payload$", remap = Interface.Remap.NONE))
 public abstract class FriendlyByteBufReadNullableMixin {

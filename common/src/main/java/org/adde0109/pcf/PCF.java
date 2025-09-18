@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import dev.neuralnexus.taterapi.logger.Logger;
-import dev.neuralnexus.taterapi.metadata.PlatformData;
+import dev.neuralnexus.taterapi.meta.MetaAPI;
 
 import org.adde0109.pcf.common.ModernForwarding;
 
@@ -60,7 +60,7 @@ public class PCF {
     }
 
     public static boolean isArgumentEdgeCase(String identifier) {
-        return PlatformData.instance().isModLoaded("livingthings")
+        return MetaAPI.instance().isModLoaded("livingthings")
                 && identifier.equals("minecraft:entity");
     }
 

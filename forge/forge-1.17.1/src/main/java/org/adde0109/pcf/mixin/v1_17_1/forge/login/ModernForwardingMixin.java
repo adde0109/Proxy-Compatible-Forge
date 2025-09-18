@@ -2,10 +2,10 @@ package org.adde0109.pcf.mixin.v1_17_1.forge.login;
 
 import com.mojang.authlib.GameProfile;
 
-import dev.neuralnexus.conditionalmixins.annotations.ReqMCVersion;
-import dev.neuralnexus.conditionalmixins.annotations.ReqMappings;
-import dev.neuralnexus.taterapi.Mappings;
-import dev.neuralnexus.taterapi.MinecraftVersion;
+import dev.neuralnexus.taterapi.meta.Mappings;
+import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
+import dev.neuralnexus.taterapi.muxins.annotations.ReqMCVersion;
+import dev.neuralnexus.taterapi.muxins.annotations.ReqMappings;
 
 import io.netty.buffer.Unpooled;
 
@@ -31,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @ReqMappings(Mappings.SEARGE)
-@ReqMCVersion(min = MinecraftVersion.V1_17, max = MinecraftVersion.V1_20_1)
+@ReqMCVersion(min = MinecraftVersion.V17, max = MinecraftVersion.V20_1)
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ModernForwardingMixin {
     @Shadow @Final public net.minecraft.network.Connection connection;

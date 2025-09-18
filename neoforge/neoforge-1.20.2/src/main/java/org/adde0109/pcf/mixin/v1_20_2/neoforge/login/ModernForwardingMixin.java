@@ -2,11 +2,13 @@ package org.adde0109.pcf.mixin.v1_20_2.neoforge.login;
 
 import com.mojang.authlib.GameProfile;
 
-import dev.neuralnexus.conditionalmixins.annotations.ReqMCVersion;
-import dev.neuralnexus.conditionalmixins.annotations.ReqMappings;
-import dev.neuralnexus.taterapi.Mappings;
-import dev.neuralnexus.taterapi.MinecraftVersion;
-import dev.neuralnexus.taterapi.Platform;
+import dev.neuralnexus.taterapi.meta.Mappings;
+import dev.neuralnexus.taterapi.meta.MetaAPI;
+import dev.neuralnexus.taterapi.meta.MinecraftVersions;
+import dev.neuralnexus.taterapi.meta.Platforms;
+import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
+import dev.neuralnexus.taterapi.muxins.annotations.ReqMCVersion;
+import dev.neuralnexus.taterapi.muxins.annotations.ReqMappings;
 
 import io.netty.buffer.Unpooled;
 
@@ -32,8 +34,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@ReqMappings(Mappings.MOJMAP)
-@ReqMCVersion(min = MinecraftVersion.V1_20_2)
+@ReqMappings(Mappings.MOJANG)
+@ReqMCVersion(min = MinecraftVersion.V20_2)
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ModernForwardingMixin {
     @Shadow @Final net.minecraft.network.Connection connection;
@@ -76,8 +78,8 @@ public abstract class ModernForwardingMixin {
                 packet.payload().write(data);
 
                 // NeoForge 1.20.2 start - Work around NeoForge's SimpleQueryPayload
-                if (Platform.get().isNeoForgeBased()
-                        && MinecraftVersion.get().is(MinecraftVersion.V1_20_2)) {
+                if (MetaAPI.instance().isPlatformPresent(Platforms.NEOFORGE)
+                        && MetaAPI.instance().version().is(MinecraftVersions.V20_2)) {
                     data.readVarInt();
                     data.readResourceLocation();
                 }

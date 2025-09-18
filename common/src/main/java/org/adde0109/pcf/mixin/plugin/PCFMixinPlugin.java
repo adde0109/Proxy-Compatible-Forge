@@ -1,6 +1,6 @@
 package org.adde0109.pcf.mixin.plugin;
 
-import dev.neuralnexus.conditionalmixins.ConditionalMixins;
+import dev.neuralnexus.taterapi.muxins.Muxins;
 
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -22,7 +22,7 @@ public class PCFMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        return ConditionalMixins.shouldApplyMixin(mixinClassName);
+        return Muxins.shouldApplyMixin(mixinClassName);
     }
 
     @Override

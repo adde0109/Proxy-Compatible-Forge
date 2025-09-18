@@ -1,9 +1,9 @@
 package org.adde0109.pcf.mixin.v1_16_5.forge.command;
 
-import dev.neuralnexus.conditionalmixins.annotations.ReqMCVersion;
-import dev.neuralnexus.conditionalmixins.annotations.ReqMappings;
-import dev.neuralnexus.taterapi.Mappings;
-import dev.neuralnexus.taterapi.MinecraftVersion;
+import dev.neuralnexus.taterapi.meta.Mappings;
+import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
+import dev.neuralnexus.taterapi.muxins.annotations.ReqMCVersion;
+import dev.neuralnexus.taterapi.muxins.annotations.ReqMappings;
 
 import io.netty.buffer.Unpooled;
 
@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @ReqMappings(Mappings.SEARGE)
-@ReqMCVersion(MinecraftVersion.V1_16_5)
+@ReqMCVersion(MinecraftVersion.V16_5)
 @Mixin(Commands.class)
 public class CommandsMixin {
     @Unique private static final ResourceLocation pcf$AMBASSADOR_COMMANDS =

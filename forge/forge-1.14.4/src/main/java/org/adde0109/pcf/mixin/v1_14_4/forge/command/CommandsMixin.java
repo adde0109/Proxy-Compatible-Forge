@@ -1,9 +1,9 @@
 package org.adde0109.pcf.mixin.v1_14_4.forge.command;
 
-import dev.neuralnexus.conditionalmixins.annotations.ReqMCVersion;
-import dev.neuralnexus.conditionalmixins.annotations.ReqMappings;
-import dev.neuralnexus.taterapi.Mappings;
-import dev.neuralnexus.taterapi.MinecraftVersion;
+import dev.neuralnexus.taterapi.meta.Mappings;
+import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
+import dev.neuralnexus.taterapi.muxins.annotations.ReqMCVersion;
+import dev.neuralnexus.taterapi.muxins.annotations.ReqMappings;
 
 import net.minecraft.commands.Commands;
 import net.minecraft.network.protocol.Packet;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 // TODO: Needs to be back ported to 1.14.4
 @ReqMappings(Mappings.SEARGE)
-@ReqMCVersion(min = MinecraftVersion.V1_14_4, max = MinecraftVersion.V1_16_4)
+@ReqMCVersion(min = MinecraftVersion.V14_4, max = MinecraftVersion.V16_4)
 @Mixin(Commands.class)
 public class CommandsMixin {
     //    @Unique private static final ResourceLocation pcf$AMBASSADOR_COMMANDS =

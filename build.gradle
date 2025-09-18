@@ -1,6 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import kotlin.jvm.functions.Function1
 import xyz.wagyourtail.jvmdg.gradle.task.DowngradeJar
 import xyz.wagyourtail.jvmdg.gradle.task.ShadeJar
 
@@ -120,7 +121,9 @@ subprojects {
     dependencies {
         compileOnly("org.jetbrains:annotations:24.1.0")
         compileOnly("org.spongepowered:mixin:0.8.5")
-        compileOnly("dev.neuralnexus:conditional-mixins:0.1.1")
+        compileOnly("dev.neuralnexus.taterlib.lite:base:0.1.0-SNAPSHOT")
+        compileOnly("dev.neuralnexus.taterlib.lite:metadata:0.1.0-SNAPSHOT")
+        compileOnly("dev.neuralnexus.taterlib.lite:muxins:0.1.0-SNAPSHOT")
     }
 
     spotless {
@@ -214,6 +217,17 @@ tasks.register("customDowngrade", DowngradeJar) {
 
 tasks.register("customShadeDowngradedApi", ShadeJar) {
     inputFile = tasks.customDowngrade.archiveFile
+    shadePath = new Function1<String, String>() {
+        @Override
+        String invoke(String path) {
+            def s = path
+            s = s.contains(".") ? s.substring(0, s.indexOf(".")) : s
+            s = s.contains("-") ? s.substring(0, s.lastIndexOf("-")) : s
+            s = s.replaceAll(/[.;\[\/]/, "-")
+                    .replace("pcf", "org/adde0109/pcf/lib/jvmdg")
+            return s
+        }
+    }
     archiveFileName = "pcf-${version}.jar"
 }
 
