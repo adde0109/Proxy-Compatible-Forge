@@ -34,6 +34,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.lang.reflect.Field;
+import java.util.Map;
+
 @ReqMappings(Mappings.MOJANG)
 @ReqMCVersion(min = MinecraftVersion.V20_2)
 @Mixin(ServerLoginPacketListenerImpl.class)
@@ -84,6 +87,25 @@ public abstract class ModernForwardingMixin {
                     data.readResourceLocation();
                 }
                 // NeoForge 1.20.2 end - Work around NeoForge's SimpleQueryPayload
+
+                // TODO: Make a source set for handling this, or make some stubs to do it the
+                // sketchy way
+                // TODO: Cache this reflection, and/or set up some method handles
+                if (MetaAPI.instance()
+                        .isModLoaded(Platforms.NEOFORGE, "fabric_networking_api_v1")) {
+                    Field addonField = this.getClass().getDeclaredField("addon");
+                    Object addon = addonField.get(this);
+
+                    Class<?> slnaClass =
+                            Class.forName(
+                                    "net.fabricmc.fabric.impl.networking.server.ServerLoginNetworkAddon");
+                    Field channelsField = slnaClass.getDeclaredField("channels");
+                    channelsField.setAccessible(true);
+                    // TODO: Test to see if this is a one-off
+                    //noinspection unchecked
+                    Map<Integer, ?> channels = (Map<Integer, ?>) channelsField.get(addon);
+                    channels.remove(PCF.QUERY_ID);
+                }
 
                 this.authenticatedProfile =
                         PCF.modernForwarding.handleForwardingPacket(
