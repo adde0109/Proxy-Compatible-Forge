@@ -52,7 +52,7 @@ public abstract class ModernForwardingMixin {
             StateUtil.setState(this, 0);
             PCF.logger.debug("Sent Forward Request");
             ClientboundCustomQueryPacket packet = new ClientboundCustomQueryPacket();
-            ((ClientboundCustomQueryPacketAccessor) packet).setTransactionId(100);
+            ((ClientboundCustomQueryPacketAccessor) packet).setTransactionId(PCF.QUERY_ID);
             ((ClientboundCustomQueryPacketAccessor) packet).setIdentifier((ResourceLocation) PCF.channelResource());
             ((ClientboundCustomQueryPacketAccessor) packet).setData(new FriendlyByteBuf(Unpooled.EMPTY_BUFFER));
             this.connection.send(packet);
