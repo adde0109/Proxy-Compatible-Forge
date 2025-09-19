@@ -4,8 +4,8 @@ import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
-
 import dev.neuralnexus.taterapi.meta.platforms.TaterMetadata;
+
 import net.minecraftforge.fml.common.Mod;
 
 @SuppressWarnings("unused")

@@ -21,7 +21,7 @@ public class PCF {
 
     public static ModernForwarding modernForwarding;
 
-    public static final int QUERY_ID = 100;
+    public static final int QUERY_ID = 1203961429;
     public static final String velocityChannel = "velocity:player_info";
     public static Function<String, Object> resourceLocation;
 
