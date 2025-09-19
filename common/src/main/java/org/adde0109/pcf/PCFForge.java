@@ -5,6 +5,7 @@ import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
+import dev.neuralnexus.taterapi.meta.platforms.TaterMetadata;
 import net.minecraftforge.fml.common.Mod;
 
 @SuppressWarnings("unused")
@@ -13,6 +14,9 @@ public class PCFForge {
     Logger logger = Logger.create("pcf");
 
     public PCFForge() {
+        // Bootstrap TaterLibLite Metadata
+        TaterMetadata.initForge();
+
         MetaAPI api = MetaAPI.instance();
         MinecraftVersion mcv = api.version();
         // spotless:off
