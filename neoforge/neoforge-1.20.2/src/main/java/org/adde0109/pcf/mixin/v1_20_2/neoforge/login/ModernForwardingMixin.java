@@ -80,9 +80,9 @@ public abstract class ModernForwardingMixin {
                 FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
                 packet.payload().write(data);
 
+                MetaAPI api = MetaAPI.instance();
                 // NeoForge 1.20.2 start - Work around NeoForge's SimpleQueryPayload
-                if (MetaAPI.instance().isPlatformPresent(Platforms.NEOFORGE)
-                        && MetaAPI.instance().version().is(MinecraftVersions.V20_2)) {
+                if (api.isPlatformPresent(Platforms.NEOFORGE) && api.version().is(MinecraftVersions.V20_2)) {
                     data.readVarInt();
                     data.readResourceLocation();
                 }
@@ -91,8 +91,9 @@ public abstract class ModernForwardingMixin {
                 // TODO: Make a source set for handling this, or make some stubs to do it the
                 // sketchy way
                 // TODO: Cache this reflection, and/or set up some method handles
-                if (MetaAPI.instance()
-                        .isModLoaded(Platforms.NEOFORGE, "fabric_networking_api_v1")) {
+                if (api.isPlatformPresent(Platforms.NEOFORGE)
+                        && api.version().isAtLeast(MinecraftVersions.V21_1)
+                        && api.isModLoaded(Platforms.NEOFORGE, "fabric_networking_api_v1")) {
                     Field addonField = this.getClass().getDeclaredField("addon");
                     Object addon = addonField.get(this);
 
