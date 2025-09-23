@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.UUID;
 
-@ReqMappings(Mappings.SEARGE)
+@ReqMappings(Mappings.LEGACY_SEARGE)
 @ReqMCVersion(min = MinecraftVersion.V14, max = MinecraftVersion.V16_5)
 @Mixin(FriendlyByteBuf.class)
 @Implements(@Interface(iface = Payload.class, prefix = "payload$", remap = Interface.Remap.NONE))

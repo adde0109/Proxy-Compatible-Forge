@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.net.SocketAddress;
 
-@ReqMappings(Mappings.SEARGE)
+@ReqMappings(Mappings.LEGACY_SEARGE)
 @ReqMCVersion(min = MinecraftVersion.V14, max = MinecraftVersion.V16_5)
 @Mixin(net.minecraft.network.Connection.class)
 @Implements(@Interface(iface = Connection.class, prefix = "conn$", remap = Interface.Remap.NONE))

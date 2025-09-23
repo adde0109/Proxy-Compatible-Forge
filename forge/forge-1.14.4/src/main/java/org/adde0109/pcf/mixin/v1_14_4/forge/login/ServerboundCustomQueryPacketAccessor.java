@@ -11,7 +11,7 @@ import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@ReqMappings(Mappings.SEARGE)
+@ReqMappings(Mappings.LEGACY_SEARGE)
 @ReqMCVersion(min = MinecraftVersion.V14, max = MinecraftVersion.V16_5)
 @Mixin(ServerboundCustomQueryPacket.class)
 public interface ServerboundCustomQueryPacketAccessor {

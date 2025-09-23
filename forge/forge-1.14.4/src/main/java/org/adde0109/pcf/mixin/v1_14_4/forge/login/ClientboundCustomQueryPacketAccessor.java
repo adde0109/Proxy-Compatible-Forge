@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@ReqMappings(Mappings.SEARGE)
+@ReqMappings(Mappings.LEGACY_SEARGE)
 @ReqMCVersion(min = MinecraftVersion.V14, max = MinecraftVersion.V16_5)
 @Mixin(ClientboundCustomQueryPacket.class)
 public interface ClientboundCustomQueryPacketAccessor {
