@@ -167,7 +167,7 @@ tasks.withType(JavaCompile).configureEach {
 
 var platformVersions = [:]
 platformVersions.put("forge", Arrays.asList("1.14.4", "1.16.5", "1.17.1", "1.18",
-        "1.19", "1.19.1", "1.19.3", "1.20.2", "1.20.6", "1.21"))
+        "1.19", "1.19.1", "1.19.3", "1.20.2", "1.20.6", "1.21", "1.21.6"))
 platformVersions.put("neoforge", Arrays.asList("1.20.2", "1.21"))
 
 tasks.register("buildAllTheStuffNowBcGradleIsDumb", Task) {

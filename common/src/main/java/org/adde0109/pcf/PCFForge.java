@@ -42,8 +42,10 @@ public class PCFForge {
             className = "org.adde0109.pcf.v1_19_3.forge.Initializer";
         } else if (mcv.isInRange(MinecraftVersions.V20_5, MinecraftVersions.V20_6)) {
             className = "org.adde0109.pcf.v1_20_6.forge.Initializer";
-        } else if (mcv.isAtLeast(MinecraftVersions.V21)) {
+        } else if (mcv.isInRange(MinecraftVersions.V21, MinecraftVersions.V21_5)) {
             className = "org.adde0109.pcf.v1_21.forge.Initializer";
+        } else if (mcv.isAtLeast(MinecraftVersions.V21_6)) {
+            className = "org.adde0109.pcf.v1_21_6.forge.Initializer";
         }
         try {
             Class.forName(className).getMethod("init").invoke(null);

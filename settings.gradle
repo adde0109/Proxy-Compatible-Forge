@@ -55,6 +55,7 @@ include(
         'forge:forge-1.20.2',
         'forge:forge-1.20.6',
         'forge:forge-1.21',
+        'forge:forge-1.21.6',
 
         'neoforge:neoforge-1.20.2',
         'neoforge:neoforge-1.21'

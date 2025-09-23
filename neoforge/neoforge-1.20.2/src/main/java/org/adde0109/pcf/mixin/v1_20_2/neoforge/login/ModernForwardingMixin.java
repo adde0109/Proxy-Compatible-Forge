@@ -82,7 +82,8 @@ public abstract class ModernForwardingMixin {
 
                 MetaAPI api = MetaAPI.instance();
                 // NeoForge 1.20.2 start - Work around NeoForge's SimpleQueryPayload
-                if (api.isPlatformPresent(Platforms.NEOFORGE) && api.version().is(MinecraftVersions.V20_2)) {
+                if (api.isPlatformPresent(Platforms.NEOFORGE)
+                        && api.version().is(MinecraftVersions.V20_2)) {
                     data.readVarInt();
                     data.readResourceLocation();
                 }
