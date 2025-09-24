@@ -3,9 +3,6 @@ package org.adde0109.pcf.mixin.v1_20_2.neoforge.login;
 import com.mojang.authlib.GameProfile;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
-import dev.neuralnexus.taterapi.meta.MetaAPI;
-import dev.neuralnexus.taterapi.meta.MinecraftVersions;
-import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import dev.neuralnexus.taterapi.muxins.annotations.ReqMCVersion;
 import dev.neuralnexus.taterapi.muxins.annotations.ReqMappings;
@@ -24,6 +21,7 @@ import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.abstractions.Connection;
 import org.adde0109.pcf.common.abstractions.Payload;
 import org.adde0109.pcf.common.reflection.StateUtil;
+import org.adde0109.pcf.v1_20_2.neoforge.Compatibility;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -33,9 +31,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.lang.reflect.Field;
-import java.util.Map;
 
 @ReqMappings(Mappings.MOJANG)
 @ReqMCVersion(min = MinecraftVersion.V20_2)
@@ -80,34 +75,14 @@ public abstract class ModernForwardingMixin {
                 FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
                 packet.payload().write(data);
 
-                MetaAPI api = MetaAPI.instance();
                 // NeoForge 1.20.2 start - Work around NeoForge's SimpleQueryPayload
-                if (api.isPlatformPresent(Platforms.NEOFORGE)
-                        && api.version().is(MinecraftVersions.V20_2)) {
+                if (Compatibility.isNeoForge1_20_2) {
                     data.readVarInt();
                     data.readResourceLocation();
                 }
                 // NeoForge 1.20.2 end - Work around NeoForge's SimpleQueryPayload
 
-                // TODO: Make a source set for handling this, or make some stubs to do it the
-                // sketchy way
-                // TODO: Cache this reflection, and/or set up some method handles
-                if (api.isPlatformPresent(Platforms.NEOFORGE)
-                        && api.version().isAtLeast(MinecraftVersions.V21_1)
-                        && api.isModLoaded(Platforms.NEOFORGE, "fabric_networking_api_v1")) {
-                    Field addonField = this.getClass().getDeclaredField("addon");
-                    Object addon = addonField.get(this);
-
-                    Class<?> slnaClass =
-                            Class.forName(
-                                    "net.fabricmc.fabric.impl.networking.server.ServerLoginNetworkAddon");
-                    Field channelsField = slnaClass.getDeclaredField("channels");
-                    channelsField.setAccessible(true);
-                    // TODO: Test to see if this is a one-off
-                    //noinspection unchecked
-                    Map<Integer, ?> channels = (Map<Integer, ?>) channelsField.get(addon);
-                    channels.remove(PCF.QUERY_ID);
-                }
+                Compatibility.applyFFAPIFix(this);
 
                 this.authenticatedProfile =
                         PCF.modernForwarding.handleForwardingPacket(
