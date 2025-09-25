@@ -31,6 +31,7 @@ public final class Compatibility {
 
     /**
      * Remove PCF's query id from FFAPI's channels map to prevent infinite login screen
+     *
      * @param serverLoginPacketListener an instance of ServerLoginPacketListenerImpl
      */
     @SuppressWarnings({"UnstableApiUsage", "unchecked"})

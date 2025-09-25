@@ -108,6 +108,12 @@ subprojects {
         // NeuralNexus Mirror
         maven {
             name = 'NeuralNexus Mirror'
+            url = 'https://maven.neuralnexus.dev/snapshots'
+        }
+
+        // NeuralNexus Mirror
+        maven {
+            name = 'NeuralNexus Mirror'
             url = 'https://maven.neuralnexus.dev/mirror'
         }
 
