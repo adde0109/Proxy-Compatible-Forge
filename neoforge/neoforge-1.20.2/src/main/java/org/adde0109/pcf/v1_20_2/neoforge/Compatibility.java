@@ -16,7 +16,6 @@ import java.util.Map;
 public final class Compatibility {
     public static final boolean isNeoForge1_20_2;
     private static final boolean shouldApplyFFAPIFix;
-    private static boolean appliedFFAPIFix = false;
 
     static {
         MetaAPI api = MetaAPI.instance();
@@ -36,7 +35,7 @@ public final class Compatibility {
      */
     @SuppressWarnings({"UnstableApiUsage", "unchecked"})
     public static void applyFFAPIFix(Object serverLoginPacketListener) {
-        if (!shouldApplyFFAPIFix || appliedFFAPIFix) {
+        if (!shouldApplyFFAPIFix) {
             return;
         }
         // spotless:off
@@ -50,7 +49,6 @@ public final class Compatibility {
             Map<Integer, ?> channels = (Map<Integer, ?>) channelsMH.invokeExact(addon);
 
             channels.remove(PCF.QUERY_ID);
-            appliedFFAPIFix = true;
         } catch (IllegalAccessException | NoSuchFieldException | NoSuchMethodException e) {
             PCF.logger.warn("Lookup Exception applying FFAPI fix", e);
         } catch (Throwable e) {
