@@ -8,7 +8,7 @@
   "plugin": "org.adde0109.pcf.mixin.plugin.PCFMixinPlugin",
   "package": "org.adde0109.pcf.mixin",
   "server": [
-    "v1_14_4.forge.command.ClientboundCommandsPacketMixin",
+    "v1_14_4.forge.crossstitch.CommandsPacketMixin",
     "v1_14_4.forge.login.ClientboundCustomQueryPacketAccessor",
     "v1_14_4.forge.login.ModernForwardingMixin",
     "v1_14_4.forge.login.ServerboundCustomQueryPacketAccessor",
