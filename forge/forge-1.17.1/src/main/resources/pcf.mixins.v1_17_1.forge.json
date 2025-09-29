@@ -8,8 +8,7 @@
   "plugin": "org.adde0109.pcf.mixin.plugin.PCFMixinPlugin",
   "package": "org.adde0109.pcf.mixin",
   "server": [
-    "v1_17_1.forge.command.CommandsMixin",
-    "v1_17_1.forge.command.WrappableCommandsPacketMixin",
+    "v1_17_1.forge.crossstitch.CommandsPacketMixin",
     "v1_17_1.forge.login.ModernForwardingMixin",
     "v1_17_1.forge.login.ServerLoginPacketListenerPlaceholderMixin",
     "v1_17_1.forge.network.ConnectionMixin",

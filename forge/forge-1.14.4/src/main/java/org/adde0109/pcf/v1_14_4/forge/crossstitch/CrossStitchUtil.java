@@ -10,6 +10,7 @@ import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import io.netty.buffer.Unpooled;
 
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.synchronization.ArgumentSerializer;
 import net.minecraft.commands.synchronization.ArgumentTypes;
 import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
 import net.minecraft.network.FriendlyByteBuf;
@@ -57,7 +58,7 @@ public final class CrossStitchUtil {
                     "ArgumentTypes has no entry for type: " + argumentType.getClass().getName());
             return;
         }
-        ResourceLocation identifier = ArgumentTypesUtil.getName(entry);
+        ResourceLocation identifier = (ResourceLocation) ArgumentTypesUtil.getName(entry);
         if (PCF.isIntegratedArgument(identifier.toString())) {
             return;
         }
@@ -68,14 +69,16 @@ public final class CrossStitchUtil {
         ci.cancel();
     }
 
+    @SuppressWarnings("unchecked")
     private static void serializeWrappedArgumentType(
             FriendlyByteBuf buf, ArgumentType<?> argumentType, Object entry) {
         buf.writeResourceLocation(MOD_ARGUMENT_INDICATOR);
 
-        buf.writeResourceLocation(ArgumentTypesUtil.getName(entry));
+        buf.writeResourceLocation((ResourceLocation) ArgumentTypesUtil.getName(entry));
 
         FriendlyByteBuf extraData = new FriendlyByteBuf(Unpooled.buffer());
-        ArgumentTypesUtil.getSerializer(entry).serializeToNetwork(argumentType, extraData);
+        ((ArgumentSerializer<ArgumentType<?>>) ArgumentTypesUtil.getSerializer(entry))
+                .serializeToNetwork(argumentType, extraData);
 
         buf.writeVarInt(extraData.readableBytes());
         buf.writeBytes(extraData);

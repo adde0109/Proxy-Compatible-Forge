@@ -22,7 +22,7 @@ public class PCFNeo {
         // spotless:off
         logger.info("Initializing Proxy Compatible Forge on "
                 + "Minecraft " + mcv
-                + " (" + api.platform() + " " + api.meta().loaderVersion() + ")");
+                + " (" + api.platform() + " " + api.meta().apiVersion() + ")");
         // spotless:on
 
         PCF.setupIntegratedArgumentTypes();

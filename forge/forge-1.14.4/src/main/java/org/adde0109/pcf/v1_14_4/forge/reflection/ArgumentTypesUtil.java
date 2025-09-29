@@ -2,9 +2,7 @@ package org.adde0109.pcf.v1_14_4.forge.reflection;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 
-import net.minecraft.commands.synchronization.ArgumentSerializer;
-import net.minecraft.commands.synchronization.ArgumentTypes;
-import net.minecraft.resources.ResourceLocation;
+import dev.neuralnexus.taterapi.meta.MetaAPI;
 
 import org.adde0109.pcf.PCF;
 
@@ -23,40 +21,86 @@ public class ArgumentTypesUtil {
 
     static {
         try {
+            String argTypesClassName;
+            String byClassFieldName;
+            String byNameFieldName;
+            String getAtMethodName;
+
+            String entrySerializerFieldName;
+            String entryNameFieldName;
+
+            String argSerializerClassName;
+            String resourceLocationClassName;
+            switch (MetaAPI.instance().mappings()) {
+                case LEGACY_SEARGE -> {
+                    argTypesClassName = "net.minecraft.command.arguments.ArgumentTypes";
+                    byClassFieldName = "field_197489_b";
+                    byNameFieldName = "field_197490_c";
+                    getAtMethodName = "func_201040_a";
+                    entrySerializerFieldName = "field_197480_b";
+                    entryNameFieldName = "field_197481_c";
+                    argSerializerClassName = "net.minecraft.command.arguments.ArgumentSerializer";
+                    resourceLocationClassName = "net.minecraft.util.ResourceLocation";
+                }
+                case SEARGE -> {
+                    argTypesClassName = "net.minecraft.commands.synchronization.ArgumentTypes";
+                    byClassFieldName = "f_121583_";
+                    byNameFieldName = "f_121584_";
+                    getAtMethodName = "m_121616_";
+                    entrySerializerFieldName = "f_121619_";
+                    entryNameFieldName = "f_121620_";
+                    argSerializerClassName =
+                            "net.minecraft.commands.synchronization.ArgumentSerializer";
+                    resourceLocationClassName = "net.minecraft.resources.ResourceLocation";
+                }
+                default -> {
+                    argTypesClassName = "net.minecraft.commands.synchronization.ArgumentTypes";
+                    byClassFieldName = "BY_CLASS";
+                    byNameFieldName = "BY_NAME";
+                    getAtMethodName = "get";
+                    entrySerializerFieldName = "serializer";
+                    entryNameFieldName = "name";
+                    argSerializerClassName =
+                            "net.minecraft.commands.synchronization.ArgumentSerializer";
+                    resourceLocationClassName = "net.minecraft.resources.ResourceLocation";
+                }
+            }
+            // ArgumentTypes class
+            Class<?> ArgumentTypes = Class.forName(argTypesClassName);
+
             // private Map<Class<?>, ArgumentTypes$Entry<?>> ArgumentTypes.BY_CLASS
-            // (ArgumentTypes#field_197489_b)
-            byClassField = ArgumentTypes.class.getDeclaredField("field_197489_b");
+            byClassField = ArgumentTypes.getDeclaredField(byClassFieldName);
             byClassField.setAccessible(true);
 
             // private Map<ResourceLocation, ArgumentTypes$Entry<?>> ArgumentTypes.BY_NAME
-            // (ArgumentTypes#field_197490_c)
-            byNameField = ArgumentTypes.class.getDeclaredField("field_197490_c");
+            byNameField = ArgumentTypes.getDeclaredField(byNameFieldName);
             byNameField.setAccessible(true);
 
             // private static ArgumentTypes$Entry<?> ArgumentTypes.get(ArgumentType<?>)
-            // (ArgumentTypes#func_201040_a)
-            getAtMethod =
-                    ArgumentTypes.class.getDeclaredMethod("func_201040_a", ArgumentType.class);
+            getAtMethod = ArgumentTypes.getDeclaredMethod(getAtMethodName, ArgumentType.class);
             getAtMethod.setAccessible(true);
 
             // ArgumentTypes$Entry
-            Class<?> ATEntryClass =
-                    Class.forName("net.minecraft.command.arguments.ArgumentTypes$Entry");
+            Class<?> ATEntryClass = Class.forName(argTypesClassName + "$Entry");
+
+            // ArgumentSerializer class
+            Class<?> ArgumentSerializer = Class.forName(argSerializerClassName);
+
+            // ResourceLocation class
+            Class<?> resourceLocationClass = Class.forName(resourceLocationClassName);
 
             // ArgumentTypes$Entry constructor
             entryConstructor =
                     ATEntryClass.getDeclaredConstructor(
-                            Class.class, ArgumentSerializer.class, ResourceLocation.class);
+                            Class.class, ArgumentSerializer, resourceLocationClass);
             entryConstructor.setAccessible(true);
 
             // ArgumentSerializer<T> ArgumentTypes$Entry#serializer
-            // (ArgumentTypes$Entry#field_197480_b)
-            entrySerializerField = ATEntryClass.getDeclaredField("field_197480_b");
+            entrySerializerField = ATEntryClass.getDeclaredField(entrySerializerFieldName);
             entrySerializerField.setAccessible(true);
 
             // ResourceLocation ArgumentTypes$Entry#name
-            // (ArgumentTypes$Entry#field_197481_c)
-            entryNameField = ATEntryClass.getDeclaredField("field_197481_c");
+            entryNameField = ATEntryClass.getDeclaredField(entryNameFieldName);
             entryNameField.setAccessible(true);
         } catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException e) {
             PCF.logger.error("Error setting up ArgumentTypesEntryUtil", e);
@@ -82,16 +126,16 @@ public class ArgumentTypesUtil {
     }
 
     @SuppressWarnings("unchecked")
-    public static Map<ResourceLocation, Object> getByNameMap() {
+    public static Map<?, Object> getByNameMap() {
         try {
-            return (Map<ResourceLocation, Object>) byNameField.get(null);
+            return (Map<?, Object>) byNameField.get(null);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static <T extends ArgumentType<?>> Object createEntry(
-            Class<T> argumentClass, ArgumentSerializer<T> serializer, ResourceLocation name) {
+            Class<T> argumentClass, Object serializer, Object name) {
         try {
             return entryConstructor.newInstance(argumentClass, serializer, name);
         } catch (ReflectiveOperationException e) {
@@ -99,18 +143,17 @@ public class ArgumentTypesUtil {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public static ArgumentSerializer<ArgumentType<?>> getSerializer(Object entry) {
+    public static Object getSerializer(Object entry) {
         try {
-            return (ArgumentSerializer<ArgumentType<?>>) entrySerializerField.get(entry);
+            return entrySerializerField.get(entry);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static ResourceLocation getName(Object entry) {
+    public static Object getName(Object entry) {
         try {
-            return (ResourceLocation) entryNameField.get(entry);
+            return entryNameField.get(entry);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
