@@ -18,8 +18,6 @@ import org.adde0109.pcf.v1_14_4.forge.reflection.ArgumentTypesUtil;
 public final class CrossStitchUtil17 {
     private static final ResourceLocation MOD_ARGUMENT_INDICATOR =
             new ResourceLocation("crossstitch:mod_argument");
-    private static final ResourceLocation FORGE_ENUM = new ResourceLocation("forge:enum");
-    private static final ResourceLocation FORGE_MODID = new ResourceLocation("forge:modid");
 
     @SuppressWarnings("unchecked")
     public static void writeNode$wrapInVelocityModArgument17(
@@ -34,9 +32,7 @@ public final class CrossStitchUtil17 {
         }
 
         ResourceLocation identifier = (ResourceLocation) ArgumentTypesUtil.getName(entry);
-        if (PCF.isIntegratedArgument(identifier.toString())
-                || FORGE_ENUM.equals(identifier)
-                || FORGE_MODID.equals(identifier)) {
+        if (PCF.isIntegratedArgument(identifier.toString())) {
             buf.writeResourceLocation(identifier);
             ((ArgumentSerializer<ArgumentType<?>>) ArgumentTypesUtil.getSerializer(entry))
                     .serializeToNetwork(argumentType, buf);

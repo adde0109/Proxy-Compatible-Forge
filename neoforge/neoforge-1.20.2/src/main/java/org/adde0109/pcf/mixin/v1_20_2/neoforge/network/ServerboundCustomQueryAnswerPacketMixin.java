@@ -1,9 +1,8 @@
 package org.adde0109.pcf.mixin.v1_20_2.neoforge.network;
 
+import static org.adde0109.pcf.v1_20_2.neoforge.Compatibility.isNeoForge1_20_2;
+
 import dev.neuralnexus.taterapi.meta.Mappings;
-import dev.neuralnexus.taterapi.meta.MetaAPI;
-import dev.neuralnexus.taterapi.meta.MinecraftVersions;
-import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import dev.neuralnexus.taterapi.muxins.annotations.ReqMCVersion;
 import dev.neuralnexus.taterapi.muxins.annotations.ReqMappings;
@@ -12,6 +11,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.custom.payload.SimpleQueryPayload;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.abstractions.Payload;
@@ -22,9 +22,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * <a
@@ -58,17 +55,9 @@ public class ServerboundCustomQueryAnswerPacketMixin {
             cir.setReturnValue(buffer == null ? null : new QueryAnswerPayload(buffer));
             // Paper end - MC Utils - default query payloads
             // NeoForge 1.20.2 start - Work around NeoForge's SimpleQueryPayload
-            if (MetaAPI.instance().isPlatformPresent(Platforms.NEOFORGE) && MetaAPI.instance().version().is(MinecraftVersions.V20_2)) {
-                try {
-                    Class<?> SimpleQueryPayload = Class.forName("net.neoforged.neoforge.network.custom.payload.SimpleQueryPayload");
-                    Constructor<?> constructor = SimpleQueryPayload.getDeclaredConstructor(FriendlyByteBuf.class, int.class, ResourceLocation.class);
-                    constructor.setAccessible(true);
-                    cir.setReturnValue(buffer == null ? null : (CustomQueryAnswerPayload) constructor.newInstance(
-                            buffer, PCF.QUERY_ID, (ResourceLocation) PCF.channelResource()));
-                } catch (ClassNotFoundException | IllegalAccessException | InstantiationException |
-                         InvocationTargetException | NoSuchMethodException e) {
-                    PCF.logger.error("Failed to create SimpleQueryPayload", e);
-                }
+            if (isNeoForge1_20_2) {
+                cir.setReturnValue(buffer == null ? null : (CustomQueryAnswerPayload)
+                        SimpleQueryPayload.outbound(buffer, PCF.QUERY_ID, (ResourceLocation) PCF.channelResource()));
             }
             // NeoForge 1.20.2 end - Work around NeoForge's SimpleQueryPayload
             // spotless:on
