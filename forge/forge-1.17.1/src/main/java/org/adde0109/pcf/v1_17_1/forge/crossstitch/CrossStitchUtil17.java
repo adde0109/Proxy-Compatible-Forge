@@ -13,7 +13,7 @@ import org.adde0109.pcf.v1_14_4.forge.reflection.ArgumentTypesUtil;
 
 /**
  * Adapted from <a
- * href="https://github.com/VelocityPowered/CrossStitch/blob/fe3f3be49c52dc9c1b6b7cd3cafefb953adf4486/src/main/java/com/velocitypowered/crossstitch/mixin/command/CommandTreeSerializationMixin.java">CrossStitch</a>
+ * href="https://github.com/VelocityPowered/CrossStitch/blob/2259dd4492789f07bc41eec4200b734c37eea618/src/main/java/com/velocitypowered/crossstitch/mixin/command/CommandTreeSerializationMixin.java">CrossStitch</a>
  */
 public final class CrossStitchUtil17 {
     private static final ResourceLocation MOD_ARGUMENT_INDICATOR =
@@ -27,7 +27,7 @@ public final class CrossStitchUtil17 {
         Object entry = ArgumentTypesUtil.getEntry(argumentType);
 
         if (entry == null) {
-            PCF.logger.info(
+            PCF.logger.debug(
                     "ArgumentTypes has no entry for type: " + argumentType.getClass().getName());
             buf.writeResourceLocation(new ResourceLocation(""));
             return;
@@ -44,7 +44,7 @@ public final class CrossStitchUtil17 {
         }
 
         // Not a standard Minecraft argument type - so we need to wrap it
-        PCF.logger.info("Wrapping argument with identifier: " + identifier);
+        PCF.logger.debug("Wrapping argument with identifier: " + identifier);
         serializeWrappedArgumentType(buf, argumentType, entry);
     }
 
@@ -61,5 +61,7 @@ public final class CrossStitchUtil17 {
 
         buf.writeVarInt(extraData.readableBytes());
         buf.writeBytes(extraData);
+
+        extraData.release();
     }
 }

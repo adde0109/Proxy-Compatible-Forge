@@ -39,6 +39,7 @@ public class PCF {
 
     public static Function<Object, Object> COMMAND_ARGUMENT_TYPE_KEY;
 
+    // TODO: Consider switching to using Optional<ResourceKey<ArgumentTypeInfo<?, ?>>>
     public static Object commandArgumentTypeKey(Object type) {
         return COMMAND_ARGUMENT_TYPE_KEY.apply(type);
     }

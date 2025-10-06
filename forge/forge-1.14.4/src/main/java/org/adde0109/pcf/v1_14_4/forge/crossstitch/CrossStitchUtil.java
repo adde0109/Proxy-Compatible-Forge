@@ -82,6 +82,8 @@ public final class CrossStitchUtil {
 
         buf.writeVarInt(extraData.readableBytes());
         buf.writeBytes(extraData);
+
+        extraData.release();
     }
 
     // Forge-specific fixes

@@ -22,7 +22,7 @@ public class Initializer {
         PCF.component = Component::nullToEmpty;
         PCF.COMMAND_ARGUMENT_TYPE_KEY =
                 (type) ->
-                        ForgeRegistries.COMMAND_ARGUMENT_TYPES.getKey(
+                        BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey(
                                 (ArgumentTypeInfo<?, ?>) type);
         PCF.COMMAND_ARGUMENT_TYPE_ID =
                 (type) ->

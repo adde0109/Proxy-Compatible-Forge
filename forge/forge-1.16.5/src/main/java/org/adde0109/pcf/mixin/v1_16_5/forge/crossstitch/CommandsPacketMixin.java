@@ -11,6 +11,7 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
 
+import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.v1_14_4.forge.crossstitch.CrossStitchUtil;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -36,6 +37,11 @@ public abstract class CommandsPacketMixin {
             CommandNode<SharedSuggestionProvider> node,
             Map<CommandNode<SharedSuggestionProvider>, Integer> map,
             CallbackInfo ci) {
-        CrossStitchUtil.writeNode$wrapInVelocityModArgument(buf, node, map, ci);
+        try {
+            CrossStitchUtil.writeNode$wrapInVelocityModArgument(buf, node, map, ci);
+        } catch (Exception e) {
+            PCF.logger.error(
+                    "Failed to serialize command argument type: " + node.getClass().getName(), e);
+        }
     }
 }

@@ -20,9 +20,7 @@ public class Initializer {
         PCF.resourceLocation = ResourceLocation::new;
         PCF.component = Component::nullToEmpty;
         PCF.COMMAND_ARGUMENT_TYPE_KEY =
-                (type) ->
-                        ForgeRegistries.COMMAND_ARGUMENT_TYPES.getKey(
-                                (ArgumentTypeInfo<?, ?>) type);
+                (type) -> Registry.COMMAND_ARGUMENT_TYPE.getKey((ArgumentTypeInfo<?, ?>) type);
         PCF.COMMAND_ARGUMENT_TYPE_ID =
                 (type) -> Registry.COMMAND_ARGUMENT_TYPE.getId((ArgumentTypeInfo<?, ?>) type);
 

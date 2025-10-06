@@ -6,7 +6,6 @@ import dev.neuralnexus.taterapi.meta.MetaAPI;
 
 import org.adde0109.pcf.PCF;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -15,7 +14,6 @@ public class ArgumentTypesUtil {
     private static final Field byClassField;
     private static final Field byNameField;
     private static final Method getAtMethod;
-    private static final Constructor<?> entryConstructor;
     private static final Field entrySerializerField;
     private static final Field entryNameField;
 
@@ -29,8 +27,6 @@ public class ArgumentTypesUtil {
             String entrySerializerFieldName;
             String entryNameFieldName;
 
-            String argSerializerClassName;
-            String resourceLocationClassName;
             switch (MetaAPI.instance().mappings()) {
                 case LEGACY_SEARGE -> {
                     argTypesClassName = "net.minecraft.command.arguments.ArgumentTypes";
@@ -39,8 +35,6 @@ public class ArgumentTypesUtil {
                     getAtMethodName = "func_201040_a";
                     entrySerializerFieldName = "field_197480_b";
                     entryNameFieldName = "field_197481_c";
-                    argSerializerClassName = "net.minecraft.command.arguments.ArgumentSerializer";
-                    resourceLocationClassName = "net.minecraft.util.ResourceLocation";
                 }
                 case SEARGE -> {
                     argTypesClassName = "net.minecraft.commands.synchronization.ArgumentTypes";
@@ -49,9 +43,6 @@ public class ArgumentTypesUtil {
                     getAtMethodName = "m_121616_";
                     entrySerializerFieldName = "f_121619_";
                     entryNameFieldName = "f_121620_";
-                    argSerializerClassName =
-                            "net.minecraft.commands.synchronization.ArgumentSerializer";
-                    resourceLocationClassName = "net.minecraft.resources.ResourceLocation";
                 }
                 default -> {
                     argTypesClassName = "net.minecraft.commands.synchronization.ArgumentTypes";
@@ -60,9 +51,6 @@ public class ArgumentTypesUtil {
                     getAtMethodName = "get";
                     entrySerializerFieldName = "serializer";
                     entryNameFieldName = "name";
-                    argSerializerClassName =
-                            "net.minecraft.commands.synchronization.ArgumentSerializer";
-                    resourceLocationClassName = "net.minecraft.resources.ResourceLocation";
                 }
             }
             // ArgumentTypes class
@@ -82,18 +70,6 @@ public class ArgumentTypesUtil {
 
             // ArgumentTypes$Entry
             Class<?> ATEntryClass = Class.forName(argTypesClassName + "$Entry");
-
-            // ArgumentSerializer class
-            Class<?> ArgumentSerializer = Class.forName(argSerializerClassName);
-
-            // ResourceLocation class
-            Class<?> resourceLocationClass = Class.forName(resourceLocationClassName);
-
-            // ArgumentTypes$Entry constructor
-            entryConstructor =
-                    ATEntryClass.getDeclaredConstructor(
-                            Class.class, ArgumentSerializer, resourceLocationClass);
-            entryConstructor.setAccessible(true);
 
             // ArgumentSerializer<T> ArgumentTypes$Entry#serializer
             entrySerializerField = ATEntryClass.getDeclaredField(entrySerializerFieldName);
@@ -130,15 +106,6 @@ public class ArgumentTypesUtil {
         try {
             return (Map<?, Object>) byNameField.get(null);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static <T extends ArgumentType<?>> Object createEntry(
-            Class<T> argumentClass, Object serializer, Object name) {
-        try {
-            return entryConstructor.newInstance(argumentClass, serializer, name);
-        } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
     }
