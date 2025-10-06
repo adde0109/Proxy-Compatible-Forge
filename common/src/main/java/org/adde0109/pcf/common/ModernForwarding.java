@@ -64,7 +64,7 @@ public class ModernForwarding {
         conn.setAddress(new InetSocketAddress(ip, port));
 
         GameProfile profile;
-        if (isAtLeast21_9) {
+        if (isAtLeast21_9) { // com.mojang:authlib:7.0.0 or newer
             profile =
                     new GameProfile(
                             data.readUUID(),
