@@ -1,16 +1,19 @@
-// Contains code from:
-// https://github.com/OKTW-Network/FabricProxy-Lite/blob/master/src/main/java/one/oktw/VelocityLib.java
 package org.adde0109.pcf.common;
 
+import com.google.common.collect.ImmutableMultimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
+
+import dev.neuralnexus.taterapi.meta.MetaAPI;
+import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.abstractions.Connection;
 import org.adde0109.pcf.common.abstractions.Payload;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.security.InvalidKeyException;
@@ -20,9 +23,17 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+/**
+ * Adapted from <a
+ * href="https://github.com/OKTW-Network/FabricProxy-Lite/blob/master/src/main/java/one/oktw/VelocityLib.java">FabricProxy-Lite</a>
+ */
 public class ModernForwarding {
     private static final int SUPPORTED_FORWARDING_VERSION = 1;
     private final String forwardingSecret;
+
+    private static final boolean isAtLeast21_9 =
+            MetaAPI.instance().version().isAtLeast(MinecraftVersions.V21_9);
+    private Method propertiesMethod;
 
     public ModernForwarding(String forwardingSecret) {
         this.forwardingSecret = forwardingSecret;
@@ -52,8 +63,22 @@ public class ModernForwarding {
 
         conn.setAddress(new InetSocketAddress(ip, port));
 
-        GameProfile profile = new GameProfile(data.readUUID(), data.readUtf(16));
-        this.readProperties(data, profile);
+        GameProfile profile;
+        if (isAtLeast21_9) {
+            profile =
+                    new GameProfile(
+                            data.readUUID(),
+                            data.readUtf(16),
+                            new PropertyMap(this.readProperties(data)));
+        } else {
+            profile = new GameProfile(data.readUUID(), data.readUtf(16));
+            ImmutableMultimap<String, Property> properties = this.readProperties(data);
+            if (propertiesMethod == null) {
+                propertiesMethod = GameProfile.class.getMethod("getProperties");
+            }
+            PropertyMap propertiesMap = (PropertyMap) propertiesMethod.invoke(profile);
+            propertiesMap.putAll(properties);
+        }
         return profile;
     }
 
@@ -78,8 +103,9 @@ public class ModernForwarding {
         return true;
     }
 
-    public void readProperties(Payload buf, GameProfile profile) {
-        PropertyMap properties = profile.getProperties();
+    public ImmutableMultimap<String, Property> readProperties(Payload buf) {
+        final ImmutableMultimap.Builder<String, Property> propertiesBuilder =
+                ImmutableMultimap.builder();
         int size = buf.readVarInt();
         for (int i = 0; i < size; i++) {
             String name = buf.readUtf();
@@ -89,7 +115,8 @@ public class ModernForwarding {
             if (hasSignature) {
                 signature = buf.readUtf();
             }
-            properties.put(name, new Property(name, value, signature));
+            propertiesBuilder.put(name, new Property(name, value, signature));
         }
+        return propertiesBuilder.build();
     }
 }
