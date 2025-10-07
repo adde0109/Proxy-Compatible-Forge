@@ -1,7 +1,5 @@
 package org.adde0109.pcf.mixin.v1_20_2.neoforge.network;
 
-import static org.adde0109.pcf.v1_20_2.neoforge.Compatibility.isNeoForge1_20_2;
-
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import dev.neuralnexus.taterapi.muxins.annotations.ReqMCVersion;
@@ -10,11 +8,10 @@ import dev.neuralnexus.taterapi.muxins.annotations.ReqMappings;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.custom.payload.SimpleQueryPayload;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.abstractions.Payload;
+import org.adde0109.pcf.v1_20_2.neoforge.Compatibility;
 import org.adde0109.pcf.v1_20_2.neoforge.login.QueryAnswerPayload;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -54,12 +51,7 @@ public class ServerboundCustomQueryAnswerPacketMixin {
             });
             cir.setReturnValue(buffer == null ? null : new QueryAnswerPayload(buffer));
             // Paper end - MC Utils - default query payloads
-            // NeoForge 1.20.2 start - Work around NeoForge's SimpleQueryPayload
-            if (isNeoForge1_20_2) {
-                cir.setReturnValue(buffer == null ? null : (CustomQueryAnswerPayload)
-                        SimpleQueryPayload.outbound(buffer, PCF.QUERY_ID, (ResourceLocation) PCF.channelResource()));
-            }
-            // NeoForge 1.20.2 end - Work around NeoForge's SimpleQueryPayload
+            Compatibility.neoForgeReturnSimpleQueryPayload(buffer, cir);
             // spotless:on
             cir.cancel();
         }

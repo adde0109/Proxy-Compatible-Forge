@@ -75,13 +75,7 @@ public abstract class ModernForwardingMixin {
                 FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
                 packet.payload().write(data);
 
-                // NeoForge 1.20.2 start - Work around NeoForge's SimpleQueryPayload
-                if (Compatibility.isNeoForge1_20_2) {
-                    data.readVarInt();
-                    data.readResourceLocation();
-                }
-                // NeoForge 1.20.2 end - Work around NeoForge's SimpleQueryPayload
-
+                Compatibility.neoForgeReadSimpleQueryPayload(data);
                 Compatibility.applyFFAPIFix(this);
 
                 this.authenticatedProfile =
