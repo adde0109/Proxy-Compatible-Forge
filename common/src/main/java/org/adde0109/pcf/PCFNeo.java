@@ -25,8 +25,6 @@ public class PCFNeo {
                 + " (" + api.platform() + " " + api.meta().apiVersion() + ")");
         // spotless:on
 
-        PCF.setupIntegratedArgumentTypes();
-
         String className;
         if (mcv.isInRange(MinecraftVersions.V20_2, MinecraftVersions.V20_6)) {
             className = "org.adde0109.pcf.v1_20_2.neoforge.Initializer";

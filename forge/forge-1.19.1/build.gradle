@@ -7,6 +7,7 @@ unimined.minecraft(sourceSets.main) {
     version(minecraft_version)
     minecraftForge {
         loader(forge_version)
+        mixinConfig("pcf.mixins.v1_19_1.forge.json")
     }
     mappings {
         mojmap()

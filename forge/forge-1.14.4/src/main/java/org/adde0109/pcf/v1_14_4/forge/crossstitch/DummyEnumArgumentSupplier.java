@@ -8,7 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.function.Supplier;
 
 @SuppressWarnings("rawtypes")
-public class DummyEnumArgumentSupplier implements Supplier<EnumArgument> {
+public final class DummyEnumArgumentSupplier implements Supplier<EnumArgument> {
     @SuppressWarnings("rawtypes")
     private static final Constructor<EnumArgument> enumArgumentConstructor;
 

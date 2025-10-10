@@ -1,49 +1,59 @@
-package org.adde0109.pcf.v1_17_1.forge.crossstitch;
+package org.adde0109.pcf.v1_14_4.forge.crossstitch;
 
-import static org.adde0109.pcf.v1_17_1.forge.crossstitch.CSBootstrap.shouldWrapArgument;
+import static org.adde0109.pcf.v1_14_4.forge.crossstitch.CSBootstrap.shouldWrapArgument;
 
 import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.tree.ArgumentCommandNode;
+import com.mojang.brigadier.tree.CommandNode;
 
 import io.netty.buffer.Unpooled;
 
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.synchronization.ArgumentSerializer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.v1_14_4.forge.crossstitch.ArgumentTypesUtil;
+import org.adde0109.pcf.v1_14_4.forge.crossstitch.compat.RegisterForgeArguments;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Map;
 
 /**
  * Adapted from <a
- * href="https://github.com/VelocityPowered/CrossStitch/blob/2259dd4492789f07bc41eec4200b734c37eea618/src/main/java/com/velocitypowered/crossstitch/mixin/command/CommandTreeSerializationMixin.java">CrossStitch</a>
+ * href="https://github.com/VelocityPowered/CrossStitch/blob/fe3f3be49c52dc9c1b6b7cd3cafefb953adf4486/src/main/java/com/velocitypowered/crossstitch/mixin/command/CommandTreeSerializationMixin.java">CrossStitch</a>
  */
-public final class CrossStitchUtil17 {
+public final class CrossStitchUtil14 {
     private static final ResourceLocation MOD_ARGUMENT_INDICATOR =
             new ResourceLocation("crossstitch:mod_argument");
 
-    @SuppressWarnings("unchecked")
-    public static void writeNode$wrapInVelocityModArgument17(
-            FriendlyByteBuf buf, ArgumentType<?> argumentType) {
-        Object entry = ArgumentTypesUtil.getEntry(argumentType);
+    public static void writeNode$wrapInVelocityModArgument(
+            FriendlyByteBuf buf,
+            CommandNode<SharedSuggestionProvider> node,
+            Map<CommandNode<SharedSuggestionProvider>, Integer> ignored,
+            CallbackInfo ci) {
+        ArgumentCommandNode<SharedSuggestionProvider, ?> argNode =
+                (ArgumentCommandNode<SharedSuggestionProvider, ?>) node;
+        ArgumentType<?> argumentType = argNode.getType();
 
+        // Forge didn't implement arg serializers on some versions
+        RegisterForgeArguments.applyFixes(argumentType);
+
+        Object entry = ArgumentTypesUtil.getEntry(argumentType);
         if (entry == null) {
             PCF.logger.debug(
                     "ArgumentTypes has no entry for type: " + argumentType.getClass().getName());
-            buf.writeResourceLocation(new ResourceLocation(""));
             return;
         }
-
         ResourceLocation identifier = (ResourceLocation) ArgumentTypesUtil.getName(entry);
         if (!shouldWrapArgument(identifier)) {
-            buf.writeResourceLocation(identifier);
-            ((ArgumentSerializer<ArgumentType<?>>) ArgumentTypesUtil.getSerializer(entry))
-                    .serializeToNetwork(argumentType, buf);
             return;
         }
 
         // Not a standard Minecraft argument type - so we need to wrap it
         PCF.logger.debug("Wrapping argument with identifier: " + identifier);
         serializeWrappedArgumentType(buf, argumentType, entry);
+        ci.cancel();
     }
 
     @SuppressWarnings("unchecked")

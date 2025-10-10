@@ -4,6 +4,7 @@ base {
 
 dependencies {
     compileOnly("net.neoforged:neoforge:21.0.${neo_version}")
+    compileOnly(project(":forge:forge-1.20.6"))
     compileOnly(project(":neoforge:neoforge-1.20.2"))
     compileOnly(project(":common"))
 }

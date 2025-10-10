@@ -1,4 +1,4 @@
-package org.adde0109.pcf.v1_19_3.forge;
+package org.adde0109.pcf.v1_20_2.forge;
 
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -19,13 +19,15 @@ import org.adde0109.pcf.v1_19_1.forge.crossstitch.CSForgeBootstrap;
 
 import java.util.Optional;
 
-@SuppressWarnings({"deprecation", "unused"})
+@SuppressWarnings("unused")
 public class Initializer {
     public static void init() {
         PCF.resourceLocation = ResourceLocation::new;
         PCF.component = Component::nullToEmpty;
         CSBootstrap.ARGUMENT_TYPES_REGISTRY =
                 () -> Optional.of(BuiltInRegistries.COMMAND_ARGUMENT_TYPE);
+        CSForgeBootstrap.FORGE_ARGUMENT_TYPES_REGISTRY =
+                () -> Optional.of(ForgeRegistries.COMMAND_ARGUMENT_TYPES);
         CSBootstrap.COMMAND_ARGUMENT_TYPE_KEY =
                 (type) -> {
                     if (CSBootstrap.isForge) {
@@ -49,8 +51,6 @@ public class Initializer {
                                                 new IllegalStateException(
                                                         "Could not find ID for argument type: "
                                                                 + type.getClass().getName()));
-        CSForgeBootstrap.FORGE_ARGUMENT_TYPES_REGISTRY =
-                () -> Optional.of(ForgeRegistries.COMMAND_ARGUMENT_TYPES);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.spec);
 

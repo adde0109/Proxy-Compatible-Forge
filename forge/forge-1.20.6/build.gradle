@@ -4,6 +4,7 @@ base {
 
 dependencies {
     compileOnly(project(":forge:forge-1.14.4"))
+    compileOnly(project(":neoforge:neoforge-1.20.2"))
     compileOnly(project(":common"))
 }
 

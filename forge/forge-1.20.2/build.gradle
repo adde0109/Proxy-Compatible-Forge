@@ -1,4 +1,7 @@
 dependencies {
+    compileOnly(project(":forge:forge-1.14.4"))
+    compileOnly(project(":forge:forge-1.19.1"))
+    compileOnly(project(":neoforge:neoforge-1.20.2"))
     compileOnly(project(":common"))
 }
 

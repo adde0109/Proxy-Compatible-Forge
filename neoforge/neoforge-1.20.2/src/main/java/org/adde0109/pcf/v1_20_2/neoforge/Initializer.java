@@ -1,6 +1,5 @@
 package org.adde0109.pcf.v1_20_2.neoforge;
 
-import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -10,24 +9,19 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 
 import org.adde0109.pcf.PCF;
+import org.adde0109.pcf.v1_20_2.neoforge.crossstitch.CSBootstrap;
+
+import java.util.Optional;
 
 @SuppressWarnings("unused")
 public class Initializer {
     public static void init() {
         PCF.resourceLocation = ResourceLocation::new;
         PCF.component = Component::nullToEmpty;
-        PCF.COMMAND_ARGUMENT_TYPE_KEY =
-                (type) ->
-                        BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey(
-                                (ArgumentTypeInfo<?, ?>) type);
-        PCF.COMMAND_ARGUMENT_TYPE_ID =
-                (type) ->
-                        BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId(
-                                (ArgumentTypeInfo<?, ?>) type);
+        CSBootstrap.ARGUMENT_TYPES_REGISTRY =
+                () -> Optional.of(BuiltInRegistries.COMMAND_ARGUMENT_TYPE);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.spec);
-
-        NeoForge.EVENT_BUS.addListener((ServerAboutToStartEvent event) -> Config.setupForwarding());
 
         NeoForge.EVENT_BUS.addListener(
                 (ServerAboutToStartEvent event) -> {

@@ -25,8 +25,6 @@ public class PCFForge {
                 + " (" + api.platform() + " " + api.meta().apiVersion() + ")");
         // spotless:on
 
-        PCF.setupIntegratedArgumentTypes();
-
         String className = "";
         if (mcv.isInRange(MinecraftVersions.V14, MinecraftVersions.V16_5)) {
             className = "org.adde0109.pcf.v1_14_4.forge.Initializer";
@@ -34,12 +32,12 @@ public class PCFForge {
             className = "org.adde0109.pcf.v1_17_1.forge.Initializer";
         } else if (mcv.isInRange(MinecraftVersions.V18, MinecraftVersions.V18_2)) {
             className = "org.adde0109.pcf.v1_18.forge.Initializer";
-        } else if (mcv.is(MinecraftVersions.V19)) {
-            className = "org.adde0109.pcf.v1_19.forge.Initializer";
-        } else if (mcv.isInRange(MinecraftVersions.V19_1, MinecraftVersions.V19_2)) {
+        } else if (mcv.isInRange(MinecraftVersions.V19, MinecraftVersions.V19_2)) {
             className = "org.adde0109.pcf.v1_19_1.forge.Initializer";
-        } else if (mcv.isInRange(MinecraftVersions.V19_3, MinecraftVersions.V20_4)) {
+        } else if (mcv.isInRange(MinecraftVersions.V19_3, MinecraftVersions.V19_4)) {
             className = "org.adde0109.pcf.v1_19_3.forge.Initializer";
+        } else if (mcv.isInRange(MinecraftVersions.V20, MinecraftVersions.V20_4)) {
+            className = "org.adde0109.pcf.v1_20_2.forge.Initializer";
         } else if (mcv.isInRange(MinecraftVersions.V20_5, MinecraftVersions.V20_6)) {
             className = "org.adde0109.pcf.v1_20_6.forge.Initializer";
         } else if (mcv.isInRange(MinecraftVersions.V21, MinecraftVersions.V21_5)) {

@@ -8,7 +8,7 @@
   "plugin": "org.adde0109.pcf.mixin.plugin.PCFMixinPlugin",
   "package": "org.adde0109.pcf.mixin",
   "server": [
-    "v1_21.neoforge.crossstitch.ArgumentNodeStubMixin",
-    "v1_21.neoforge.network.FriendlyByteBufReadNullableMixin"
+    "v1_19_1.forge.crossstitch.ArgumentNodeStubMixin",
+    "v1_19_1.forge.network.FriendlyByteBufReadNullableMixin"
   ]
 }
