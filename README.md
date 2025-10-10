@@ -1,4 +1,4 @@
-# Modern Forwarding for Forge
+# Proxy Compatible Forge
 
 Special thanks to [FabricProxy-Lite](<https://github.com/OKTW-Network/FabricProxy-Lite>) and
 [CrossStitch](<https://github.com/VelocityPowered/CrossStitch>) for spearheading in the modded proxy space. We've done
@@ -24,7 +24,7 @@ Currently, PCF only supports the default modern forwarding (v1) variant of the p
 
 ### Modded Command Argument Wrapping, aka [CrossStitch](<https://github.com/VelocityPowered/CrossStitch>)
 
-PCF ports this Fabric mods' ability to wrap modded command arguments, allowing them to be sent through Velocity without
+PCF ports this Fabric mod's ability to wrap modded command arguments, allowing them to be sent through Velocity without
 there needing to be a custom packet deserializer for each and every command argument mods add.
 
 <sub><sup>
@@ -49,17 +49,22 @@ If you wish to host modern Forge server (1.13-1.20.1) behind a Velocity proxy, c
 
 ### Installation
 
-1. Download and install this as a mod to your Neo/Forge server. (Jars can be found  on [Modrinth](<https://modrinth.com/mod/proxy-compatible-forge/versions>) or in the releases tab.)
+The following assumes you've already [configured a Velocity proxy](<https://docs.papermc.io/velocity/getting-started/>) and have a functional setup.
+
+1. Download this mod and place it in your Neo/Forge server's `mods` folder (Jars can be found  on [Modrinth](<https://modrinth.com/mod/proxy-compatible-forge/versions>) or in the releases tab).
 2. Start the server to generate the default config file.
-3. Close the server and open `pcf-common.toml` in the `config` folder and put your forwarding secret in the `forwardingSecret` field.
-4. In `server.properties` make sure online-mode is set to false.
+3. Stop the server and open `pcf-common.toml` in the `config` folder and put your Velocity forwarding secret in the `forwardingSecret` config field.
+4. In `server.properties` make sure `online-mode` is set to `false`.
 5. You are now ready to start the server and connect to it with Velocity!
 
 ### Configuration
 
 The config is located under `config/pcf-common.toml` and has the following options:
-- `forwardingSecret`: The secret used to verify the player's connection is coming from a trusted proxy. PCF will only handle argument wrapping if this setting is blank.
-- `moddedArgumentTypes`: List of argument types that are not vanilla but are integrated into the server (found in the Vanilla registry)
+
+| Setting Group | Setting Name          | Default Value                    | Description                                                                                                                                        |
+|---------------|-----------------------|----------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+|               | `forwardingSecret`    | `\"\"`                           | The secret used to verify the player's connection is coming from a trusted proxy. PCF will only handle argument wrapping if this setting is blank. |
+| `commandArgs` | `moddedArgumentTypes` | `["livingthings:sampler_types"]` | List of argument types that are not vanilla but are integrated into the server (found in the Vanilla registry).                                    |
 
 ## Building the Project
 
