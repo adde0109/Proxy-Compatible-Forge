@@ -14,12 +14,27 @@ import org.adde0109.pcf.v1_20_2.neoforge.crossstitch.CSBootstrap;
 import java.util.Optional;
 
 @SuppressWarnings("unused")
-public class Initializer {
+public final class Initializer {
     public static void init() {
         PCF.resourceLocation = ResourceLocation::new;
         PCF.component = Component::nullToEmpty;
         CSBootstrap.ARGUMENT_TYPES_REGISTRY =
                 () -> Optional.of(BuiltInRegistries.COMMAND_ARGUMENT_TYPE);
+        CSBootstrap.COMMAND_ARGUMENT_TYPE_KEY =
+                (type) ->
+                        CSBootstrap.ARGUMENT_TYPES_REGISTRY
+                                .get()
+                                .flatMap(reg -> reg.getResourceKey(type));
+        CSBootstrap.COMMAND_ARGUMENT_TYPE_ID =
+                (type) ->
+                        CSBootstrap.ARGUMENT_TYPES_REGISTRY
+                                .get()
+                                .map(reg -> reg.getId(type))
+                                .orElseThrow(
+                                        () ->
+                                                new IllegalStateException(
+                                                        "Could not find ID for argument type: "
+                                                                + type.getClass().getName()));
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.spec);
 

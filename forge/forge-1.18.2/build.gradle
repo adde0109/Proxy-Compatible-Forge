@@ -1,0 +1,26 @@
+dependencies {
+    compileOnly(project(":forge:forge-1.14.4"))
+    compileOnly(project(':forge:forge-1.17.1'))
+    compileOnly(project(":common"))
+}
+
+unimined.minecraft(sourceSets.main) {
+    version(minecraft_version)
+    minecraftForge {
+        loader(forge_version)
+    }
+    mappings {
+        mojmap()
+        devFallbackNamespace("official")
+    }
+    defaultRemapJar = false
+    remap(jar) {
+        prodNamespace("searge")
+        mixinRemap {
+            disableRefmap()
+        }
+        archiveFileName = "pcf-forge-${minecraft_version}-${project.version}.jar"
+    }
+}
+
+tasks.build.dependsOn(remapJar)

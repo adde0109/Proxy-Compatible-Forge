@@ -29,7 +29,7 @@ public class PCFNeo {
         if (mcv.isInRange(MinecraftVersions.V20_2, MinecraftVersions.V20_6)) {
             className = "org.adde0109.pcf.v1_20_2.neoforge.Initializer";
         } else {
-            className = "org.adde0109.pcf.v1_21.neoforge.Initializer";
+            className = "org.adde0109.pcf.v1_21_10.neoforge.Initializer";
         }
         try {
             Class.forName(className).getMethod("init").invoke(null);

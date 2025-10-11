@@ -13,7 +13,7 @@ import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.v1_14_4.forge.Config;
 
 @SuppressWarnings("unused")
-public class Initializer {
+public final class Initializer {
     public static void init() {
         PCF.resourceLocation = ResourceLocation::new;
         PCF.component = Component::nullToEmpty;

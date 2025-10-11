@@ -13,7 +13,7 @@ import org.adde0109.pcf.PCF;
 import org.apache.commons.lang3.tuple.Pair;
 
 @SuppressWarnings("unused")
-public class Initializer {
+public final class Initializer {
     public static void init() {
         PCF.resourceLocation = ResourceLocation::new;
         PCF.component = TextComponent::new;

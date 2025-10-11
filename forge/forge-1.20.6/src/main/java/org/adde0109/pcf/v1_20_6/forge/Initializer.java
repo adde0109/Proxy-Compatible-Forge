@@ -15,12 +15,12 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.v1_14_4.forge.Config;
 import org.adde0109.pcf.v1_20_2.neoforge.crossstitch.CSBootstrap;
-import org.adde0109.pcf.v1_20_6.forge.crossstitch.CSForgeBootstrap;
+import org.adde0109.pcf.v1_21_10.forge.crossstitch.CSForgeBootstrap;
 
 import java.util.Optional;
 
 @SuppressWarnings("unused")
-public class Initializer {
+public final class Initializer {
     public static void init() {
         PCF.resourceLocation = ResourceLocation::new;
         PCF.component = Component::nullToEmpty;
