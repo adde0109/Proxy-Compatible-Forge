@@ -30,6 +30,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap.DIRECT_CONN_ERR;
+import static org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap.PLAYER_INFO_CHANNEL;
+
 @ReqMappings(Mappings.SEARGE)
 @ReqMCVersion(min = MinecraftVersion.V17, max = MinecraftVersion.V20_1)
 @Mixin(ServerLoginPacketListenerImpl.class)
@@ -49,11 +52,7 @@ public abstract class ModernForwardingMixin {
         if (PCF.modernForwarding != null) {
             StateUtil.setState(this, 0);
             PCF.logger.debug("Sent Forward Request");
-            this.connection.send(
-                    new ClientboundCustomQueryPacket(
-                            PCF.QUERY_ID,
-                            (ResourceLocation) PCF.channelResource(),
-                            new FriendlyByteBuf(Unpooled.EMPTY_BUFFER)));
+            this.connection.send(new ClientboundCustomQueryPacket(PCF.QUERY_ID, PLAYER_INFO_CHANNEL, new FriendlyByteBuf(Unpooled.EMPTY_BUFFER)));
             this.pcf$listen = true;
             ci.cancel();
         }
@@ -78,7 +77,7 @@ public abstract class ModernForwardingMixin {
                 this.arclight$preLogin();
                 StateUtil.setState(this, 3);
             } catch (Exception e) {
-                this.shadow$disconnect((Component) PCF.directConnErrComponent());
+                this.shadow$disconnect(DIRECT_CONN_ERR);
                 PCF.logger.warn("Exception verifying forwarded player info", e);
             }
             ci.cancel();

@@ -14,7 +14,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import net.minecraft.network.protocol.login.custom.DiscardedQueryPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.PCF;
@@ -30,6 +29,9 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import static org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap.DIRECT_CONN_ERR;
+import static org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap.PLAYER_INFO_CHANNEL;
 
 @ReqMappings(Mappings.SEARGE)
 @ReqMCVersion(min = MinecraftVersion.V20_2, max = MinecraftVersion.V20_4)
@@ -50,10 +52,7 @@ public abstract class ModernForwardingMixin {
         if (PCF.modernForwarding != null) {
             StateUtil.setState(this, 0);
             PCF.logger.debug("Sent Forward Request");
-            this.connection.send(
-                    new ClientboundCustomQueryPacket(
-                            PCF.QUERY_ID,
-                            new DiscardedQueryPayload((ResourceLocation) PCF.channelResource())));
+            this.connection.send(new ClientboundCustomQueryPacket(PCF.QUERY_ID, new DiscardedQueryPayload(PLAYER_INFO_CHANNEL)));
             this.pcf$listen = true;
             ci.cancel();
         }
@@ -80,7 +79,7 @@ public abstract class ModernForwardingMixin {
                 this.arclight$preLogin();
                 StateUtil.setState(this, 4);
             } catch (Exception e) {
-                this.shadow$disconnect((Component) PCF.directConnErrComponent());
+                this.shadow$disconnect(DIRECT_CONN_ERR);
                 PCF.logger.warn("Exception verifying forwarded player info", e);
             }
             ci.cancel();

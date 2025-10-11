@@ -14,6 +14,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.v1_14_4.forge.Config;
 import org.adde0109.pcf.v1_20_2.neoforge.crossstitch.CSBootstrap;
+import org.adde0109.pcf.v1_20_2.neoforge.forwarding.FWDBootstrap;
 import org.adde0109.pcf.v1_21_10.forge.crossstitch.CSForgeBootstrap;
 
 import java.util.Optional;
@@ -22,8 +23,9 @@ import java.util.Optional;
 public final class Initializer {
     //    public static void init(FMLJavaModLoadingContext context) {
     public static void init() {
-        PCF.resourceLocation = ResourceLocation::parse;
-        PCF.component = Component::nullToEmpty;
+        FWDBootstrap.RESOURCE_LOCATION = ResourceLocation::parse;
+        FWDBootstrap.COMPONENT = Component::nullToEmpty;
+        FWDBootstrap.init();
         CSBootstrap.ARGUMENT_TYPES_REGISTRY =
                 () -> Optional.of(BuiltInRegistries.COMMAND_ARGUMENT_TYPE);
         CSForgeBootstrap.FORGE_ARGUMENT_TYPES_REGISTRY =

@@ -8,7 +8,6 @@ import net.fabricmc.fabric.impl.networking.NetworkHandlerExtensions;
 import net.fabricmc.fabric.impl.networking.server.ServerLoginNetworkAddon;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.custom.payload.SimpleQueryPayload;
 
 import org.adde0109.pcf.PCF;
@@ -17,6 +16,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
+
+import static org.adde0109.pcf.v1_20_2.neoforge.forwarding.FWDBootstrap.PLAYER_INFO_CHANNEL;
 
 public final class Compatibility {
     public static final boolean isNeoForge1_20_2;
@@ -61,7 +62,7 @@ public final class Compatibility {
                             : SimpleQueryPayload.outbound(
                                     buffer,
                                     PCF.QUERY_ID,
-                                    (ResourceLocation) PCF.channelResource()));
+                                    PLAYER_INFO_CHANNEL));
         }
     }
 

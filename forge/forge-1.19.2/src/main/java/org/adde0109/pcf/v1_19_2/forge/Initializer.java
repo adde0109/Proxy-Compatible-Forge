@@ -17,6 +17,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.v1_14_4.forge.Config;
+import org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap;
 import org.adde0109.pcf.v1_20_4.forge.crossstitch.CSBootstrap;
 import org.adde0109.pcf.v1_20_4.forge.crossstitch.CSForgeBootstrap;
 
@@ -25,8 +26,9 @@ import java.util.Optional;
 @SuppressWarnings({"deprecation", "unused"})
 public final class Initializer {
     public static void init() {
-        PCF.resourceLocation = ResourceLocation::new;
-        PCF.component = Component::nullToEmpty;
+        FWDBootstrap.RESOURCE_LOCATION = ResourceLocation::new;
+        FWDBootstrap.COMPONENT = Component::nullToEmpty;
+        FWDBootstrap.init();
         CSBootstrap.ARGUMENT_TYPES_REGISTRY = () -> Optional.of(Registry.COMMAND_ARGUMENT_TYPE);
         CSBootstrap.COMMAND_ARGUMENT_TYPE_KEY =
                 (type) -> {

@@ -10,14 +10,16 @@ import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.v1_20_2.neoforge.crossstitch.CSBootstrap;
+import org.adde0109.pcf.v1_20_2.neoforge.forwarding.FWDBootstrap;
 
 import java.util.Optional;
 
 @SuppressWarnings("unused")
 public final class Initializer {
     public static void init() {
-        PCF.resourceLocation = ResourceLocation::new;
-        PCF.component = Component::nullToEmpty;
+        FWDBootstrap.RESOURCE_LOCATION = ResourceLocation::new;
+        FWDBootstrap.COMPONENT = Component::nullToEmpty;
+        FWDBootstrap.init();
         CSBootstrap.ARGUMENT_TYPES_REGISTRY =
                 () -> Optional.of(BuiltInRegistries.COMMAND_ARGUMENT_TYPE);
         CSBootstrap.COMMAND_ARGUMENT_TYPE_KEY =

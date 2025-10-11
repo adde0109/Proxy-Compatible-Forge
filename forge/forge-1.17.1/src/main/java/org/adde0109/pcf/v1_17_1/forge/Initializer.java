@@ -11,12 +11,14 @@ import net.minecraftforge.fmlserverevents.FMLServerAboutToStartEvent;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.v1_14_4.forge.Config;
+import org.adde0109.pcf.v1_14_4.forge.forwarding.FWDBootstrap;
 
 @SuppressWarnings("unused")
 public final class Initializer {
     public static void init() {
-        PCF.resourceLocation = ResourceLocation::new;
-        PCF.component = Component::nullToEmpty;
+        FWDBootstrap.RESOURCE_LOCATION = ResourceLocation::new;
+        FWDBootstrap.COMPONENT = Component::nullToEmpty;
+        FWDBootstrap.init();
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.spec);
 
