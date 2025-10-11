@@ -14,7 +14,8 @@ public final class FWDBootstrap {
     private static final String PLAYER_INFO_CHANNEL_ID = "velocity:player_info";
     public static ResourceLocation PLAYER_INFO_CHANNEL;
 
-    private static final String DIRECT_CONN_ERR_MSG = "Direct connections to this server are not permitted!";
+    private static final String DIRECT_CONN_ERR_MSG =
+            "Direct connections to this server are not permitted!";
     public static Component DIRECT_CONN_ERR;
 
     public static void init() {

@@ -9,7 +9,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload;
 
-import org.adde0109.pcf.PCF;
+import org.adde0109.pcf.common.ModernForwarding;
 import org.adde0109.pcf.common.abstractions.Payload;
 import org.adde0109.pcf.v1_20_2.neoforge.Compatibility;
 import org.adde0109.pcf.v1_20_2.neoforge.login.QueryAnswerPayload;
@@ -37,7 +37,7 @@ public class ServerboundCustomQueryAnswerPacketMixin {
             int queryId,
             FriendlyByteBuf buf,
             CallbackInfoReturnable<CustomQueryAnswerPayload> cir) {
-        if (queryId == PCF.QUERY_ID) {
+        if (queryId == ModernForwarding.QUERY_ID) {
             // spotless:off
             // Paper start - MC Utils - default query payloads
             // Note: Added interface cast to make it cross-version compatible

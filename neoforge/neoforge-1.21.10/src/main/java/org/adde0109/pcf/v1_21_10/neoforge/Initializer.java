@@ -8,7 +8,6 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 
-import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.v1_20_2.neoforge.Config;
 import org.adde0109.pcf.v1_20_2.neoforge.crossstitch.CSBootstrap;
 import org.adde0109.pcf.v1_20_2.neoforge.forwarding.FWDBootstrap;

@@ -15,7 +15,6 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.v1_14_4.forge.Config;
 import org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap;
 import org.adde0109.pcf.v1_20_4.forge.crossstitch.CSBootstrap;

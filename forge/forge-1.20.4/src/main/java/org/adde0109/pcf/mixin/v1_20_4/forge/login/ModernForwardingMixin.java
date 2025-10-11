@@ -1,5 +1,9 @@
 package org.adde0109.pcf.mixin.v1_20_4.forge.login;
 
+import static org.adde0109.pcf.common.ModernForwarding.handleForwardingPacket;
+import static org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap.DIRECT_CONN_ERR;
+import static org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap.PLAYER_INFO_CHANNEL;
+
 import com.mojang.authlib.GameProfile;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
@@ -17,6 +21,7 @@ import net.minecraft.network.protocol.login.custom.DiscardedQueryPayload;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.PCF;
+import org.adde0109.pcf.common.ModernForwarding;
 import org.adde0109.pcf.common.abstractions.Connection;
 import org.adde0109.pcf.common.abstractions.Payload;
 import org.adde0109.pcf.common.reflection.StateUtil;
@@ -29,9 +34,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import static org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap.DIRECT_CONN_ERR;
-import static org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap.PLAYER_INFO_CHANNEL;
 
 @ReqMappings(Mappings.SEARGE)
 @ReqMCVersion(min = MinecraftVersion.V20_2, max = MinecraftVersion.V20_4)
@@ -49,10 +51,13 @@ public abstract class ModernForwardingMixin {
     @Inject(method = "handleHello", at = @At("HEAD"), cancellable = true)
     private void onHandleHello(CallbackInfo ci) {
         Validate.validState(StateUtil.stateEquals(this, 0), "Unexpected hello packet");
-        if (PCF.modernForwarding != null) {
+        if (PCF.instance().forwardingSecret() != null) {
             StateUtil.setState(this, 0);
             PCF.logger.debug("Sent Forward Request");
-            this.connection.send(new ClientboundCustomQueryPacket(PCF.QUERY_ID, new DiscardedQueryPayload(PLAYER_INFO_CHANNEL)));
+            this.connection.send(
+                    new ClientboundCustomQueryPacket(
+                            ModernForwarding.QUERY_ID,
+                            new DiscardedQueryPayload(PLAYER_INFO_CHANNEL)));
             this.pcf$listen = true;
             ci.cancel();
         }
@@ -62,7 +67,7 @@ public abstract class ModernForwardingMixin {
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
     private void onHandleCustomQueryPacket(
             ServerboundCustomQueryAnswerPacket packet, CallbackInfo ci) {
-        if ((packet.transactionId() == PCF.QUERY_ID)
+        if ((packet.transactionId() == ModernForwarding.QUERY_ID)
                 && StateUtil.stateEquals(this, 0)
                 && this.pcf$listen) {
             this.pcf$listen = false;
@@ -74,8 +79,7 @@ public abstract class ModernForwardingMixin {
                 packet.payload().write(data);
 
                 this.authenticatedProfile =
-                        PCF.modernForwarding.handleForwardingPacket(
-                                (Payload) data, (Connection) connection);
+                        handleForwardingPacket((Payload) data, (Connection) connection);
                 this.arclight$preLogin();
                 StateUtil.setState(this, 4);
             } catch (Exception e) {

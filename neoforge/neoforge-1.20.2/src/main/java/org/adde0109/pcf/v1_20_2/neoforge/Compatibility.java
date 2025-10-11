@@ -1,5 +1,7 @@
 package org.adde0109.pcf.v1_20_2.neoforge;
 
+import static org.adde0109.pcf.v1_20_2.neoforge.forwarding.FWDBootstrap.PLAYER_INFO_CHANNEL;
+
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.meta.Platforms;
@@ -11,13 +13,12 @@ import net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload;
 import net.neoforged.neoforge.network.custom.payload.SimpleQueryPayload;
 
 import org.adde0109.pcf.PCF;
+import org.adde0109.pcf.common.ModernForwarding;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
-
-import static org.adde0109.pcf.v1_20_2.neoforge.forwarding.FWDBootstrap.PLAYER_INFO_CHANNEL;
 
 public final class Compatibility {
     public static final boolean isNeoForge1_20_2;
@@ -60,9 +61,7 @@ public final class Compatibility {
                     buffer == null
                             ? null
                             : SimpleQueryPayload.outbound(
-                                    buffer,
-                                    PCF.QUERY_ID,
-                                    PLAYER_INFO_CHANNEL));
+                                    buffer, ModernForwarding.QUERY_ID, PLAYER_INFO_CHANNEL));
         }
     }
 
@@ -86,7 +85,7 @@ public final class Compatibility {
                     slnaLookup.findGetter(ServerLoginNetworkAddon.class, "channels", Map.class);
             Map<Integer, ?> channels = (Map<Integer, ?>) channelsMH.invokeExact(addon);
 
-            channels.remove(PCF.QUERY_ID);
+            channels.remove(ModernForwarding.QUERY_ID);
         } catch (IllegalAccessException | NoSuchFieldException | NoSuchMethodException e) {
             PCF.logger.warn("Lookup Exception applying FFAPI fix", e);
         } catch (Throwable e) {

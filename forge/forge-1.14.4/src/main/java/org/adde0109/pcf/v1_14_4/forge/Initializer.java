@@ -9,7 +9,6 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.network.FMLNetworkConstants;
 
-import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.v1_14_4.forge.forwarding.FWDBootstrap;
 import org.apache.commons.lang3.tuple.Pair;
 

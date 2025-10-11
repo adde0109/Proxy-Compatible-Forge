@@ -3,7 +3,6 @@ package org.adde0109.pcf.v1_20_2.neoforge;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.common.ModernForwarding;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
@@ -40,14 +39,14 @@ public class Config {
 
     public static void setupForwarding() {
         String forwardingSecret = Config.config.forwardingSecret.get();
-        if (!(forwardingSecret.isBlank() || forwardingSecret.isEmpty())) {
-            PCF.modernForwarding = new ModernForwarding(forwardingSecret);
+        if (!forwardingSecret.isBlank()) {
+            PCF.instance().setForwardingSecret(forwardingSecret);
         }
     }
 
     @SuppressWarnings("unchecked")
     public static void setupModdedArgumentTypes() {
         List<String> moddedArgumentTypes = (List<String>) Config.config.moddedArgumentTypes.get();
-        PCF.moddedArgumentTypes.addAll(moddedArgumentTypes);
+        PCF.instance().addModdedArgumentTypes(moddedArgumentTypes);
     }
 }

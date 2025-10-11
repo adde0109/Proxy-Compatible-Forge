@@ -9,7 +9,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload;
 
-import org.adde0109.pcf.PCF;
+import org.adde0109.pcf.common.ModernForwarding;
 import org.adde0109.pcf.v1_20_4.forge.login.QueryAnswerPayload;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -34,7 +34,7 @@ public class ServerboundCustomQueryAnswerPacketMixin {
             int queryId,
             FriendlyByteBuf buf,
             CallbackInfoReturnable<CustomQueryAnswerPayload> cir) {
-        if (queryId == PCF.QUERY_ID) {
+        if (queryId == ModernForwarding.QUERY_ID) {
             // spotless:off
             // Paper start - MC Utils - default query payloads
             FriendlyByteBuf buffer = buf.readNullable((buf2) -> {
