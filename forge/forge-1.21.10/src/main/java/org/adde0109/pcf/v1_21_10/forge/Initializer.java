@@ -66,9 +66,6 @@ public final class Initializer {
                                 (a, b) -> true));
 
         ServerAboutToStartEvent.BUS.addListener(
-                (ServerAboutToStartEvent event) -> {
-                    Config.setupForwarding();
-                    Config.setupModdedArgumentTypes();
-                });
+                (ServerAboutToStartEvent event) -> Config.setupConfig());
     }
 }

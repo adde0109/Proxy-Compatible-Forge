@@ -40,9 +40,6 @@ public final class Initializer {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.spec);
 
         NeoForge.EVENT_BUS.addListener(
-                (ServerAboutToStartEvent event) -> {
-                    Config.setupForwarding();
-                    Config.setupModdedArgumentTypes();
-                });
+                (ServerAboutToStartEvent event) -> Config.setupConfig());
     }
 }

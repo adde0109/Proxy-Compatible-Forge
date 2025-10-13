@@ -3,6 +3,7 @@ package org.adde0109.pcf.v1_14_4.forge;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import org.adde0109.pcf.PCF;
+import org.adde0109.pcf.forwarding.Mode;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
@@ -18,35 +19,52 @@ public class Config {
         config = specPair.getLeft();
     }
 
-    public final ForgeConfigSpec.ConfigValue<? extends String> forwardingSecret;
-    public final ForgeConfigSpec.ConfigValue<List<? extends String>> moddedArgumentTypes;
+    private final ForgeConfigSpec.ConfigValue<Boolean> enableForwarding;
+    private final ForgeConfigSpec.ConfigValue<Mode> forwardingMode;
+    private final ForgeConfigSpec.ConfigValue<String> forwardingSecret;
+    private final ForgeConfigSpec.ConfigValue<Boolean> enableCrossStitch;
+    private final ForgeConfigSpec.ConfigValue<List<? extends String>> forceWrappedArguments;
 
     Config(ForgeConfigSpec.Builder builder) {
-        builder.comment("Modern Forwarding Settings").push("modernForwarding");
-        forwardingSecret = builder.define("forwardingSecret", "");
+        builder.comment("Player Info Forwarding Settings").push("forwarding");
+
+        enableForwarding = builder
+                .comment("Enable or disable player info forwarding")
+                .define("enabled", true);
         builder.pop();
 
-        builder.push("commandWrapping");
-        moddedArgumentTypes =
-                builder.comment(
-                                "List of argument types that are not vanilla but are integrated into the server (found in the Vanilla registry)")
-                        .defineList(
-                                "moddedArgumentTypes",
-                                List.of("livingthings:sampler_types"),
-                                (obj) -> true);
+        forwardingMode = builder
+                .comment("The type of forwarding to use. Currently, only 'modern' is supported")
+                .defineEnum("mode", Mode.MODERN);
         builder.pop();
-    }
 
-    public static void setupForwarding() {
-        String forwardingSecret = Config.config.forwardingSecret.get();
-        if (!forwardingSecret.isBlank()) {
-            PCF.instance().setForwardingSecret(forwardingSecret);
-        }
+        forwardingSecret = builder
+                .comment("The forwarding secret shared with the proxy")
+                .define("secret", "");
+        builder.pop();
+
+        builder.comment("CrossStitch Settings").push("crossStitch");
+
+        enableCrossStitch = builder
+                .comment("Enable or disable CrossStitch support")
+                .define("enabled", true);
+        builder.pop();
+
+        forceWrappedArguments =
+                builder.comment("Add any incompatible modded or vanilla command argument types here")
+                        .defineList("forceWrappedArguments", List.of(), (obj) -> true);
+        builder.pop();
     }
 
     @SuppressWarnings("unchecked")
-    public static void setupModdedArgumentTypes() {
-        List<String> moddedArgumentTypes = (List<String>) Config.config.moddedArgumentTypes.get();
-        PCF.instance().addModdedArgumentTypes(moddedArgumentTypes);
+    public static void setupConfig() {
+        String forwardingSecret = Config.config.forwardingSecret.get();
+        boolean enableForwarding = Config.config.enableForwarding.get() && !forwardingSecret.isBlank();
+        Mode forwardingMode = Config.config.forwardingMode.get();
+        PCF.instance().setForwarding(new PCF.Forwarding(enableForwarding, forwardingMode, forwardingSecret));
+
+        boolean enableCrossStitch = Config.config.enableCrossStitch.get();
+        List<String> forceWrappedArguments = (List<String>) Config.config.forceWrappedArguments.get();
+        PCF.instance().setCrossStitch(new PCF.CrossStitch(enableCrossStitch, forceWrappedArguments));
     }
 }

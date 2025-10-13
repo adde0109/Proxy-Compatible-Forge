@@ -35,7 +35,7 @@ underlying vanilla registration system being brittle with generics.
 
 In some rare cases mods will register their command arguments to the wrong registry or make modifications to vanilla
 arguments, bypassing PCF's argument wrapper. In such cases, you can add the custom argument's ID to PCF's
-`moddedArgumentTypes` setting to force PCF to wrap the argument.
+`forceWrappedArguments` setting to force PCF to wrap the argument.
 
 If you find any wild args, please open an issue so we can add them to the default config.
 
@@ -53,7 +53,7 @@ The following assumes you've already [configured a Velocity proxy](<https://docs
 
 1. Download this mod and place it in your Neo/Forge server's `mods` folder (Jars can be found  on [Modrinth](<https://modrinth.com/mod/proxy-compatible-forge/versions>) or in the releases tab).
 2. Start the server to generate the default config file.
-3. Stop the server and open `pcf-common.toml` in the `config` folder and put your Velocity forwarding secret in the `forwardingSecret` config field.
+3. Stop the server and open `pcf-common.toml` in the `config` folder and put your forwarding secret in the `secret` config field.
 4. In `server.properties` make sure `online-mode` is set to `false`.
 5. You are now ready to start the server and connect to it with Velocity!
 
@@ -61,10 +61,13 @@ The following assumes you've already [configured a Velocity proxy](<https://docs
 
 The config is located under `config/pcf-common.toml` and has the following options:
 
-| Setting Group | Setting Name          | Default Value                    | Description                                                                                                                                        |
-|---------------|-----------------------|----------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-|               | `forwardingSecret`    | `\"\"`                           | The secret used to verify the player's connection is coming from a trusted proxy. PCF will only handle argument wrapping if this setting is blank. |
-| `commandArgs` | `moddedArgumentTypes` | `["livingthings:sampler_types"]` | List of argument types that are not vanilla but are integrated into the server (found in the Vanilla registry).                                    |
+| Setting Group | Setting Name            | Default Value | Description                                                                                                                                        |
+|---------------|-------------------------|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `forwarding`  | `enabled`               | `true`        | Enable or disable player info forwarding.                                                                                                          |
+| `forwarding`  | `mode`                  | `\"modern\"`  | The type of forwarding to use. Currently, only 'modern' is supported.                                                                              |
+| `forwarding`  | `secret`                | `\"\"`        | The secret used to verify the player's connection is coming from a trusted proxy. PCF will only handle argument wrapping if this setting is blank. |
+| `crossStitch` | `enabled`               | `true`        | Enable or disable CrossStitch support.                                                                                                             |
+| `crossStitch` | `forceWrappedArguments` | `[]`          | Add any incompatible modded or vanilla command argument types here.                                                                                |
 
 ## Building the Project
 

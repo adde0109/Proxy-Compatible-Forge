@@ -2,10 +2,9 @@ package org.adde0109.pcf;
 
 import dev.neuralnexus.taterapi.logger.Logger;
 
+import org.adde0109.pcf.forwarding.Mode;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public final class PCF {
@@ -18,24 +17,29 @@ public final class PCF {
         return INSTANCE;
     }
 
-    private String forwardingSecret;
-    private final List<String> MODDED_ARGUMENT_TYPES = new ArrayList<>();
+    private Forwarding forwarding;
+    private CrossStitch crossStitch;
 
-    public String forwardingSecret() {
-        return this.forwardingSecret;
+    public Forwarding forwarding() {
+        return this.forwarding;
     }
 
     @ApiStatus.Internal
-    public void setForwardingSecret(String secret) {
-        this.forwardingSecret = secret;
+    public void setForwarding(Forwarding forwarding) {
+        this.forwarding = forwarding;
     }
 
-    public List<String> moddedArgumentTypes() {
-        return this.MODDED_ARGUMENT_TYPES;
+    public CrossStitch crossStitch() {
+        return this.crossStitch;
     }
 
     @ApiStatus.Internal
-    public void addModdedArgumentTypes(Collection<String> types) {
-        this.MODDED_ARGUMENT_TYPES.addAll(types);
+    public void setCrossStitch(CrossStitch crossStitch) {
+        this.crossStitch = crossStitch;
     }
+
+    // TODO: Conditionally disable mixins based on config
+    public record Forwarding(boolean enabled, Mode mode, String secret) {}
+
+    public record CrossStitch(boolean enabled, List<String> forceWrappedArguments) {}
 }

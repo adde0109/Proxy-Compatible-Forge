@@ -51,7 +51,7 @@ public abstract class ModernForwardingMixin {
     @Inject(method = "handleHello", at = @At("HEAD"), cancellable = true)
     private void onHandleHello(CallbackInfo ci) {
         Validate.validState(StateUtil.stateEquals(this, 0), "Unexpected hello packet");
-        if (PCF.instance().forwardingSecret() != null) {
+        if (PCF.instance().forwarding().enabled()) {
             StateUtil.setState(this, 0);
             PCF.logger.debug("Sent Forward Request");
             this.connection.send(

@@ -29,9 +29,6 @@ public final class Initializer {
                                         () -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 
         MinecraftForge.EVENT_BUS.addListener(
-                (ServerAboutToStartEvent event) -> {
-                    Config.setupForwarding();
-                    Config.setupModdedArgumentTypes();
-                });
+                (ServerAboutToStartEvent event) -> Config.setupConfig());
     }
 }
