@@ -24,6 +24,9 @@ public final class CrossStitchUtil17 {
     @SuppressWarnings("unchecked")
     public static void writeNode$wrapInVelocityModArgument17(
             FriendlyByteBuf buf, ArgumentType<?> argumentType) {
+        if (!PCF.instance().crossStitch().enabled()) {
+            return;
+        }
         Object entry = ArgumentTypesUtil.getEntry(argumentType);
 
         if (entry == null) {

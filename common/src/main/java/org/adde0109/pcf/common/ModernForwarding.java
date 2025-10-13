@@ -45,7 +45,9 @@ public final class ModernForwarding {
 
         try {
             final Mac mac = Mac.getInstance("HmacSHA256");
-            mac.init(new SecretKeySpec(PCF.instance().forwarding().secret().getBytes(), "HmacSHA256"));
+            mac.init(
+                    new SecretKeySpec(
+                            PCF.instance().forwarding().secret().getBytes(), "HmacSHA256"));
             final byte[] mySignature = mac.doFinal(data);
             if (!MessageDigest.isEqual(signature, mySignature)) {
                 return false;

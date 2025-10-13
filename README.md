@@ -63,10 +63,10 @@ The config is located under `config/pcf-common.toml` and has the following optio
 
 | Setting Group | Setting Name            | Default Value | Description                                                                                                                                        |
 |---------------|-------------------------|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `forwarding`  | `enabled`               | `true`        | Enable or disable player info forwarding.                                                                                                          |
-| `forwarding`  | `mode`                  | `\"modern\"`  | The type of forwarding to use. Currently, only 'modern' is supported.                                                                              |
+| `forwarding`  | `enabled`               | `true`        | Enable or disable player info forwarding. This setting requires a server restart.                                                                  |
+| `forwarding`  | `mode`                  | `\"MODERN\"`  | The type of forwarding to use.                                                                                                                     |
 | `forwarding`  | `secret`                | `\"\"`        | The secret used to verify the player's connection is coming from a trusted proxy. PCF will only handle argument wrapping if this setting is blank. |
-| `crossStitch` | `enabled`               | `true`        | Enable or disable CrossStitch support.                                                                                                             |
+| `crossStitch` | `enabled`               | `true`        | Enable or disable CrossStitch support. This setting requires a server restart.                                                                     |
 | `crossStitch` | `forceWrappedArguments` | `[]`          | Add any incompatible modded or vanilla command argument types here.                                                                                |
 
 ## Building the Project

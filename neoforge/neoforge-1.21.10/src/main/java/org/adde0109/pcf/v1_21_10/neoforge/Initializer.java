@@ -3,11 +3,13 @@ package org.adde0109.pcf.v1_21_10.neoforge;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.fml.event.config.ModConfigEvent;
 
+import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.v1_20_2.neoforge.Config;
 import org.adde0109.pcf.v1_20_2.neoforge.crossstitch.CSBootstrap;
 import org.adde0109.pcf.v1_20_2.neoforge.forwarding.FWDBootstrap;
@@ -38,11 +40,11 @@ public final class Initializer {
                                                         "Could not find ID for argument type: "
                                                                 + type.getClass().getName()));
 
-        ModLoadingContext.get()
-                .getActiveContainer()
-                .registerConfig(ModConfig.Type.COMMON, Config.spec);
+        ModContainer container = ModList.get().getModContainerById(PCF.MOD_ID).orElseThrow();
+        container.registerConfig(ModConfig.Type.COMMON, Config.spec);
 
-        NeoForge.EVENT_BUS.addListener(
-                (ServerAboutToStartEvent event) -> Config.setupConfig());
+        IEventBus eventBus = container.getEventBus();
+        if (eventBus == null) return;
+        eventBus.addListener((ModConfigEvent event) -> Config.setupConfig());
     }
 }

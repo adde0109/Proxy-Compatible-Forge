@@ -10,8 +10,10 @@ import java.util.List;
 public final class PCF {
     private PCF() {}
 
+    public static final String MOD_ID = "pcf";
+
     private static final PCF INSTANCE = new PCF();
-    public static final Logger logger = Logger.create("pcf");
+    public static final Logger logger = Logger.create(MOD_ID);
 
     public static PCF instance() {
         return INSTANCE;

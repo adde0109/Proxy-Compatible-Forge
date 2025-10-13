@@ -8,7 +8,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
-public class Config {
+public final class Config {
     public static final Config config;
     public static final ModConfigSpec spec;
 
@@ -27,31 +27,24 @@ public class Config {
 
     Config(ModConfigSpec.Builder builder) {
         builder.comment("Player Info Forwarding Settings").push("forwarding");
-
-        enableForwarding = builder
-                .comment("Enable or disable player info forwarding")
-                .define("enabled", true);
-        builder.pop();
-
-        forwardingMode = builder
-                .comment("The type of forwarding to use. Currently, only 'modern' is supported")
-                .defineEnum("mode", Mode.MODERN);
-        builder.pop();
-
-        forwardingSecret = builder
-                .comment("The forwarding secret shared with the proxy")
-                .define("secret", "");
+        enableForwarding =
+                builder.comment(
+                                "Enable or disable player info forwarding. This setting requires a server restart")
+                        .define("enabled", true);
+        forwardingMode =
+                builder.comment("The type of forwarding to use").defineEnum("mode", Mode.MODERN);
+        forwardingSecret =
+                builder.comment("The forwarding secret shared with the proxy").define("secret", "");
         builder.pop();
 
         builder.comment("CrossStitch Settings").push("crossStitch");
-
-        enableCrossStitch = builder
-                .comment("Enable or disable CrossStitch support")
-                .define("enabled", true);
-        builder.pop();
-
+        enableCrossStitch =
+                builder.comment(
+                                "Enable or disable CrossStitch support. This setting requires a server restart")
+                        .define("enabled", true);
         forceWrappedArguments =
-                builder.comment("Add any incompatible modded or vanilla command argument types here")
+                builder.comment(
+                                "Add any incompatible modded or vanilla command argument types here")
                         .defineList("forceWrappedArguments", List.of(), (obj) -> true);
         builder.pop();
     }
@@ -59,12 +52,17 @@ public class Config {
     @SuppressWarnings("unchecked")
     public static void setupConfig() {
         String forwardingSecret = Config.config.forwardingSecret.get();
-        boolean enableForwarding = Config.config.enableForwarding.get() && !forwardingSecret.isBlank();
+        boolean enableForwarding =
+                Config.config.enableForwarding.get() && !forwardingSecret.isBlank();
         Mode forwardingMode = Config.config.forwardingMode.get();
-        PCF.instance().setForwarding(new PCF.Forwarding(enableForwarding, forwardingMode, forwardingSecret));
+        PCF.instance()
+                .setForwarding(
+                        new PCF.Forwarding(enableForwarding, forwardingMode, forwardingSecret));
 
         boolean enableCrossStitch = Config.config.enableCrossStitch.get();
-        List<String> forceWrappedArguments = (List<String>) Config.config.forceWrappedArguments.get();
-        PCF.instance().setCrossStitch(new PCF.CrossStitch(enableCrossStitch, forceWrappedArguments));
+        List<String> forceWrappedArguments =
+                (List<String>) Config.config.forceWrappedArguments.get();
+        PCF.instance()
+                .setCrossStitch(new PCF.CrossStitch(enableCrossStitch, forceWrappedArguments));
     }
 }

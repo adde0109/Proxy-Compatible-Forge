@@ -9,9 +9,9 @@ import dev.neuralnexus.taterapi.meta.platforms.TaterMetadata;
 import net.minecraftforge.fml.common.Mod;
 
 @SuppressWarnings("unused")
-@Mod("pcf")
+@Mod(PCF.MOD_ID)
 public class PCFForge {
-    Logger logger = Logger.create("pcf");
+    Logger logger = Logger.create(PCF.MOD_ID);
 
     public PCFForge() {
         // Bootstrap TaterLibLite Metadata

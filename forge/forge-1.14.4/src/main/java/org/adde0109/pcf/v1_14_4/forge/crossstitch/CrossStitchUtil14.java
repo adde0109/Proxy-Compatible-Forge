@@ -32,6 +32,9 @@ public final class CrossStitchUtil14 {
             CommandNode<SharedSuggestionProvider> node,
             Map<CommandNode<SharedSuggestionProvider>, Integer> ignored,
             CallbackInfo ci) {
+        if (!PCF.instance().crossStitch().enabled()) {
+            return;
+        }
         ArgumentCommandNode<SharedSuggestionProvider, ?> argNode =
                 (ArgumentCommandNode<SharedSuggestionProvider, ?>) node;
         ArgumentType<?> argumentType = argNode.getType();

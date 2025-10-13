@@ -30,6 +30,9 @@ public final class CrossStitchUtil19 {
                     ArgumentTypeInfo<A, T> serializer,
                     ArgumentTypeInfo.Template<A> properties,
                     CallbackInfo ci) {
+        if (!PCF.instance().crossStitch().enabled()) {
+            return;
+        }
         Optional<ResourceLocation> identifier =
                 commandArgumentResourceKey(serializer)
                         .map(ResourceKey::location)
