@@ -5,6 +5,7 @@ import static org.adde0109.pcf.v1_20_4.forge.crossstitch.CSBootstrap.commandArgu
 
 import com.mojang.brigadier.arguments.ArgumentType;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
@@ -61,7 +62,8 @@ public final class CrossStitchUtil19 {
         serializer.serializeToNetwork((T) properties, extraData);
 
         buf.writeVarInt(extraData.readableBytes());
-        buf.writeBytes(extraData);
+        // FriendlyByteBuf -> public FriendlyByteBuf writeBytes(ByteBuffer) was added in 1.20.2
+        ((ByteBuf) buf).writeBytes(extraData);
 
         extraData.release();
     }
