@@ -37,7 +37,7 @@ public final class Config {
                 builder.comment("The forwarding secret shared with the proxy").define("secret", "");
         builder.pop();
 
-        builder.comment("CrossStitch Settings").push("crossStitch");
+        builder.comment("CrossStitch Settings - For Wrapping Modded Command Arguments").push("crossStitch");
         enableCrossStitch =
                 builder.comment(
                                 "Enable or disable CrossStitch support. This setting requires a server restart")
