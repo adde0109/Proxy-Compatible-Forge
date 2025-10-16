@@ -16,6 +16,8 @@ This mod brings Velocity's [modern forwarding](<https://docs.papermc.io/velocity
 - Bukkit+Neo/Forge Hybrid servers
   - Use the Hybrid's built-in forwarding support when possible, or PCF if their implementation is incompatible
 
+See the [Compatibility](https://github.com/adde0109/Proxy-Compatible-Forge/blob/main/docs/Compatibility.md) page for more details on supported platforms and modpacks.
+
 ### Player Info Forwarding
 
 As mentioned above, PCF implements Velocity's "Modern" forwarding protocol, allowing you to secure modded servers behind proxies.
