@@ -55,9 +55,10 @@ The following assumes you've already [configured a Velocity proxy](<https://docs
 
 1. Download this mod and place it in your Neo/Forge server's `mods` folder (Jars can be found  on [Modrinth](<https://modrinth.com/mod/proxy-compatible-forge/versions>) or in the releases tab).
 2. Start the server to generate the default config file.
-3. Stop the server and open `pcf-common.toml` in the `config` folder and put your forwarding secret in the `secret` config field.
-4. In `server.properties` make sure `online-mode` is set to `false`.
-5. You are now ready to start the server and connect to it with Velocity!
+3. Optionally stop the Neo/Forge server at this point.
+4. Open `pcf-common.toml` in the `config` folder and put your forwarding secret in the `secret` config field.
+5. In `server.properties` make sure `online-mode` is set to `false`.
+6. You are now ready to start the server and connect to it with Velocity!
 
 ### Configuration
 
