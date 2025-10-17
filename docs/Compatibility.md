@@ -25,6 +25,6 @@
 | Age of Fate               | 4.3.2           | 1.20.1     | Forge 47.4.0      | ?                      | ?                | ?                        |                                |
 | ATM9                      | 1.1.0           | 1.20.1     | Forge 47.4.0      | ✅                      | ?                | ?                        |                                |
 | ATM9 to Sky               | 1.1.8           | 1.20.1     | Forge 47.4.0      | ✅                      | ?                | ?                        |                                |
-| Workload                  | 1.1.0           | 1.20.1     | Forge 47.3.22     | ✅                      | ✅                | ❌                        | FFCRP mod incompatible with VS |
+| Workload                  | 1.1.0           | 1.20.1     | Forge 47.3.22     | ✅                      | ✅                | ?                        | FFCRP mod incompatible with VS |
 | FTB Presents Stoneblock 3 | 1.11.5          | 1.18.2     | Forge 40.2.34     | ✅                      | ?                | ?                        |                                |
 | Pixelmon Reforged         | 9.1.13          | 1.16.5     | Forge 36.2.35     | ✅                      | ?                | ?                        |                                |
