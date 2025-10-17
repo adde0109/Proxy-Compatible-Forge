@@ -39,6 +39,6 @@ public final class Initializer {
 
         IEventBus eventBus = container.getEventBus();
         if (eventBus == null) return;
-        eventBus.addListener((ModConfigEvent event) -> Config.setupConfig());
+        eventBus.addListener((ModConfigEvent.Reloading event) -> Config.reload());
     }
 }

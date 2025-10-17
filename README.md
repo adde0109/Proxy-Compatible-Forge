@@ -70,6 +70,8 @@ The config is located under `config/pcf-common.toml` and has the following optio
 | `forwarding`  | `secret`                | `\"\"`        | The secret used to verify the player's connection is coming from a trusted proxy. PCF will only handle argument wrapping if this setting is blank. |
 | `crossStitch` | `enabled`               | `true`        | Enable or disable CrossStitch support. This setting requires a server restart.                                                                     |
 | `crossStitch` | `forceWrappedArguments` | `[]`          | Add any incompatible modded or vanilla command argument types here.                                                                                |
+| `debug`       | `enabled`               | `false`       | Enable or disable debug logging.                                                                                                                   |
+| `debug`       | `disabledMixins`        | `[]`          | List of mixins to disable. Use the Mixin's name and prefix it with it's partial or full package name.                                              |
 
 ## Building the Project
 

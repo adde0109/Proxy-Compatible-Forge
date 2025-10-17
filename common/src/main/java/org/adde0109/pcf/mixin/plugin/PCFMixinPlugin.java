@@ -2,6 +2,7 @@ package org.adde0109.pcf.mixin.plugin;
 
 import dev.neuralnexus.taterapi.muxins.Muxins;
 
+import org.adde0109.pcf.PCF;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -20,9 +21,12 @@ public class PCFMixinPlugin implements IMixinConfigPlugin {
         return null;
     }
 
+    // TODO: Conditionally apply mixins based on enable configs
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        return Muxins.shouldApplyMixin(mixinClassName);
+        PCF.forceLoadConfig();
+        PCF.Debug debug = PCF.instance().debug();
+        return Muxins.shouldApplyMixin(mixinClassName, debug.disabledMixins(), debug.enabled());
     }
 
     @Override

@@ -36,7 +36,7 @@ public final class Initializer {
 
         IEventBus eventBus = container.getEventBus();
         if (eventBus == null) return;
-        // TODO: Test version bounds on ModConfig.ModConfigEvent
-        eventBus.addListener((ModConfig.ModConfigEvent event) -> Config.setupConfig());
+        // TODO: Test version bounds on ModConfig.ConfigReloading
+        eventBus.addListener((ModConfig.ConfigReloading event) -> Config.reload());
     }
 }

@@ -1,15 +1,25 @@
 package org.adde0109.pcf.v1_14_4.forge;
 
+import static org.adde0109.pcf.PCF.CONFIG_FILE_NAME;
+
+import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.electronwill.nightconfig.core.io.WritingMode;
+
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.loading.FMLPaths;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.forwarding.Mode;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.ApiStatus;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
+@ApiStatus.Internal
 public final class Config {
-    public static final Config config;
+    private static final Config config;
     public static final ForgeConfigSpec spec;
 
     static {
@@ -17,13 +27,40 @@ public final class Config {
                 new ForgeConfigSpec.Builder().configure(Config::new);
         spec = specPair.getRight();
         config = specPair.getLeft();
+
+        final CommentedFileConfig config =
+                CommentedFileConfig.builder(FMLPaths.CONFIGDIR.get().resolve(CONFIG_FILE_NAME))
+                        .sync()
+                        .preserveInsertionOrder()
+                        .onFileNotFound(
+                                (file, configFormat) -> {
+                                    Files.createDirectories(file.getParent());
+                                    Path p = FMLPaths.CONFIGDIR.get().resolve(CONFIG_FILE_NAME);
+                                    if (Files.exists(p)) {
+                                        Files.copy(p, file);
+                                    } else {
+                                        Files.createFile(file);
+                                        configFormat.initEmptyFile(file);
+                                    }
+                                    return true;
+                                })
+                        .autosave()
+                        .writingMode(WritingMode.REPLACE)
+                        .build();
+        config.load();
+        spec.correct(config);
+        spec.setConfig(config);
     }
 
     private final ForgeConfigSpec.ConfigValue<Boolean> enableForwarding;
     private final ForgeConfigSpec.ConfigValue<Mode> forwardingMode;
     private final ForgeConfigSpec.ConfigValue<String> forwardingSecret;
+
     private final ForgeConfigSpec.ConfigValue<Boolean> enableCrossStitch;
     private final ForgeConfigSpec.ConfigValue<List<? extends String>> forceWrappedArguments;
+
+    private final ForgeConfigSpec.ConfigValue<Boolean> enableDebug;
+    private final ForgeConfigSpec.ConfigValue<List<? extends String>> disabledMixins;
 
     Config(ForgeConfigSpec.Builder builder) {
         builder.comment("Player Info Forwarding Settings").push("forwarding");
@@ -48,10 +85,18 @@ public final class Config {
                                 "Add any incompatible modded or vanilla command argument types here")
                         .defineList("forceWrappedArguments", List.of(), (obj) -> true);
         builder.pop();
+
+        builder.comment("Debug Settings").push("debug");
+        enableDebug = builder.comment("Enable or disable debug mode.").define("enabled", false);
+        disabledMixins =
+                builder.comment(
+                                "List of mixins to disable. Use the Mixin's name and prefix it with it's partial or full package name.")
+                        .defineList("disabledMixins", List.of(), (obj) -> true);
+        builder.pop();
     }
 
     @SuppressWarnings("unchecked")
-    public static void setupConfig() {
+    public static void reload() {
         String forwardingSecret = Config.config.forwardingSecret.get();
         boolean enableForwarding =
                 Config.config.enableForwarding.get() && !forwardingSecret.isBlank();
@@ -65,5 +110,9 @@ public final class Config {
                 (List<String>) Config.config.forceWrappedArguments.get();
         PCF.instance()
                 .setCrossStitch(new PCF.CrossStitch(enableCrossStitch, forceWrappedArguments));
+
+        boolean enableDebug = Config.config.enableDebug.get();
+        List<String> disabledMixins = (List<String>) Config.config.disabledMixins.get();
+        PCF.instance().setDebug(new PCF.Debug(enableDebug, disabledMixins));
     }
 }
