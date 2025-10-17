@@ -38,6 +38,9 @@ public final class CrossStitchUtil19 {
                         .map(ResourceKey::location)
                         .filter(CSBootstrap::shouldWrapArgument);
         if (identifier.isEmpty()) {
+            if (PCF.instance().debug().enabled()) {
+                PCF.logger.debug("Not wrapping argument with identifier: " + identifier);
+            }
             return;
         }
 

@@ -50,6 +50,9 @@ public final class CrossStitchUtil14 {
         }
         ResourceLocation identifier = (ResourceLocation) ArgumentTypesUtil.getName(entry);
         if (!shouldWrapArgument(identifier)) {
+            if (PCF.instance().debug().enabled()) {
+                PCF.logger.debug("Not wrapping argument with identifier: " + identifier);
+            }
             return;
         }
 

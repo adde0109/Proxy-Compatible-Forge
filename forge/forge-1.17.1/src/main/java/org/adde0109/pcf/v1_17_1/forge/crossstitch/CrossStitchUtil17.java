@@ -41,6 +41,9 @@ public final class CrossStitchUtil17 {
             buf.writeResourceLocation(identifier);
             ((ArgumentSerializer<ArgumentType<?>>) ArgumentTypesUtil.getSerializer(entry))
                     .serializeToNetwork(argumentType, buf);
+            if (PCF.instance().debug().enabled()) {
+                PCF.logger.debug("Not wrapping argument with identifier: " + identifier);
+            }
             return;
         }
 
