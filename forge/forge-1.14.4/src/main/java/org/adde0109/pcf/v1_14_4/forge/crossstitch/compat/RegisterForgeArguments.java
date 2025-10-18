@@ -34,7 +34,8 @@ public final class RegisterForgeArguments {
             switch (argumentType) {
                 case EnumArgument ignored -> {
                     if (!FORGE_MODID_ARG_REGISTERED
-                            && ArgumentTypesUtil.getByClassMap().containsKey(ModIdArgument.class)) {
+                            && !ArgumentTypesUtil.getByClassMap()
+                                    .containsKey(ModIdArgument.class)) {
                         PCF.logger.debug("Injecting ModIdArgument serializer into ArgumentTypes");
                         ArgumentTypes.register(
                                 FORGE_MODID.toString(),
@@ -45,7 +46,7 @@ public final class RegisterForgeArguments {
                 }
                 case ModIdArgument ignored -> {
                     if (!FORGE_ENUM_ARG_REGISTERED
-                            && ArgumentTypesUtil.getByClassMap().containsKey(EnumArgument.class)) {
+                            && !ArgumentTypesUtil.getByClassMap().containsKey(EnumArgument.class)) {
                         PCF.logger.debug("Injecting EnumArgument serializer into ArgumentTypes");
                         ArgumentTypes.register(
                                 FORGE_ENUM.toString(),
