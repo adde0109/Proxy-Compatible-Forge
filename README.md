@@ -13,7 +13,8 @@ This mod brings Velocity's [modern forwarding](<https://docs.papermc.io/velocity
 - Forge versions 1.14-1.21.10
 - NeoForge versions 1.20.1-1.21.10
 - SpongeForge/SpongeNeo
-  - Use Sponge's built-in forwarding support, then PCF just for wrapping command arguments
+  - PCF shouldn't be needed, as Sponge supports legacy+modern forwarding and command argument wrapping
+  - However, if Forgified Fabric API is installed, you may need to use PCF and disable Sponge's forwarding
 - Bukkit+Neo/Forge Hybrid servers
   - Use the Hybrid's built-in forwarding support when possible, or PCF if their implementation is incompatible
 
