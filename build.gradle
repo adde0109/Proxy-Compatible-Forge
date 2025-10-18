@@ -122,6 +122,12 @@ subprojects {
             name = "minecraft-repo"
             url = "https://libraries.minecraft.net/"
         }
+
+        // Modrinth
+        maven {
+            name = "Modrinth"
+            url = "https://api.modrinth.com/maven"
+        }
     }
 
     dependencies {
@@ -145,7 +151,10 @@ subprojects {
             importOrder()
             removeUnusedImports()
             cleanthat()
-            googleJavaFormat('1.17.0').aosp().formatJavadoc(true).reorderImports(true)
+            googleJavaFormat('1.24.0')
+                    .aosp()
+                    .formatJavadoc(true)
+                    .reorderImports(true)
             formatAnnotations()
         }
     }
