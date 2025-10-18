@@ -11,11 +11,9 @@ public final class CSBootstrap {
     private static final Set<String> BUILT_IN_REGISTRY_KEYS = Set.of("minecraft", "brigadier");
 
     public static boolean shouldWrapArgument(ResourceLocation identifier) {
-        return !(BUILT_IN_REGISTRY_KEYS.stream().anyMatch(identifier.getNamespace()::equals)
-                || PCF.instance()
-                        .crossStitch()
-                        .forceWrappedArguments()
-                        .contains(identifier.toString())
-                || ArgumentEdgeCases.isArgumentEdgeCase(identifier.toString()));
+        return PCF.instance().crossStitch().forceWrappedArguments().stream()
+                        .anyMatch(identifier.toString()::equals)
+                || !(BUILT_IN_REGISTRY_KEYS.stream().anyMatch(identifier.getNamespace()::equals)
+                        || ArgumentEdgeCases.isArgumentEdgeCase(identifier.toString()));
     }
 }
