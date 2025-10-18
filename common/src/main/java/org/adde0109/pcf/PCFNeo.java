@@ -8,9 +8,8 @@ import dev.neuralnexus.taterapi.meta.platforms.TaterMetadata;
 
 import net.neoforged.fml.common.Mod;
 
-@SuppressWarnings("unused")
 @Mod(value = PCF.MOD_ID)
-public class PCFNeo {
+public final class PCFNeo {
     Logger logger = Logger.create(PCF.MOD_ID);
 
     public PCFNeo() {

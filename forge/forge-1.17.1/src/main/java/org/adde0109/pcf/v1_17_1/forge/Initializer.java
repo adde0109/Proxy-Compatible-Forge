@@ -35,7 +35,7 @@ public final class Initializer {
                         .getModContainerById(PCF.MOD_ID)
                         .map(FMLModContainer.class::cast)
                         .orElseThrow();
-        context.registerConfig(ModConfig.Type.COMMON, Config.spec);
+        context.registerConfig(ModConfig.Type.COMMON, Config.spec, PCF.CONFIG_FILE_NAME);
 
         IEventBus eventBus = container.getEventBus();
         if (eventBus == null) return;

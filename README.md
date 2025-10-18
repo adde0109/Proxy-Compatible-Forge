@@ -9,6 +9,7 @@ This mod brings Velocity's [modern forwarding](<https://docs.papermc.io/velocity
 ## Features
 
 ### Supported Versions/Platforms
+
 - Forge versions 1.14-1.21.10
 - NeoForge versions 1.20.1-1.21.10
 - SpongeForge/SpongeNeo
@@ -54,22 +55,22 @@ If you wish to host modern Forge server (1.13-1.20.1) behind a Velocity proxy, c
 The following assumes you've already [configured a Velocity proxy](<https://docs.papermc.io/velocity/getting-started/>) and have a functional setup.
 
 1. Download this mod and place it in your Neo/Forge server's `mods` folder (Jars can be found  on [Modrinth](<https://modrinth.com/mod/proxy-compatible-forge/versions>) or in the releases tab).
-2. Start the server to generate the default config file.
-3. Optionally stop the Neo/Forge server at this point.
-4. Open `pcf-common.toml` in the `config` folder and put your forwarding secret in the `secret` config field.
+2. Start the Neo/Forge server to generate the default config file.
+3. Stop the Neo/Forge server.
+4. Open `proxy-compatible-forge.toml` in the `config` folder and put your forwarding secret in the `secret` config field.
 5. In `server.properties` make sure `online-mode` is set to `false`.
 6. You are now ready to start the server and connect to it with Velocity!
 
 ### Configuration
 
-The config is located under `config/pcf-common.toml` and has the following options:
+The config is located under `config/proxy-compatible-forge.toml` and has the following options:
 
 | Setting Group | Setting Name            | Default Value | Description                                                                                                                                        |
 |---------------|-------------------------|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `forwarding`  | `enabled`               | `true`        | Enable or disable player info forwarding. This setting requires a server restart.                                                                  |
+| `forwarding`  | `enabled`               | `true`        | Enable or disable player info forwarding. Changing this setting requires a server restart.                                                         |
 | `forwarding`  | `mode`                  | `\"MODERN\"`  | The type of forwarding to use.                                                                                                                     |
 | `forwarding`  | `secret`                | `\"\"`        | The secret used to verify the player's connection is coming from a trusted proxy. PCF will only handle argument wrapping if this setting is blank. |
-| `crossStitch` | `enabled`               | `true`        | Enable or disable CrossStitch support. This setting requires a server restart.                                                                     |
+| `crossStitch` | `enabled`               | `true`        | Enable or disable CrossStitch support. Changing this setting requires a server restart.                                                            |
 | `crossStitch` | `forceWrappedArguments` | `[]`          | Add any incompatible modded or vanilla command argument types here.                                                                                |
 | `debug`       | `enabled`               | `false`       | Enable or disable debug logging.                                                                                                                   |
 | `debug`       | `disabledMixins`        | `[]`          | List of mixins to disable. Use the Mixin's name and prefix it with it's partial or full package name.                                              |

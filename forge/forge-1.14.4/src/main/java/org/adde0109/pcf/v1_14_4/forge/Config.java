@@ -66,7 +66,7 @@ public final class Config {
         builder.comment("Player Info Forwarding Settings").push("forwarding");
         enableForwarding =
                 builder.comment(
-                                "Enable or disable player info forwarding. This setting requires a server restart")
+                                "Enable or disable player info forwarding. Changing this setting requires a server restart.")
                         .define("enabled", true);
         forwardingMode =
                 builder.comment("The type of forwarding to use").defineEnum("mode", Mode.MODERN);
@@ -78,7 +78,7 @@ public final class Config {
                 .push("crossStitch");
         enableCrossStitch =
                 builder.comment(
-                                "Enable or disable CrossStitch support. This setting requires a server restart")
+                                "Enable or disable CrossStitch support. Changing this setting requires a server restart.")
                         .define("enabled", true);
         forceWrappedArguments =
                 builder.comment(

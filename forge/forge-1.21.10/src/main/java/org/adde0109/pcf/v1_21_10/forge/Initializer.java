@@ -67,7 +67,7 @@ public final class Initializer {
                                 (a, b) -> true));
 
         ModContainer container = ModList.get().getModContainerById(PCF.MOD_ID).orElseThrow();
-        context.registerConfig(ModConfig.Type.COMMON, Config.spec);
+        context.registerConfig(ModConfig.Type.COMMON, Config.spec, PCF.CONFIG_FILE_NAME);
 
         ModConfigEvent.Reloading.getBus(context.getModBusGroup())
                 .addListener((ModConfigEvent.Reloading event) -> Config.reload());

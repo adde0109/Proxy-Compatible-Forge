@@ -14,7 +14,7 @@ public final class PCF {
     private PCF() {}
 
     public static final String MOD_ID = "pcf";
-    public static final String CONFIG_FILE_NAME = "pcf-common.toml";
+    public static final String CONFIG_FILE_NAME = "proxy-compatible-forge.toml";
 
     private static final PCF INSTANCE = new PCF();
     public static final Logger logger = Logger.create(MOD_ID);

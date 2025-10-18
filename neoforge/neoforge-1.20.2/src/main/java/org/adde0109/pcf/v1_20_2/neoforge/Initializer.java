@@ -41,7 +41,8 @@ public final class Initializer {
                                                                 + type.getClass().getName()));
 
         ModContainer container = ModList.get().getModContainerById(PCF.MOD_ID).orElseThrow();
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.spec);
+        ModLoadingContext.get()
+                .registerConfig(ModConfig.Type.COMMON, Config.spec, PCF.CONFIG_FILE_NAME);
 
         IEventBus eventBus = container.getEventBus();
         if (eventBus == null) return;

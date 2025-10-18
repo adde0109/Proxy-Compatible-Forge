@@ -8,9 +8,8 @@ import dev.neuralnexus.taterapi.meta.platforms.TaterMetadata;
 
 import net.minecraftforge.fml.common.Mod;
 
-@SuppressWarnings("unused")
 @Mod(PCF.MOD_ID)
-public class PCFForge {
+public final class PCFForge {
     Logger logger = Logger.create(PCF.MOD_ID);
 
     public PCFForge() {
@@ -26,8 +25,10 @@ public class PCFForge {
         // spotless:on
 
         String className = "";
-        if (mcv.isInRange(MinecraftVersions.V14, MinecraftVersions.V16_5)) {
+        if (mcv.isInRange(MinecraftVersions.V14, MinecraftVersions.V14)) {
             className = "org.adde0109.pcf.v1_14_4.forge.Initializer";
+        } else if (mcv.isInRange(MinecraftVersions.V15, MinecraftVersions.V16_5)) {
+            className = "org.adde0109.pcf.v1_16_5.forge.Initializer";
         } else if (mcv.isInRange(MinecraftVersions.V17, MinecraftVersions.V17_1)) {
             className = "org.adde0109.pcf.v1_17_1.forge.Initializer";
         } else if (mcv.isInRange(MinecraftVersions.V18, MinecraftVersions.V18_2)) {
