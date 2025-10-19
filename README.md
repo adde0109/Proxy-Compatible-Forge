@@ -66,15 +66,16 @@ The following assumes you've already [configured a Velocity proxy](<https://docs
 
 The config is located under `config/proxy-compatible-forge.toml` and has the following options:
 
-| Setting Group | Setting Name            | Default Value | Description                                                                                                                                        |
-|---------------|-------------------------|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `forwarding`  | `enabled`               | `true`        | Enable or disable player info forwarding. Changing this setting requires a server restart.                                                         |
-| `forwarding`  | `mode`                  | `\"MODERN\"`  | The type of forwarding to use.                                                                                                                     |
-| `forwarding`  | `secret`                | `\"\"`        | The secret used to verify the player's connection is coming from a trusted proxy. PCF will only handle argument wrapping if this setting is blank. |
-| `crossStitch` | `enabled`               | `true`        | Enable or disable CrossStitch support. Changing this setting requires a server restart.                                                            |
-| `crossStitch` | `forceWrappedArguments` | `[]`          | Add any incompatible modded or vanilla command argument types here.                                                                                |
-| `debug`       | `enabled`               | `false`       | Enable or disable debug logging.                                                                                                                   |
-| `debug`       | `disabledMixins`        | `[]`          | List of mixins to disable. Use the Mixin's name and prefix it with it's partial or full package name.                                              |
+| Setting Group | Setting Name                | Default Value | Description                                                                                                                                        |
+|---------------|-----------------------------|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `forwarding`  | `enabled`                   | `true`        | Enable or disable player info forwarding. Changing this setting requires a server restart.                                                         |
+| `forwarding`  | `mode`                      | `\"MODERN\"`  | The type of forwarding to use.                                                                                                                     |
+| `forwarding`  | `secret`                    | `\"\"`        | The secret used to verify the player's connection is coming from a trusted proxy. PCF will only handle argument wrapping if this setting is blank. |
+| `crossStitch` | `enabled`                   | `true`        | Enable or disable CrossStitch support. Changing this setting requires a server restart.                                                            |
+| `crossStitch` | `forceWrappedArguments`     | `[]`          | Add any incompatible modded or vanilla command argument types here.                                                                                |
+| `crossStitch` | `forceWrapVanillaArguments` | `false`       | Force wrap vanilla command argument types. Useful for when the above setting gets a bit excessive.                                                 |
+| `debug`       | `enabled`                   | `false`       | Enable or disable debug logging.                                                                                                                   |
+| `debug`       | `disabledMixins`            | `[]`          | List of mixins to disable. Use the Mixin's name and prefix it with it's partial or full package name.                                              |
 
 ## Building the Project
 

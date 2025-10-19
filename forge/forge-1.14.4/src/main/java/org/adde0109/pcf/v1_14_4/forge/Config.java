@@ -58,6 +58,7 @@ public final class Config {
 
     private final ForgeConfigSpec.ConfigValue<Boolean> enableCrossStitch;
     private final ForgeConfigSpec.ConfigValue<List<? extends String>> forceWrappedArguments;
+    private final ForgeConfigSpec.ConfigValue<Boolean> forceWrapVanillaArguments;
 
     private final ForgeConfigSpec.ConfigValue<Boolean> enableDebug;
     private final ForgeConfigSpec.ConfigValue<List<? extends String>> disabledMixins;
@@ -84,6 +85,10 @@ public final class Config {
                 builder.comment(
                                 "Add any incompatible modded or vanilla command argument types here")
                         .defineList("forceWrappedArguments", List.of(), (obj) -> true);
+        forceWrapVanillaArguments =
+                builder.comment(
+                                "Force wrap vanilla command argument types. Useful for when the above setting gets a bit excessive.")
+                        .define("forceWrapVanillaArguments", false);
         builder.pop();
 
         builder.comment("Debug Settings").push("debug");
@@ -108,7 +113,8 @@ public final class Config {
                 .setCrossStitch(
                         new PCF.CrossStitch(
                                 Config.config.enableCrossStitch.get(),
-                                (List<String>) Config.config.forceWrappedArguments.get()));
+                                (List<String>) Config.config.forceWrappedArguments.get(),
+                                Config.config.forceWrapVanillaArguments.get()));
         PCF.instance()
                 .setDebug(
                         new PCF.Debug(

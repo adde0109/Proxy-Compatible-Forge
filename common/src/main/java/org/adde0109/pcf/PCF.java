@@ -78,7 +78,10 @@ public final class PCF {
 
     public record Forwarding(boolean enabled, Mode mode, String secret) {}
 
-    public record CrossStitch(boolean enabled, List<String> forceWrappedArguments) {}
+    public record CrossStitch(
+            boolean enabled,
+            List<String> forceWrappedArguments,
+            boolean forceWrapVanillaArguments) {}
 
     public record Debug(boolean enabled, List<String> disabledMixins) {}
 }
