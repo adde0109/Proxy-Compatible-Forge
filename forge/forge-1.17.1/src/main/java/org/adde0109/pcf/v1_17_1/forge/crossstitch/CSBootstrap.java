@@ -13,7 +13,7 @@ public final class CSBootstrap {
     public static boolean shouldWrapArgument(ResourceLocation identifier) {
         return PCF.instance().crossStitch().forceWrappedArguments().stream()
                         .anyMatch(identifier.toString()::equals)
-                || !(BUILT_IN_REGISTRY_KEYS.stream().anyMatch(identifier.getNamespace()::equals)
-                        || ArgumentEdgeCases.isArgumentEdgeCase(identifier.toString()));
+                || ArgumentEdgeCases.isArgumentEdgeCase(identifier.toString())
+                || BUILT_IN_REGISTRY_KEYS.stream().noneMatch(identifier.getNamespace()::equals);
     }
 }

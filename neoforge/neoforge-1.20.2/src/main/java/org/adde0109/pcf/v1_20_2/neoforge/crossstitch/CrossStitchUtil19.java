@@ -2,6 +2,7 @@ package org.adde0109.pcf.v1_20_2.neoforge.crossstitch;
 
 import static org.adde0109.pcf.v1_20_2.neoforge.crossstitch.CSBootstrap.commandArgumentResourceKey;
 import static org.adde0109.pcf.v1_20_2.neoforge.crossstitch.CSBootstrap.commandArgumentTypeId;
+import static org.adde0109.pcf.v1_20_2.neoforge.crossstitch.CSBootstrap.shouldWrapArgument;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 
@@ -34,18 +35,29 @@ public final class CrossStitchUtil19 {
             return;
         }
         Optional<ResourceLocation> identifier =
-                commandArgumentResourceKey(serializer)
-                        .map(ResourceKey::location)
-                        .filter(CSBootstrap::shouldWrapArgument);
+                commandArgumentResourceKey(serializer).map(ResourceKey::location);
         if (identifier.isEmpty()) {
             if (PCF.instance().debug().enabled()) {
-                PCF.logger.debug("Not wrapping argument with identifier: " + identifier);
+                PCF.logger.debug("Not wrapping argument with unknown identifier.");
+            }
+            return;
+        } else if (!shouldWrapArgument(identifier.get())) {
+            if (PCF.instance().debug().enabled()) {
+                PCF.logger.debug(
+                        "Not wrapping argument with identifier: "
+                                + identifier.get()
+                                + " and id "
+                                + commandArgumentTypeId(serializer));
             }
             return;
         }
 
         // Not a standard Minecraft argument type - so we need to wrap it
-        PCF.logger.debug("Wrapping argument with identifier: " + identifier.get());
+        PCF.logger.debug(
+                "Wrapping argument with identifier: "
+                        + identifier.get()
+                        + " and id "
+                        + commandArgumentTypeId(serializer));
         serializeWrappedArgumentType19(buf, serializer, properties);
         ci.cancel();
     }
