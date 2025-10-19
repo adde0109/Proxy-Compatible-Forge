@@ -1,19 +1,21 @@
 # Platform Compatibility
 
 ## Modern Forwarding and CrossStitch Command Wrapping
-| MC Version | Forge | NeoForge | SpongeForge | SpongeNeo |
-|------------|-------|----------|-------------|-----------|
-| 1.21.x     | ✅     | ✅        | ?           | ?         |
-| 1.20.x     | ✅     | ✅        | ?           | ?         |
-| 1.19.x     | ✅     | N/A      | ?           | N/A       |
-| 1.18.x     | ✅     | N/A      | ?           | N/A       |
-| 1.17.x     | ✅     | N/A      | ?           | N/A       |
-| 1.16.x     | ✅     | N/A      | ?           | N/A       |
-| 1.15.x     | ✅     | N/A      | N/A         | N/A       |
-| 1.14.x     | ✅     | N/A      | N/A         | N/A       |
-| 1.13.x     | ❌     | N/A      | N/A         | N/A       |
+| MC Version | Forge | NeoForge |
+|------------|-------|----------|
+| 1.21.x     | ✅     | ✅        |
+| 1.20.x     | ✅     | ✅        |
+| 1.19.x     | ✅     | N/A      |
+| 1.18.x     | ✅     | N/A      |
+| 1.17.x     | ✅     | N/A      |
+| 1.16.x     | ✅     | N/A      |
+| 1.15.x     | ✅     | N/A      |
+| 1.14.x     | ✅     | N/A      |
+| 1.13.x     | ❌     | N/A      |
 
 ## Modpack Compatibility
+Try adding [BeQuietNegotiator](<https://modrinth.com/mod/be-quiet-negotiator>) to your NeoForge client if you're trying to join a Vanilla server.
+
 | Modpack Name              | Modpack Version | MC Version | Modloader Version | As Primary/Forced-Host | Server Switching | Can Join Vanilla Servers | Notes                          |
 |---------------------------|-----------------|------------|-------------------|------------------------|------------------|--------------------------|--------------------------------|
 | ATM10                     | 4.12            | 1.21.1     | NeoForge 21.1.209 | ✅                      | ?                | ❌                        |                                |
