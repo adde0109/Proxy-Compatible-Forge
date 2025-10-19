@@ -98,21 +98,21 @@ public final class Config {
     @SuppressWarnings("unchecked")
     public static void reload() {
         String forwardingSecret = Config.config.forwardingSecret.get();
-        boolean enableForwarding =
-                Config.config.enableForwarding.get() && !forwardingSecret.isBlank();
-        Mode forwardingMode = Config.config.forwardingMode.get();
         PCF.instance()
                 .setForwarding(
-                        new PCF.Forwarding(enableForwarding, forwardingMode, forwardingSecret));
-
-        boolean enableCrossStitch = Config.config.enableCrossStitch.get();
-        List<String> forceWrappedArguments =
-                (List<String>) Config.config.forceWrappedArguments.get();
+                        new PCF.Forwarding(
+                                Config.config.enableForwarding.get() && !forwardingSecret.isBlank(),
+                                Config.config.forwardingMode.get(),
+                                forwardingSecret));
         PCF.instance()
-                .setCrossStitch(new PCF.CrossStitch(enableCrossStitch, forceWrappedArguments));
-
-        boolean enableDebug = Config.config.enableDebug.get();
-        List<String> disabledMixins = (List<String>) Config.config.disabledMixins.get();
-        PCF.instance().setDebug(new PCF.Debug(enableDebug, disabledMixins));
+                .setCrossStitch(
+                        new PCF.CrossStitch(
+                                Config.config.enableCrossStitch.get(),
+                                (List<String>) Config.config.forceWrappedArguments.get()));
+        PCF.instance()
+                .setDebug(
+                        new PCF.Debug(
+                                Config.config.enableDebug.get(),
+                                (List<String>) Config.config.disabledMixins.get()));
     }
 }

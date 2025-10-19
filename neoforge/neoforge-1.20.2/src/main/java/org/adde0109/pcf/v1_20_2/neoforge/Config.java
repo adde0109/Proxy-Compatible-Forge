@@ -2,9 +2,16 @@ package org.adde0109.pcf.v1_20_2.neoforge;
 
 import static org.adde0109.pcf.PCF.CONFIG_FILE_NAME;
 
+import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
 
+import dev.neuralnexus.taterapi.meta.MetaAPI;
+import dev.neuralnexus.taterapi.meta.MinecraftVersions;
+
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.config.IConfigSpec;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -13,9 +20,12 @@ import org.adde0109.pcf.forwarding.Mode;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 @ApiStatus.Internal
 public final class Config {
@@ -48,8 +58,52 @@ public final class Config {
                         .writingMode(WritingMode.REPLACE)
                         .build();
         config.load();
-        spec.correct(config);
-        spec.setConfig(config);
+        try { // Fix due to the return type of ModConfigSpec#correct being changed from int to void
+            ModConfigSpec.class.getMethod("correct", CommentedConfig.class).invoke(spec, config);
+            if (MetaAPI.instance().version().isAtLeast(MinecraftVersions.V21)) {
+                // This is unholy, maybe we should just parse the toml and grab the values manually
+                // TODO: Maybe swap to method handles
+                // spotless:off
+                //noinspection JavaReflectionMemberAccess
+                Constructor<ModConfig> modConfigConstructor =
+                        ModConfig.class.getDeclaredConstructor(
+                                ModConfig.Type.class,
+                                IConfigSpec.class,
+                                ModContainer.class,
+                                String.class,
+                                ReentrantLock.class);
+                modConfigConstructor.setAccessible(true);
+                ModConfig dummyModConfig =
+                        modConfigConstructor.newInstance(
+                                ModConfig.Type.COMMON,
+                                spec,
+                                null,
+                                CONFIG_FILE_NAME,
+                                new ReentrantLock());
+
+                Class<?> loadedConfigClass = Class.forName("net.neoforged.fml.config.LoadedConfig");
+                Constructor<?> constructor =
+                        loadedConfigClass.getDeclaredConstructor(CommentedConfig.class, Path.class, ModConfig.class);
+                constructor.setAccessible(true);
+
+                Object loadedConfig = constructor.newInstance(config, config.getNioPath(), dummyModConfig);
+                Class<?> loadedConfigInterface = IConfigSpec.class.getDeclaredClasses()[0];
+                ModConfigSpec.class
+                        .getMethod("acceptConfig", loadedConfigInterface)
+                        .invoke(spec, loadedConfig);
+                // spotless:on
+            } else {
+                ModConfigSpec.class
+                        .getMethod("acceptConfig", CommentedConfig.class)
+                        .invoke(spec, config);
+            }
+        } catch (ClassNotFoundException
+                | IllegalAccessException
+                | InstantiationException
+                | InvocationTargetException
+                | NoSuchMethodException e) {
+            PCF.logger.error("Failed to load config file", e);
+        }
     }
 
     private final ModConfigSpec.ConfigValue<Boolean> enableForwarding;
@@ -98,21 +152,21 @@ public final class Config {
     @SuppressWarnings("unchecked")
     public static void reload() {
         String forwardingSecret = Config.config.forwardingSecret.get();
-        boolean enableForwarding =
-                Config.config.enableForwarding.get() && !forwardingSecret.isBlank();
-        Mode forwardingMode = Config.config.forwardingMode.get();
         PCF.instance()
                 .setForwarding(
-                        new PCF.Forwarding(enableForwarding, forwardingMode, forwardingSecret));
-
-        boolean enableCrossStitch = Config.config.enableCrossStitch.get();
-        List<String> forceWrappedArguments =
-                (List<String>) Config.config.forceWrappedArguments.get();
+                        new PCF.Forwarding(
+                                Config.config.enableForwarding.get() && !forwardingSecret.isBlank(),
+                                Config.config.forwardingMode.get(),
+                                forwardingSecret));
         PCF.instance()
-                .setCrossStitch(new PCF.CrossStitch(enableCrossStitch, forceWrappedArguments));
-
-        boolean enableDebug = Config.config.enableDebug.get();
-        List<String> disabledMixins = (List<String>) Config.config.disabledMixins.get();
-        PCF.instance().setDebug(new PCF.Debug(enableDebug, disabledMixins));
+                .setCrossStitch(
+                        new PCF.CrossStitch(
+                                Config.config.enableCrossStitch.get(),
+                                (List<String>) Config.config.forceWrappedArguments.get()));
+        PCF.instance()
+                .setDebug(
+                        new PCF.Debug(
+                                Config.config.enableDebug.get(),
+                                (List<String>) Config.config.disabledMixins.get()));
     }
 }
