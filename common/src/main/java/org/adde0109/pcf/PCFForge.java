@@ -25,7 +25,7 @@ public final class PCFForge {
         // spotless:on
 
         String className = "";
-        if (mcv.isInRange(MinecraftVersions.V14, MinecraftVersions.V14)) {
+        if (mcv.isInRange(MinecraftVersions.V14, MinecraftVersions.V14_4)) {
             className = "org.adde0109.pcf.v1_14_4.forge.Initializer";
         } else if (mcv.isInRange(MinecraftVersions.V15, MinecraftVersions.V16_5)) {
             className = "org.adde0109.pcf.v1_16_5.forge.Initializer";
