@@ -107,7 +107,7 @@ public final class Config {
     }
 
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
-    private final ModConfigSpec.ConfigValue<Float> version;
+    private final ModConfigSpec.ConfigValue<Double> version;
 
     private final ModConfigSpec.ConfigValue<Boolean> enableForwarding;
     private final ModConfigSpec.ConfigValue<Mode> forwardingMode;
@@ -121,7 +121,7 @@ public final class Config {
     private final ModConfigSpec.ConfigValue<List<? extends String>> disabledMixins;
 
     Config(ModConfigSpec.Builder builder) {
-        version = builder.comment("Config version, DO NOT CHANGE THIS").define("version", 2.0f);
+        version = builder.comment("Config version, DO NOT CHANGE THIS").define("version", 2.0d);
 
         builder.comment("Player Info Forwarding Settings").push("forwarding");
         enableForwarding =

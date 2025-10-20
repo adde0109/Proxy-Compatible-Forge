@@ -1,3 +1,7 @@
+# Fun things I don't want to forget
+
+- Don't use floats in Neo/Forge toml files, it causes an infinite validation loop. Save a brain cell and use a double.
+
 # General Cross-Version Notes
 
 ## 1.15.2 -> 1.16.1
