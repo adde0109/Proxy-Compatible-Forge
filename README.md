@@ -1,5 +1,12 @@
 # Proxy Compatible Forge
 
+[![Github](https://img.shields.io/github/stars/adde0109/Proxy-Compatible-Forge)](https://github.com/adde0109/Proxy-Compatible-Forge)
+[![Github Issues](https://img.shields.io/github/issues/adde0109/Proxy-Compatible-Forge?label=Issues)](https://github.com/adde0109/Proxy-Compatible-Forge/issues)
+[![Discord](https://img.shields.io/discord/1064999648101671003?color=7289da&logo=discord&logoColor=white)](https://discord.gg/Vusz9pBNyJ)
+
+[![Github Releases](https://img.shields.io/github/downloads/adde0109/Proxy-Compatible-Forge/total?label=Github&logo=github&color=181717)](https://github.com/adde0109/Proxy-Compatible-Forge/releases)
+[![Modrinth](https://img.shields.io/modrinth/dt/proxy-compatible-forge?label=Modrinth&logo=modrinth&color=00AF5C)](https://modrinth.com/mod/proxy-compatible-forge)
+
 Special thanks to [FabricProxy-Lite](<https://github.com/OKTW-Network/FabricProxy-Lite>) and
 [CrossStitch](<https://github.com/VelocityPowered/CrossStitch>) for spearheading in the modded proxy space. We've done
 our fair share of work porting things and tailoring them to a Neo/Forge environment, but nonetheless we stand on the shoulders of giants.
@@ -11,6 +18,7 @@ This mod brings Velocity's [modern forwarding](<https://docs.papermc.io/velocity
 ### Supported Versions/Platforms
 
 - Forge versions 1.14-1.21.10
+  - [MixinBootstrap](https://modrinth.com/mod/mixinbootstrap) is required on Forge 1.14.x - 1.15.1
 - NeoForge versions 1.20.1-1.21.10
 - SpongeForge/SpongeNeo
   - PCF shouldn't be needed, as Sponge supports legacy+modern forwarding and command argument wrapping
@@ -37,11 +45,24 @@ serialized correctly. Only caveat being that `forge:enum` cannot send any extra 
 underlying vanilla registration system being brittle with generics.
 </sup></sub>
 
-In some rare cases mods will register their command arguments to the wrong registry or make modifications to vanilla
-arguments, bypassing PCF's argument wrapper. In such cases, you can add the custom argument's ID to PCF's
+In some rare cases mods will register their command arguments under the `minecraft` namespace or make modifications to
+vanilla arguments, bypassing PCF's argument wrapper. In such cases, you can add the custom argument's ID to PCF's
 `forceWrappedArguments` setting to force PCF to wrap the argument.
 
-If you find any wild args, please open an issue so we can add them to the default config.
+In situations where mods inject and register their arguments before Vanilla does, offsetting all the argument ID values,
+you can enable the `forceWrapVanillaArguments` setting to force-wrap the `minecraft` and `brigadier` namespaces.
+This is more of a band-aid solution as the offset argument IDs cannot be read by Velocity, and if the argument IDs on
+the client have the same offset Velocity commands cannot be read by the client, preventing connections entirely unless
+you disable all commands on the proxy via permissions or by removing plugins that add commands.
+
+The easiest way to tell if this is happening is to enable PCF's debug logging in the config and check to see if
+`brigadier:boolean` has an argument ID other than `0`.
+
+A common fix for this is for the mod in question to move their registration mixin to `RETURN`, and to ensure that their
+argument's registration specifies their modid as the namespace.
+
+If you find any wild args, please open an issue so we can add them to the default config,
+or so we can use the information provided to write up a PR for the mod causing the issue. 
 
 ## How to Get Started
 
