@@ -36,6 +36,11 @@ Currently, PCF only supports the default modern forwarding (v1) variant of the p
 
 ### Modded Command Argument Wrapping, aka [CrossStitch](<https://github.com/VelocityPowered/CrossStitch>)
 
+This resolves errors such as:
+```
+io.netty.handler.codec.CorruptedFrameException: Error decoding class com.velocitypowered.proxy.protocol.packet.AvailableCommandsPacket
+```
+
 PCF ports this Fabric mod's ability to wrap modded command arguments, allowing them to be sent through Velocity without
 there needing to be a custom packet deserializer for each and every command argument mods add.
 
@@ -97,6 +102,32 @@ The config is located under `config/proxy-compatible-forge.toml` and has the fol
 | `crossStitch` | `forceWrapVanillaArguments` | `false`       | Force wrap vanilla command argument types. Useful for when the above setting gets a bit excessive.                                                 |
 | `debug`       | `enabled`                   | `false`       | Enable or disable debug logging.                                                                                                                   |
 | `debug`       | `disabledMixins`            | `[]`          | List of mixins to disable. Use the Mixin's name and prefix it with it's partial or full package name.                                              |
+
+### Common Issues
+
+#### Too Many Channels
+
+**Client Error:**
+```
+Invalid payload REGISTER!
+```
+
+**Velocity:**
+
+Velocity Fix: Add `-Dvelocity.max-known-packs=#` to the Velocity's startup arguments,
+where `#` is a number that is 64 + number-of-mods*1.5 (round up).
+
+Eg: For 40 mods, use `64 + 40*1.5 = 124`, so `-Dvelocity.max-known-packs=124`
+
+**Paper Server Error:**
+```
+[00:00:00 ERROR]: Couldn't register custom payload
+java.lang.IllegalStateException: Cannot register channel 'modid:channel'. Too many channels registered!
+```
+
+Paper Fix: Add `-Dpaper.disableChannelLimit=true` to the Paper server's startup arguments
+
+Notes: Due to the amount of channels and mods at play, textures/items may be mismatched on the client when joining a Vanilla server.
 
 ## Building the Project
 
