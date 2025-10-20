@@ -14,8 +14,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.v1_14_4.forge.crossstitch.compat.RegisterForestryArguments;
-import org.adde0109.pcf.v1_14_4.forge.crossstitch.compat.RegisterForgeArguments;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Map;
@@ -39,12 +37,6 @@ public final class CrossStitchUtil14 {
         ArgumentCommandNode<SharedSuggestionProvider, ?> argNode =
                 (ArgumentCommandNode<SharedSuggestionProvider, ?>) node;
         ArgumentType<?> argumentType = argNode.getType();
-
-        // Forge didn't implement arg serializers on some versions
-        RegisterForgeArguments.applyFixes(argumentType);
-
-        // Forestry didn't implement arg serializers on some versions
-        RegisterForestryArguments.applyFixes(argumentType);
 
         Object entry = ArgumentTypesUtil.getEntry(argumentType);
         if (entry == null) {
