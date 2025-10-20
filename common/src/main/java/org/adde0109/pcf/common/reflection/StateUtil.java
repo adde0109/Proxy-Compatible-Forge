@@ -1,7 +1,9 @@
 package org.adde0109.pcf.common.reflection;
 
-import dev.neuralnexus.taterapi.MinecraftVersion;
-import dev.neuralnexus.taterapi.Platform;
+import dev.neuralnexus.taterapi.meta.MetaAPI;
+import dev.neuralnexus.taterapi.meta.MinecraftVersion;
+import dev.neuralnexus.taterapi.meta.MinecraftVersions;
+import dev.neuralnexus.taterapi.meta.Platform;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
@@ -12,16 +14,16 @@ public class StateUtil {
     private static final Enum<?>[] cachedStateEnumConstants;
 
     static {
-        MinecraftVersion mcv = MinecraftVersion.get();
-        Platform p = Platform.get();
+        MinecraftVersion mcv = MetaAPI.instance().version();
+        Platform p = MetaAPI.instance().platform();
         String slplClassName = "net.minecraft.server.network.ServerLoginPacketListenerImpl";
         String stateFieldName = "state";
-        if (mcv.isInRange(MinecraftVersion.V1_14_4, MinecraftVersion.V1_16_5)) {
+        if (mcv.isInRange(MinecraftVersions.V14_4, MinecraftVersions.V16_5)) {
             stateFieldName = "field_147328_g";
             slplClassName = "net.minecraft.network.login.ServerLoginNetHandler";
-        } else if (mcv.isInRange(MinecraftVersion.V1_17, MinecraftVersion.V1_20_4)
-                && p.isForgeBased()
-                && !p.isNeoForgeBased()) {
+        } else if (mcv.isInRange(MinecraftVersions.V17, MinecraftVersions.V20_4)
+                && p.isForge()
+                && !p.isNeoForge()) {
             stateFieldName = "f_10019_";
         }
         String slplStateClassName = slplClassName + "$State";

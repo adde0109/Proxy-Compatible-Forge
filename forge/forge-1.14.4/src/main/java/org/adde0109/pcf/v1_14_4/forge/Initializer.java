@@ -2,33 +2,48 @@ package org.adde0109.pcf.v1_14_4.forge;
 
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ExtensionPoint;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 import net.minecraftforge.fml.network.FMLNetworkConstants;
 
 import org.adde0109.pcf.PCF;
+import org.adde0109.pcf.v1_14_4.forge.crossstitch.compat.RegisterForestryArguments;
+import org.adde0109.pcf.v1_14_4.forge.crossstitch.compat.RegisterForgeArguments;
+import org.adde0109.pcf.v1_14_4.forge.forwarding.FWDBootstrap;
 import org.apache.commons.lang3.tuple.Pair;
 
 @SuppressWarnings("unused")
-public class Initializer {
+public final class Initializer {
     public static void init() {
-        PCF.resourceLocation = ResourceLocation::new;
-        PCF.component = TextComponent::new;
+        FWDBootstrap.RESOURCE_LOCATION = ResourceLocation::new;
+        FWDBootstrap.COMPONENT = TextComponent::new;
+        FWDBootstrap.init();
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.spec);
+        ModLoadingContext context = ModLoadingContext.get();
 
-        ModLoadingContext.get()
-                .registerExtensionPoint(
-                        ExtensionPoint.DISPLAYTEST,
-                        () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+        context.registerExtensionPoint(
+                ExtensionPoint.DISPLAYTEST,
+                () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 
-        MinecraftForge.EVENT_BUS.addListener(
-                (FMLServerAboutToStartEvent event) -> {
-                    Config.setupForwarding();
-                    Config.setupModdedArgumentTypes();
-                });
+        FMLModContainer container =
+                ModList.get()
+                        .getModContainerById(PCF.MOD_ID)
+                        .map(FMLModContainer.class::cast)
+                        .orElseThrow();
+        context.registerConfig(ModConfig.Type.COMMON, Config.spec, PCF.CONFIG_FILE_NAME);
+
+        IEventBus eventBus = container.getEventBus();
+        if (eventBus == null) return;
+        eventBus.addListener((ModConfig.ConfigReloading event) -> Config.reload());
+
+        // Forge didn't implement arg serializers on some versions
+        RegisterForgeArguments.applyFix();
+
+        // Forestry didn't implement arg serializers on some versions
+        RegisterForestryArguments.applyFix();
     }
 }

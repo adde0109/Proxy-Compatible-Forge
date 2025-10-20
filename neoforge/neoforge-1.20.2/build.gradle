@@ -2,11 +2,6 @@ base {
     archivesName = "${project_id}-neoforge-${minecraft_version}"
 }
 
-dependencies {
-    compileOnly("net.neoforged:neoforge:20.2.${neo_version}")
-    compileOnly(project(":common"))
-}
-
 unimined.minecraft(sourceSets.main) {
     version(minecraft_version)
     neoForge {
@@ -16,4 +11,18 @@ unimined.minecraft(sourceSets.main) {
         mojmap()
     }
     defaultRemapJar = true
+}
+
+repositories {
+    // Forgified Fabric API
+    maven {
+        url = "https://maven.su5ed.dev/releases"
+    }
+}
+
+dependencies {
+    compileOnly("net.neoforged:neoforge:20.2.${neo_version}")
+    compileOnly(project(":common"))
+
+    modImplementation("org.sinytra.forgified-fabric-api:fabric-networking-api-v1:4.3.0+ab6ec1d119")
 }

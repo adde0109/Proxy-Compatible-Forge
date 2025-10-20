@@ -1,12 +1,15 @@
 package org.adde0109.pcf.mixin.v1_20_2.neoforge.login;
 
+import static org.adde0109.pcf.common.ModernForwarding.handleForwardingPacket;
+import static org.adde0109.pcf.v1_20_2.neoforge.forwarding.FWDBootstrap.DIRECT_CONN_ERR;
+import static org.adde0109.pcf.v1_20_2.neoforge.forwarding.FWDBootstrap.PLAYER_INFO_CHANNEL;
+
 import com.mojang.authlib.GameProfile;
 
-import dev.neuralnexus.conditionalmixins.annotations.ReqMCVersion;
-import dev.neuralnexus.conditionalmixins.annotations.ReqMappings;
-import dev.neuralnexus.taterapi.Mappings;
-import dev.neuralnexus.taterapi.MinecraftVersion;
-import dev.neuralnexus.taterapi.Platform;
+import dev.neuralnexus.taterapi.meta.Mappings;
+import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
+import dev.neuralnexus.taterapi.muxins.annotations.ReqMCVersion;
+import dev.neuralnexus.taterapi.muxins.annotations.ReqMappings;
 
 import io.netty.buffer.Unpooled;
 
@@ -15,13 +18,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import net.minecraft.network.protocol.login.custom.DiscardedQueryPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.PCF;
+import org.adde0109.pcf.common.ModernForwarding;
 import org.adde0109.pcf.common.abstractions.Connection;
 import org.adde0109.pcf.common.abstractions.Payload;
 import org.adde0109.pcf.common.reflection.StateUtil;
+import org.adde0109.pcf.v1_20_2.neoforge.Compatibility;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -32,8 +36,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@ReqMappings(Mappings.MOJMAP)
-@ReqMCVersion(min = MinecraftVersion.V1_20_2)
+@ReqMappings(Mappings.MOJANG)
+@ReqMCVersion(min = MinecraftVersion.V20_2)
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ModernForwardingMixin {
     @Shadow @Final net.minecraft.network.Connection connection;
@@ -48,13 +52,13 @@ public abstract class ModernForwardingMixin {
     @Inject(method = "handleHello", at = @At("HEAD"), cancellable = true)
     private void onHandleHello(CallbackInfo ci) {
         Validate.validState(StateUtil.stateEquals(this, 0), "Unexpected hello packet");
-        if (PCF.modernForwarding != null) {
+        if (PCF.instance().forwarding().enabled()) {
             StateUtil.setState(this, 0);
             PCF.logger.debug("Sent Forward Request");
             this.connection.send(
                     new ClientboundCustomQueryPacket(
-                            PCF.QUERY_ID,
-                            new DiscardedQueryPayload((ResourceLocation) PCF.channelResource())));
+                            ModernForwarding.QUERY_ID,
+                            new DiscardedQueryPayload(PLAYER_INFO_CHANNEL)));
             this.pcf$listen = true;
             ci.cancel();
         }
@@ -64,7 +68,7 @@ public abstract class ModernForwardingMixin {
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
     private void onHandleCustomQueryPacket(
             ServerboundCustomQueryAnswerPacket packet, CallbackInfo ci) {
-        if ((packet.transactionId() == PCF.QUERY_ID)
+        if ((packet.transactionId() == ModernForwarding.QUERY_ID)
                 && StateUtil.stateEquals(this, 0)
                 && this.pcf$listen) {
             this.pcf$listen = false;
@@ -75,21 +79,15 @@ public abstract class ModernForwardingMixin {
                 FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
                 packet.payload().write(data);
 
-                // NeoForge 1.20.2 start - Work around NeoForge's SimpleQueryPayload
-                if (Platform.get().isNeoForgeBased()
-                        && MinecraftVersion.get().is(MinecraftVersion.V1_20_2)) {
-                    data.readVarInt();
-                    data.readResourceLocation();
-                }
-                // NeoForge 1.20.2 end - Work around NeoForge's SimpleQueryPayload
+                Compatibility.neoForgeReadSimpleQueryPayload(data);
+                Compatibility.applyFFAPIFix(this);
 
                 this.authenticatedProfile =
-                        PCF.modernForwarding.handleForwardingPacket(
-                                (Payload) data, (Connection) connection);
+                        handleForwardingPacket((Payload) data, (Connection) connection);
                 this.arclight$preLogin();
                 StateUtil.setState(this, 4);
             } catch (Exception e) {
-                this.shadow$disconnect((Component) PCF.directConnErrComponent());
+                this.shadow$disconnect(DIRECT_CONN_ERR);
                 PCF.logger.warn("Exception verifying forwarded player info", e);
             }
             ci.cancel();

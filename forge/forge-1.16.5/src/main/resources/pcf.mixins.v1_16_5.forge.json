@@ -7,8 +7,8 @@
   "required": true,
   "plugin": "org.adde0109.pcf.mixin.plugin.PCFMixinPlugin",
   "package": "org.adde0109.pcf.mixin",
-  "server": [
-    "v1_16_5.forge.command.CommandsMixin",
-    "v1_16_5.forge.command.WrappableCommandsPacketMixin"
+  "server": [],
+  "mixins": [
+    "v1_16_5.forge.crossstitch.CommandsPacketMixin"
   ]
 }

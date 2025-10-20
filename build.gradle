@@ -1,6 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import kotlin.jvm.functions.Function1
 import xyz.wagyourtail.jvmdg.gradle.task.DowngradeJar
 import xyz.wagyourtail.jvmdg.gradle.task.ShadeJar
 
@@ -107,6 +108,12 @@ subprojects {
         // NeuralNexus Mirror
         maven {
             name = 'NeuralNexus Mirror'
+            url = 'https://maven.neuralnexus.dev/snapshots'
+        }
+
+        // NeuralNexus Mirror
+        maven {
+            name = 'NeuralNexus Mirror'
             url = 'https://maven.neuralnexus.dev/mirror'
         }
 
@@ -115,12 +122,20 @@ subprojects {
             name = "minecraft-repo"
             url = "https://libraries.minecraft.net/"
         }
+
+        // Modrinth
+        maven {
+            name = "Modrinth"
+            url = "https://api.modrinth.com/maven"
+        }
     }
 
     dependencies {
         compileOnly("org.jetbrains:annotations:24.1.0")
         compileOnly("org.spongepowered:mixin:0.8.5")
-        compileOnly("dev.neuralnexus:conditional-mixins:0.1.1")
+        compileOnly("dev.neuralnexus.taterlib.lite:base:0.1.0-SNAPSHOT")
+        compileOnly("dev.neuralnexus.taterlib.lite:metadata:0.1.0-SNAPSHOT")
+        compileOnly("dev.neuralnexus.taterlib.lite:muxins:0.1.0-SNAPSHOT")
     }
 
     spotless {
@@ -136,7 +151,10 @@ subprojects {
             importOrder()
             removeUnusedImports()
             cleanthat()
-            googleJavaFormat('1.17.0').aosp().formatJavadoc(true).reorderImports(true)
+            googleJavaFormat('1.24.0')
+                    .aosp()
+                    .formatJavadoc(true)
+                    .reorderImports(true)
             formatAnnotations()
         }
     }
@@ -163,9 +181,9 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 var platformVersions = [:]
-platformVersions.put("forge", Arrays.asList("1.14.4", "1.16.5", "1.17.1", "1.18",
-        "1.19", "1.19.1", "1.19.3", "1.20.2", "1.20.6", "1.21"))
-platformVersions.put("neoforge", Arrays.asList("1.20.2", "1.21"))
+platformVersions.put("forge", Arrays.asList("1.14.4", "1.16.5", "1.17.1", "1.18.2",
+        "1.19.2", "1.19.4", "1.20.4", "1.20.6", "1.21.5", "1.21.10"))
+platformVersions.put("neoforge", Arrays.asList("1.20.2", "1.21.10"))
 
 tasks.register("buildAllTheStuffNowBcGradleIsDumb", Task) {
     dependsOn(":common:build")
@@ -180,7 +198,7 @@ tasks.register("shadeAndRelocate", ShadowJar) {
     relocate("dev.neuralnexus.conditionalmixins", "org.adde0109.pcf.lib.conditionalmixins")
     relocate("dev.neuralnexus.taterapi", "org.adde0109.pcf.lib.taterapi")
 
-    String mc_version = '1.14-1.21.1'
+    String mc_version = '1.14-1.21.9'
     archiveFileName = "proxy-compatible-forge-${version}-mono.jar"
     destinationDirectory = file("./build/libs")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -214,6 +232,17 @@ tasks.register("customDowngrade", DowngradeJar) {
 
 tasks.register("customShadeDowngradedApi", ShadeJar) {
     inputFile = tasks.customDowngrade.archiveFile
+    shadePath = new Function1<String, String>() {
+        @Override
+        String invoke(String path) {
+            def s = path
+            s = s.contains(".") ? s.substring(0, s.indexOf(".")) : s
+            s = s.contains("-") ? s.substring(0, s.lastIndexOf("-")) : s
+            s = s.replaceAll(/[.;\[\/]/, "-")
+                    .replace("pcf", "org/adde0109/pcf/lib/jvmdg")
+            return s
+        }
+    }
     archiveFileName = "pcf-${version}.jar"
 }
 
