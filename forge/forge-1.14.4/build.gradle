@@ -1,3 +1,7 @@
+dependencies {
+    compileOnly(project(":common"))
+}
+
 unimined.minecraft(sourceSets.main) {
     version(minecraft_version)
     minecraftForge {
@@ -16,12 +20,6 @@ unimined.minecraft(sourceSets.main) {
         }
         archiveFileName = "pcf-forge-${minecraft_version}-${project.version}.jar"
     }
-}
-
-dependencies {
-    compileOnly(project(":common"))
-
-    modImplementation("maven.modrinth:forestry:6.0.14")
 }
 
 tasks.build.dependsOn(remapJar)

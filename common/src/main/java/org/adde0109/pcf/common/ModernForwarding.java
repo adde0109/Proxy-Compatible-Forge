@@ -7,6 +7,7 @@ import com.mojang.authlib.properties.PropertyMap;
 
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
+import dev.neuralnexus.taterapi.meta.Platforms;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.abstractions.Connection;
@@ -78,6 +79,18 @@ public final class ModernForwarding {
         final String ip = data.readUtf();
         conn.setAddress(
                 new InetSocketAddress(ip, ((InetSocketAddress) conn.remoteAddress()).getPort()));
+
+        //
+        System.out.println("------------------------------------------------------");
+        System.out.println(MetaAPI.instance().version());
+        System.out.println(MetaAPI.instance().version().version());
+        System.out.println(
+                MetaAPI.instance().meta(Platforms.FORGE).orElseThrow().minecraftVersion());
+        System.out.println(
+                MetaAPI.instance().meta(Platforms.BUKKIT).orElseThrow().minecraftVersion());
+        System.out.println(
+                MetaAPI.instance().meta(Platforms.ARCLIGHT).orElseThrow().minecraftVersion());
+        System.out.println("------------------------------------------------------");
 
         final GameProfile profile;
         if (isAtLeast21_9) { // com.mojang:authlib:7.0.0 or newer
