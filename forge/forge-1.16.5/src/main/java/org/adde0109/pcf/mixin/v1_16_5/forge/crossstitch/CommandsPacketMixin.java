@@ -1,24 +1,20 @@
 package org.adde0109.pcf.mixin.v1_16_5.forge.crossstitch;
 
-import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.arguments.ArgumentType;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import dev.neuralnexus.taterapi.muxins.annotations.ReqMCVersion;
 import dev.neuralnexus.taterapi.muxins.annotations.ReqMappings;
 
-import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.v1_14_4.forge.crossstitch.CrossStitchUtil14;
+import org.adde0109.pcf.v1_16_5.forge.crossstitch.CrossStitchUtil16;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.Map;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 /**
  * Adapted from <a
@@ -29,19 +25,15 @@ import java.util.Map;
 @Mixin(ClientboundCommandsPacket.class)
 public abstract class CommandsPacketMixin {
     // spotless:off
-    @Inject(cancellable = true, method = "writeNode",
+    @Redirect(method = "writeNode",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/commands/synchronization/ArgumentTypes;serialize(Lnet/minecraft/network/FriendlyByteBuf;Lcom/mojang/brigadier/arguments/ArgumentType;)V"))
-    // spotless:on
-    private static void writeNode$wrapInVelocityModArgument(
-            FriendlyByteBuf buf,
-            CommandNode<SharedSuggestionProvider> node,
-            Map<CommandNode<SharedSuggestionProvider>, Integer> map,
-            CallbackInfo ci) {
+    private static void writeNode$wrapInVelocityModArgument(FriendlyByteBuf buf, ArgumentType<?> argumentType) {
         try {
-            CrossStitchUtil14.writeNode$wrapInVelocityModArgument(buf, node, map, ci);
+            CrossStitchUtil16.writeNode$wrapInVelocityModArgument16(buf, argumentType);
         } catch (Exception e) {
             PCF.logger.error(
-                    "Failed to serialize command argument type: " + node.getClass().getName(), e);
+                    "Failed to serialize command argument type: " + argumentType.getClass().getName(), e);
         }
     }
+    // spotless:on
 }

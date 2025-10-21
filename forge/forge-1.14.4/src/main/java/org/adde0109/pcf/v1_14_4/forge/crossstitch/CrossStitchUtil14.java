@@ -59,7 +59,7 @@ public final class CrossStitchUtil14 {
     }
 
     @SuppressWarnings("unchecked")
-    private static void serializeWrappedArgumentType(
+    public static void serializeWrappedArgumentType(
             FriendlyByteBuf buf, ArgumentType<?> argumentType, Object entry) {
         buf.writeResourceLocation(MOD_ARGUMENT_INDICATOR);
         buf.writeResourceLocation((ResourceLocation) ArgumentTypesUtil.getName(entry));
