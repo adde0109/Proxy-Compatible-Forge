@@ -44,12 +44,6 @@ io.netty.handler.codec.CorruptedFrameException: Error decoding class com.velocit
 PCF ports this Fabric mod's ability to wrap modded command arguments, allowing them to be sent through Velocity without
 there needing to be a custom packet deserializer for each and every command argument mods add.
 
-<sub><sup>
-Fun note: PCF also fixes Forge 1.14-1.15.2 so the `forge:enum` and `forge:modlist` command arguments are
-serialized correctly. Only caveat being that `forge:enum` cannot send any extra data on those versions due to the
-underlying vanilla registration system being brittle with generics.
-</sup></sub>
-
 In some rare cases mods will register their command arguments under the `minecraft` namespace or make modifications to
 vanilla arguments, bypassing PCF's argument wrapper. In such cases, you can add the custom argument's ID to PCF's
 `forceWrappedArguments` setting to force PCF to wrap the argument.
