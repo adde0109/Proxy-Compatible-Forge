@@ -7,16 +7,15 @@ base {
 }
 
 dependencies {
-    compileOnly("com.google.code.gson:gson:2.11.0")
-    compileOnly("com.mojang:authlib:7.0.61")
-    compileOnly("com.google.guava:guava:33.3.1-jre")
-    compileOnly("io.netty:netty-buffer:4.1.25.Final")
-    compileOnly("org.ow2.asm:asm-tree:6.2")
+    compileOnly(libs.mojang.authlib)
+    compileOnly(libs.guava)
+    compileOnly(libs.netty.buffer)
+    compileOnly(libs.asm.tree)
 
-    compileOnly("dev.neuralnexus:entrypoint-spoof:0.1.26")
-    implementation("dev.neuralnexus.taterlib.lite:base:0.1.0-SNAPSHOT")
-    implementation("dev.neuralnexus.taterlib.lite:metadata:0.1.0-SNAPSHOT")
-    implementation("dev.neuralnexus.taterlib.lite:muxins:0.1.0-SNAPSHOT")
+    compileOnly(libs.entrypoint.spoof)
+    implementation(libs.taterlib.lite.base)
+    implementation(libs.taterlib.lite.metadata)
+    implementation(libs.taterlib.lite.muxins)
 }
 
 tasks.withType(ProcessResources).configureEach {

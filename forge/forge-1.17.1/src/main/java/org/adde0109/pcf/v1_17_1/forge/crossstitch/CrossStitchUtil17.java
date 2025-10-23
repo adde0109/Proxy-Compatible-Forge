@@ -20,6 +20,8 @@ import org.adde0109.pcf.v1_14_4.forge.crossstitch.ArgumentTypesUtil;
 public final class CrossStitchUtil17 {
     private static final ResourceLocation MOD_ARGUMENT_INDICATOR =
             new ResourceLocation("crossstitch:mod_argument");
+    private static final ResourceLocation EMPTY_IDENTIFIER = new ResourceLocation("");
+    private static final int ZERO_LENGTH = 0;
 
     @SuppressWarnings("unchecked")
     public static void writeNode$wrapInVelocityModArgument17(
@@ -31,8 +33,10 @@ public final class CrossStitchUtil17 {
 
         if (entry == null) {
             PCF.logger.debug(
-                    "ArgumentTypes has no entry for type: " + argumentType.getClass().getName());
-            buf.writeResourceLocation(new ResourceLocation(""));
+                    "Wrapping entryless argument type: " + argumentType.getClass().getName());
+            buf.writeResourceLocation(MOD_ARGUMENT_INDICATOR);
+            buf.writeResourceLocation(EMPTY_IDENTIFIER);
+            buf.writeVarInt(ZERO_LENGTH);
             return;
         }
 
@@ -49,6 +53,9 @@ public final class CrossStitchUtil17 {
 
         // Not a standard Minecraft argument type - so we need to wrap it
         PCF.logger.debug("Wrapping argument with identifier: " + identifier);
+        if (PCF.instance().debug().enabled()) {
+            PCF.logger.debug("Wrapping argument with type: " + argumentType.getClass().getName());
+        }
         serializeWrappedArgumentType(buf, argumentType, entry);
     }
 

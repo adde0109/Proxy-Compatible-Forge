@@ -131,11 +131,11 @@ subprojects {
     }
 
     dependencies {
-        compileOnly("org.jetbrains:annotations:24.1.0")
-        compileOnly("org.spongepowered:mixin:0.8.5")
-        compileOnly("dev.neuralnexus.taterlib.lite:base:0.1.0-SNAPSHOT")
-        compileOnly("dev.neuralnexus.taterlib.lite:metadata:0.1.0-SNAPSHOT")
-        compileOnly("dev.neuralnexus.taterlib.lite:muxins:0.1.0-SNAPSHOT")
+        compileOnly(libs.annotations)
+        compileOnly(libs.mixin)
+        compileOnly(libs.taterlib.lite.base)
+        compileOnly(libs.taterlib.lite.metadata)
+        compileOnly(libs.taterlib.lite.muxins)
     }
 
     spotless {

@@ -23,13 +23,13 @@ public class CommandsPacketMixin {
     // spotless:off
     @Redirect(method = "writeNode",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/commands/synchronization/ArgumentTypes;serialize(Lnet/minecraft/network/FriendlyByteBuf;Lcom/mojang/brigadier/arguments/ArgumentType;)V"))
-    // spotless:on
-    private static void writeNode$wrapInVelocityModArgument(
-            FriendlyByteBuf buf, ArgumentType<?> argumentType) {
+    private static void writeNode$wrapInVelocityModArgument(FriendlyByteBuf buf, ArgumentType<?> argumentType) {
         try {
             CrossStitchUtil17.writeNode$wrapInVelocityModArgument17(buf, argumentType);
         } catch (Exception e) {
-            PCF.logger.error("Failed to serialize command argument type: " + argumentType, e);
+            PCF.logger.error(
+                    "Failed to serialize command argument type: " + argumentType.getClass().getName(), e);
         }
     }
+    // spotless:on
 }
