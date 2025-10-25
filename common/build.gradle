@@ -10,6 +10,7 @@ dependencies {
     compileOnly(libs.mojang.authlib)
     compileOnly(libs.guava)
     compileOnly(libs.netty.buffer)
+    compileOnly(libs.netty.codec)
     compileOnly(libs.asm.tree)
 
     compileOnly(libs.entrypoint.spoof)
