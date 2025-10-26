@@ -1,17 +1,18 @@
 package org.adde0109.pcf.forwarding.modern;
 
+import static org.adde0109.pcf.common.ByteBufUtils.readVarInt;
+import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MAX_SUPPORTED_FORWARDING_VERSION;
+import static org.adde0109.pcf.forwarding.modern.VelocityProxy.checkIntegrity;
+import static org.adde0109.pcf.forwarding.modern.VelocityProxy.readAddress;
+
 import io.netty.buffer.ByteBuf;
+
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.abstractions.Connection;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Optional;
-
-import static org.adde0109.pcf.common.ByteBufUtils.readVarInt;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MAX_SUPPORTED_FORWARDING_VERSION;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.checkIntegrity;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.readAddress;
 
 public final class ModernForwarding {
     public static Optional<String> forward(ByteBuf buf, Connection connection) {

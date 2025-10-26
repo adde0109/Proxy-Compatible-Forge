@@ -1,11 +1,13 @@
 package org.adde0109.pcf.common;
 
 import com.mojang.authlib.GameProfile;
+
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
 import java.lang.reflect.Method;
 import java.util.UUID;
+
 
 public record NameAndId(String name, UUID id) {
     private static final boolean isAtLeast21_9 =
@@ -16,7 +18,10 @@ public record NameAndId(String name, UUID id) {
     static {
         if (isAtLeast21_9) {
             try {
+                // TODO MethodHandle this
+                //noinspection JavaReflectionMemberAccess
                 nameMethod = GameProfile.class.getMethod("getName");
+                //noinspection JavaReflectionMemberAccess
                 idMethod = GameProfile.class.getMethod("getId");
             } catch (NoSuchMethodException e) {
                 throw new ExceptionInInitializerError(e);

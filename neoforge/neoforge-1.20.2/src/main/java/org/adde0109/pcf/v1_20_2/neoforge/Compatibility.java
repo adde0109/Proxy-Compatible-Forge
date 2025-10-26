@@ -71,7 +71,7 @@ public final class Compatibility {
      * @param serverLoginPacketListener an instance of ServerLoginPacketListenerImpl
      */
     @SuppressWarnings({"UnstableApiUsage", "unchecked"})
-    public static void applyFFAPIFix(Object serverLoginPacketListener) {
+    public static void applyFFAPIFix(Object serverLoginPacketListener, int queryId) {
         if (!shouldApplyFFAPIFix) {
             return;
         }
@@ -85,7 +85,7 @@ public final class Compatibility {
                     slnaLookup.findGetter(ServerLoginNetworkAddon.class, "channels", Map.class);
             Map<Integer, ?> channels = (Map<Integer, ?>) channelsMH.invokeExact(addon);
 
-            channels.remove(ModernForwarding.QUERY_ID);
+            channels.remove(queryId);
         } catch (IllegalAccessException | NoSuchFieldException | NoSuchMethodException e) {
             PCF.logger.warn("Lookup Exception applying FFAPI fix", e);
         } catch (Throwable e) {

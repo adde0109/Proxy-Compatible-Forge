@@ -88,10 +88,13 @@ public final class VelocityProxy {
         return InetAddresses.forString(readUtf(buf));
     }
 
+    @SuppressWarnings("JavaReflectionMemberAccess")
     public static @NotNull GameProfile createProfile(final ByteBuf buf) {
         final GameProfile profile;
         if (isAtLeast21_9) { // com.mojang:authlib:7.0.0 or newer
-            profile = new GameProfile(readUUID(buf), readUtf(buf, 16), new PropertyMap(readProperties(buf)));
+            profile =
+                    new GameProfile(
+                            readUUID(buf), readUtf(buf, 16), new PropertyMap(readProperties(buf)));
         } else {
             profile = new GameProfile(readUUID(buf), readUtf(buf, 16));
             try {

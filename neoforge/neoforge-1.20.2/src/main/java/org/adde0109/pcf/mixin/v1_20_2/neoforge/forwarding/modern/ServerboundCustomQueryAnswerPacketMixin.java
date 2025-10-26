@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v1_20_2.neoforge.network;
+package org.adde0109.pcf.mixin.v1_20_2.neoforge.forwarding.modern;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
@@ -9,7 +9,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload;
 
-import org.adde0109.pcf.common.ModernForwarding;
 import org.adde0109.pcf.common.abstractions.Payload;
 import org.adde0109.pcf.v1_20_2.neoforge.Compatibility;
 import org.adde0109.pcf.v1_20_2.neoforge.login.QueryAnswerPayload;
@@ -20,12 +19,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import static org.adde0109.pcf.forwarding.modern.VelocityProxy.QUERY_IDS;
+
 /**
  * <a
  * href="https://github.com/PaperMC/Paper/blob/bd5867a96f792f0eb32c1d249bb4bbc1d8338d14/patches/server/0009-MC-Utils.patch#L6040-L6050">Adapted
  * from Paper</a>
  */
-@SuppressWarnings({"DataFlowIssue", "RedundantCast"})
+@SuppressWarnings("DataFlowIssue")
 @ReqMappings(Mappings.MOJANG)
 @ReqMCVersion(min = MinecraftVersion.V20_2)
 @Mixin(ServerboundCustomQueryAnswerPacket.class)
@@ -37,10 +38,8 @@ public class ServerboundCustomQueryAnswerPacketMixin {
             int queryId,
             FriendlyByteBuf buf,
             CallbackInfoReturnable<CustomQueryAnswerPayload> cir) {
-        if (queryId == ModernForwarding.QUERY_ID) {
+        if (QUERY_IDS.contains(queryId)) {
             // spotless:off
-            // Paper start - MC Utils - default query payloads
-            // Note: Added interface cast to make it cross-version compatible
             FriendlyByteBuf buffer = (FriendlyByteBuf) ((Payload) buf).readNullable((buf2) -> {
                 int i = buf2.readableBytes();
                 if (i >= 0 && i <= MAX_PAYLOAD_SIZE) {
@@ -50,9 +49,8 @@ public class ServerboundCustomQueryAnswerPacketMixin {
                 }
             });
             cir.setReturnValue(buffer == null ? null : new QueryAnswerPayload(buffer));
-            // Paper end - MC Utils - default query payloads
-            Compatibility.neoForgeReturnSimpleQueryPayload(buffer, cir);
             // spotless:on
+            Compatibility.neoForgeReturnSimpleQueryPayload(buffer, cir);
             cir.cancel();
         }
     }

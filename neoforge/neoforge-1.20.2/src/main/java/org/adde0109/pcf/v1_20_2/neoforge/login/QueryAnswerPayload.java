@@ -1,5 +1,7 @@
 package org.adde0109.pcf.v1_20_2.neoforge.login;
 
+import io.netty.buffer.ByteBuf;
+
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload;
 
@@ -10,11 +12,9 @@ import org.jetbrains.annotations.NotNull;
  * href="https://github.com/PaperMC/Paper/blob/bd5867a96f792f0eb32c1d249bb4bbc1d8338d14/patches/server/0009-MC-Utils.patch#L6059-L6073">Simplified
  * version of Paper's implementation</a>
  */
-// Paper start - MC Utils - default query payloads
-public record QueryAnswerPayload(FriendlyByteBuf buffer) implements CustomQueryAnswerPayload {
+public record QueryAnswerPayload(ByteBuf buffer) implements CustomQueryAnswerPayload {
     @Override
-    public void write(@NotNull FriendlyByteBuf buff) {
-        buff.writeBytes(buffer().copy());
+    public void write(final @NotNull FriendlyByteBuf buf) {
+        buf.writeBytes(this.buffer().copy());
     }
 }
-// Paper end - MC Utils - default query payloads
