@@ -13,7 +13,6 @@ import net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload;
 import net.neoforged.neoforge.network.custom.payload.SimpleQueryPayload;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.common.ModernForwarding;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.lang.invoke.MethodHandle;
@@ -55,13 +54,13 @@ public final class Compatibility {
      * @param cir The mixin's callback returnable
      */
     public static void neoForgeReturnSimpleQueryPayload(
-            FriendlyByteBuf buffer, CallbackInfoReturnable<CustomQueryAnswerPayload> cir) {
+            FriendlyByteBuf buffer, int queryId, CallbackInfoReturnable<CustomQueryAnswerPayload> cir) {
         if (isNeoForge1_20_2) {
             cir.setReturnValue(
                     buffer == null
                             ? null
                             : SimpleQueryPayload.outbound(
-                                    buffer, ModernForwarding.QUERY_ID, PLAYER_INFO_CHANNEL));
+                                    buffer, queryId, PLAYER_INFO_CHANNEL));
         }
     }
 

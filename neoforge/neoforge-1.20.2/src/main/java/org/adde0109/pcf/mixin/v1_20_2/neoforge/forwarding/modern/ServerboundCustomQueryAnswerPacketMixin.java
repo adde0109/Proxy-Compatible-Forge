@@ -50,7 +50,7 @@ public class ServerboundCustomQueryAnswerPacketMixin {
             });
             cir.setReturnValue(buffer == null ? null : new QueryAnswerPayload(buffer));
             // spotless:on
-            Compatibility.neoForgeReturnSimpleQueryPayload(buffer, cir);
+            Compatibility.neoForgeReturnSimpleQueryPayload(buffer, queryId, cir);
             cir.cancel();
         }
     }

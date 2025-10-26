@@ -1,11 +1,11 @@
-package org.adde0109.pcf.mixin.v1_20_2.neoforge.forwarding.modern;
+package org.adde0109.pcf.mixin.v1_17_1.forge.forwarding.modern;
 
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.forward;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MAX_SUPPORTED_FORWARDING_VERSION;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.QUERY_IDS;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.createProfile;
-import static org.adde0109.pcf.v1_20_2.neoforge.forwarding.FWDBootstrap.COMPONENT;
-import static org.adde0109.pcf.v1_20_2.neoforge.forwarding.FWDBootstrap.PLAYER_INFO_CHANNEL;
+import static org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap.COMPONENT;
+import static org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap.PLAYER_INFO_CHANNEL;
 
 import com.mojang.authlib.GameProfile;
 
@@ -22,15 +22,15 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
-import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
+import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
 import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.NameAndId;
 import org.adde0109.pcf.common.abstractions.Connection;
-import org.adde0109.pcf.v1_20_2.neoforge.Compatibility;
-import org.adde0109.pcf.v1_20_2.neoforge.forwarding.modern.PlayerInfoChannelPayload;
+import org.adde0109.pcf.common.reflection.StateUtil;
+import org.objectweb.asm.Opcodes;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -43,54 +43,52 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
-@ReqMappings(Mappings.MOJANG)
-@ReqMCVersion(min = MinecraftVersion.V20_2)
+/**
+ * <a
+ * href="https://github.com/PaperMC/Paper-archive/blob/ver/1.19.4/patches/server/0874-Add-Velocity-IP-Forwarding-Support.patch">Adapted
+ * from Paper</a>
+ */
+@ReqMappings(Mappings.SEARGE)
+@ReqMCVersion(min = MinecraftVersion.V17, max = MinecraftVersion.V20_1)
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ServerLoginPacketListenerImplMixin {
     // spotless:off
     @Shadow @Final static Logger LOGGER;
-    @Shadow @Final net.minecraft.network.Connection connection;
-    @Shadow abstract void shadow$startClientVerification(GameProfile profile);
+    @Shadow @Final public net.minecraft.network.Connection connection;
+    @Shadow GameProfile gameProfile;
     @Shadow public abstract void shadow$disconnect(Component reason);
 
     @Unique private int pcf$velocityLoginMessageId = -1;
 
-    @Inject(method = "handleHello", cancellable = true, at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/server/network/ServerLoginPacketListenerImpl;startClientVerification(Lcom/mojang/authlib/GameProfile;)V"))
+    @Inject(method = "handleHello", cancellable = true, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD,
+            target = "Lnet/minecraft/server/network/ServerLoginPacketListenerImpl;state:Lnet/minecraft/server/network/ServerLoginPacketListenerImpl$State;"))
     // spotless:on
     private void onHandleHello(ServerboundHelloPacket packet, CallbackInfo ci) {
         if (PCF.instance().forwarding().enabled()) {
             this.pcf$velocityLoginMessageId = ThreadLocalRandom.current().nextInt();
-            QUERY_IDS.add(this.pcf$velocityLoginMessageId);
-            final ByteBuf buf = Unpooled.buffer();
+            final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
             buf.writeByte(MAX_SUPPORTED_FORWARDING_VERSION);
             this.connection.send(
                     new ClientboundCustomQueryPacket(
-                            this.pcf$velocityLoginMessageId,
-                            new PlayerInfoChannelPayload(PLAYER_INFO_CHANNEL, buf)));
+                            this.pcf$velocityLoginMessageId, PLAYER_INFO_CHANNEL, buf));
             PCF.logger.debug("Sent Forward Request");
             ci.cancel();
         }
     }
 
+    @SuppressWarnings("ConstantValue")
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
-    private void onHandleCustomQueryPacket(
-            ServerboundCustomQueryAnswerPacket packet, CallbackInfo ci) {
+    private void onHandleCustomQueryPacket(ServerboundCustomQueryPacket packet, CallbackInfo ci) {
         if (PCF.instance().forwarding().enabled()
-                && packet.transactionId() == this.pcf$velocityLoginMessageId) {
+                && packet.getTransactionId() == this.pcf$velocityLoginMessageId) {
             QUERY_IDS.remove(this.pcf$velocityLoginMessageId);
 
-            if (packet.payload() == null) {
+            final ByteBuf buf = packet.getData();
+            if (buf == null) {
                 this.shadow$disconnect(
                         COMPONENT.apply("This server requires you to connect with Velocity."));
-                ci.cancel();
                 return;
             }
-            final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-            packet.payload().write(buf);
-
-            Compatibility.neoForgeReadSimpleQueryPayload(buf);
-            Compatibility.applyFFAPIFix(this, this.pcf$velocityLoginMessageId);
 
             final Optional<String> disconnect = forward(buf, (Connection) this.connection);
             if (disconnect.isPresent()) {
@@ -99,8 +97,8 @@ public abstract class ServerLoginPacketListenerImplMixin {
                 return;
             }
 
-            final GameProfile profile = createProfile(buf);
-            final NameAndId nameAndId = new NameAndId(profile);
+            this.gameProfile = createProfile(buf);
+            final NameAndId nameAndId = new NameAndId(this.gameProfile);
 
             // TODO Update handling for lazy sessions, might not even have to do anything?
 
@@ -113,7 +111,7 @@ public abstract class ServerLoginPacketListenerImplMixin {
                     return;
                 }
                 LOGGER.info("UUID of player {} is {}", nameAndId.name(), nameAndId.id());
-                this.shadow$startClientVerification(profile);
+                StateUtil.setState(this, 3);
             } catch (Exception ex) {
                 this.shadow$disconnect(COMPONENT.apply("Failed to verify username!"));
                 PCF.logger.warn("Exception verifying " + nameAndId.name(), ex);
