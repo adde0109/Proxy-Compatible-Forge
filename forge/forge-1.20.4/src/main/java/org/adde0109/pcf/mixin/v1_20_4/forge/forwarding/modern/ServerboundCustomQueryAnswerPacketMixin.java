@@ -1,4 +1,6 @@
-package org.adde0109.pcf.mixin.v1_20_4.forge.network;
+package org.adde0109.pcf.mixin.v1_20_4.forge.forwarding.modern;
+
+import static org.adde0109.pcf.forwarding.modern.VelocityProxy.QUERY_IDS;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
@@ -9,8 +11,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload;
 
-import org.adde0109.pcf.common.ModernForwarding;
-import org.adde0109.pcf.v1_20_4.forge.login.QueryAnswerPayload;
+import org.adde0109.pcf.common.abstractions.Payload;
+import org.adde0109.pcf.v1_20_4.forge.forwarding.modern.QueryAnswerPayload;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,6 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * href="https://github.com/PaperMC/Paper/blob/bd5867a96f792f0eb32c1d249bb4bbc1d8338d14/patches/server/0009-MC-Utils.patch#L6040-L6050">Adapted
  * from Paper</a>
  */
+@SuppressWarnings("DataFlowIssue")
 @ReqMappings(Mappings.SEARGE)
 @ReqMCVersion(min = MinecraftVersion.V20_2, max = MinecraftVersion.V20_4)
 @Mixin(ServerboundCustomQueryAnswerPacket.class)
@@ -34,19 +37,17 @@ public class ServerboundCustomQueryAnswerPacketMixin {
             int queryId,
             FriendlyByteBuf buf,
             CallbackInfoReturnable<CustomQueryAnswerPayload> cir) {
-        if (queryId == ModernForwarding.QUERY_ID) {
+        if (QUERY_IDS.contains(queryId)) {
             // spotless:off
-            // Paper start - MC Utils - default query payloads
-            FriendlyByteBuf buffer = buf.readNullable((buf2) -> {
+            FriendlyByteBuf buffer = (FriendlyByteBuf) ((Payload) buf).readNullable((buf2) -> {
                 int i = buf2.readableBytes();
                 if (i >= 0 && i <= MAX_PAYLOAD_SIZE) {
-                    return new FriendlyByteBuf(buf2.readBytes(i));
+                    return (Payload) new FriendlyByteBuf(buf2.readBytes(i));
                 } else {
                     throw new IllegalArgumentException("Payload may not be larger than " + MAX_PAYLOAD_SIZE + " bytes");
                 }
             });
             cir.setReturnValue(buffer == null ? null : new QueryAnswerPayload(buffer));
-            // Paper end - MC Utils - default query payloads
             // spotless:on
             cir.cancel();
         }

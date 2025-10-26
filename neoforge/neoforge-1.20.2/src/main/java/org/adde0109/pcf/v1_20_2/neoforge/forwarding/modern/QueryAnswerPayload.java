@@ -1,4 +1,4 @@
-package org.adde0109.pcf.v1_20_2.neoforge.login;
+package org.adde0109.pcf.v1_20_2.neoforge.forwarding.modern;
 
 import io.netty.buffer.ByteBuf;
 

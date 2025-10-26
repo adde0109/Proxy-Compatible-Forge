@@ -1,10 +1,10 @@
-package org.adde0109.pcf.mixin.v1_20_2.neoforge.forwarding.modern;
+package org.adde0109.pcf.mixin.v1_20_4.forge.forwarding.modern;
 
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MAX_SUPPORTED_FORWARDING_VERSION;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.QUERY_IDS;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.createProfile;
-import static org.adde0109.pcf.v1_20_2.neoforge.forwarding.FWDBootstrap.COMPONENT;
-import static org.adde0109.pcf.v1_20_2.neoforge.forwarding.FWDBootstrap.PLAYER_INFO_CHANNEL;
+import static org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap.COMPONENT;
+import static org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap.PLAYER_INFO_CHANNEL;
 
 import com.mojang.authlib.GameProfile;
 
@@ -29,8 +29,7 @@ import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.NameAndId;
 import org.adde0109.pcf.common.abstractions.Connection;
 import org.adde0109.pcf.forwarding.modern.ModernForwarding;
-import org.adde0109.pcf.v1_20_2.neoforge.Compatibility;
-import org.adde0109.pcf.v1_20_2.neoforge.forwarding.modern.PlayerInfoChannelPayload;
+import org.adde0109.pcf.v1_20_4.forge.forwarding.modern.PlayerInfoChannelPayload;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -43,8 +42,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
-@ReqMappings(Mappings.MOJANG)
-@ReqMCVersion(min = MinecraftVersion.V20_2)
+@ReqMappings(Mappings.SEARGE)
+@ReqMCVersion(min = MinecraftVersion.V20_2, max = MinecraftVersion.V20_4)
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ServerLoginPacketListenerImplMixin {
     // spotless:off
@@ -87,9 +86,6 @@ public abstract class ServerLoginPacketListenerImplMixin {
             final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
             packet.payload().write(buf);
             QUERY_IDS.remove(this.pcf$velocityLoginMessageId);
-
-            Compatibility.neoForgeReadSimpleQueryPayload(buf);
-            Compatibility.applyFFAPIFix(this, this.pcf$velocityLoginMessageId);
 
             final Optional<String> disconnect =
                     ModernForwarding.forward(buf, (Connection) this.connection);

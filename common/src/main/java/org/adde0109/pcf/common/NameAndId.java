@@ -5,9 +5,9 @@ import com.mojang.authlib.GameProfile;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.UUID;
-
 
 public record NameAndId(String name, UUID id) {
     private static final boolean isAtLeast21_9 =
@@ -17,6 +17,9 @@ public record NameAndId(String name, UUID id) {
 
     static {
         if (isAtLeast21_9) {
+            nameMethod = null;
+            idMethod = null;
+        } else {
             try {
                 // TODO MethodHandle this
                 //noinspection JavaReflectionMemberAccess
@@ -26,9 +29,6 @@ public record NameAndId(String name, UUID id) {
             } catch (NoSuchMethodException e) {
                 throw new ExceptionInInitializerError(e);
             }
-        } else {
-            nameMethod = null;
-            idMethod = null;
         }
     }
 
@@ -38,25 +38,25 @@ public record NameAndId(String name, UUID id) {
 
     private static String extractName(GameProfile profile) {
         if (isAtLeast21_9) {
+            return profile.name();
+        } else {
             try {
                 return (String) nameMethod.invoke(profile);
-            } catch (Exception e) {
+            } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new IllegalStateException("Failed to get name from GameProfile", e);
             }
-        } else {
-            return profile.name();
         }
     }
 
     private static UUID extractId(GameProfile profile) {
         if (isAtLeast21_9) {
+            return profile.id();
+        } else {
             try {
                 return (UUID) idMethod.invoke(profile);
-            } catch (Exception e) {
-                throw new IllegalStateException("Failed to get id from GameProfile", e);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new IllegalStateException("Failed to get name from GameProfile", e);
             }
-        } else {
-            return profile.id();
         }
     }
 }

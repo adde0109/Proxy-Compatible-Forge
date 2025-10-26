@@ -1,5 +1,7 @@
 package org.adde0109.pcf.mixin.v1_20_2.neoforge.forwarding.modern;
 
+import static org.adde0109.pcf.forwarding.modern.VelocityProxy.QUERY_IDS;
+
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import dev.neuralnexus.taterapi.muxins.annotations.ReqMCVersion;
@@ -11,15 +13,13 @@ import net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload;
 
 import org.adde0109.pcf.common.abstractions.Payload;
 import org.adde0109.pcf.v1_20_2.neoforge.Compatibility;
-import org.adde0109.pcf.v1_20_2.neoforge.login.QueryAnswerPayload;
+import org.adde0109.pcf.v1_20_2.neoforge.forwarding.modern.QueryAnswerPayload;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.QUERY_IDS;
 
 /**
  * <a
