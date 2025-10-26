@@ -27,8 +27,8 @@ import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.PCF;
+import org.adde0109.pcf.common.Connection;
 import org.adde0109.pcf.common.NameAndId;
-import org.adde0109.pcf.common.abstractions.Connection;
 import org.adde0109.pcf.common.reflection.StateUtil;
 import org.objectweb.asm.Opcodes;
 import org.slf4j.Logger;

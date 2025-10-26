@@ -27,8 +27,8 @@ import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.PCF;
+import org.adde0109.pcf.common.Connection;
 import org.adde0109.pcf.common.NameAndId;
-import org.adde0109.pcf.common.abstractions.Connection;
 import org.adde0109.pcf.v1_14_4.forge.reflection.StateUtil;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.Logger;
@@ -44,6 +44,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * <a
+ * href="https://github.com/PaperMC/Paper-archive/blob/ver/1.19.4/patches/server/0874-Add-Velocity-IP-Forwarding-Support.patch">Adapted
+ * from Paper</a>
+ */
 @ReqMappings(Mappings.LEGACY_SEARGE)
 @ReqMCVersion(min = MinecraftVersion.V14, max = MinecraftVersion.V16_5)
 @Mixin(ServerLoginPacketListenerImpl.class)

@@ -54,13 +54,14 @@ public final class Compatibility {
      * @param cir The mixin's callback returnable
      */
     public static void neoForgeReturnSimpleQueryPayload(
-            FriendlyByteBuf buffer, int queryId, CallbackInfoReturnable<CustomQueryAnswerPayload> cir) {
+            FriendlyByteBuf buffer,
+            int queryId,
+            CallbackInfoReturnable<CustomQueryAnswerPayload> cir) {
         if (isNeoForge1_20_2) {
             cir.setReturnValue(
                     buffer == null
                             ? null
-                            : SimpleQueryPayload.outbound(
-                                    buffer, queryId, PLAYER_INFO_CHANNEL));
+                            : SimpleQueryPayload.outbound(buffer, queryId, PLAYER_INFO_CHANNEL));
         }
     }
 

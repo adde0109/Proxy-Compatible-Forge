@@ -8,7 +8,7 @@ import static org.adde0109.pcf.forwarding.modern.VelocityProxy.readAddress;
 import io.netty.buffer.ByteBuf;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.common.abstractions.Connection;
+import org.adde0109.pcf.common.Connection;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
