@@ -26,9 +26,9 @@ import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.common.Connection;
 import org.adde0109.pcf.common.NameAndId;
 import org.adde0109.pcf.forwarding.modern.ModernForwarding;
+import org.adde0109.pcf.mixin.v1_20_2.neoforge.network.ConnectionAccessor;
 import org.adde0109.pcf.v1_20_2.neoforge.Compatibility;
 import org.adde0109.pcf.v1_20_2.neoforge.forwarding.modern.PlayerInfoChannelPayload;
 import org.slf4j.Logger;
@@ -90,13 +90,13 @@ public abstract class ServerLoginPacketListenerImplMixin {
             Compatibility.applyFFAPIFix(this, this.pcf$velocityLoginMessageId);
 
             final ModernForwarding.Data data =
-                    forward(buf, ((Connection) this.connection).remoteAddress());
+                    forward(buf, ((ConnectionAccessor) this.connection).pcf$getAddress());
             if (data == null) {
                 this.shadow$disconnect(COMPONENT.apply(data.disconnectMsg()));
                 ci.cancel();
                 return;
             }
-            ((Connection) this.connection).setAddress(data.address());
+            ((ConnectionAccessor) this.connection).pcf$setAddress(data.address());
 
             final NameAndId nameAndId = new NameAndId(data.profile());
 

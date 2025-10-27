@@ -12,7 +12,6 @@ import io.netty.buffer.ByteBuf;
 
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 
-import org.adde0109.pcf.common.FByteBuf;
 import org.adde0109.pcf.v1_20_2.neoforge.Compatibility;
 import org.adde0109.pcf.v1_20_2.neoforge.forwarding.modern.QueryAnswerPayload;
 import org.spongepowered.asm.mixin.Mixin;

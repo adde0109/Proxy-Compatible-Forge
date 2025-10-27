@@ -13,7 +13,6 @@ import io.netty.buffer.ByteBuf;
 import org.adde0109.pcf.PCF;
 import org.jetbrains.annotations.Nullable;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Set;
@@ -23,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class ModernForwarding {
     public static final Set<Integer> QUERY_IDS = ConcurrentHashMap.newKeySet();
 
-    public static Data forward(ByteBuf buf, InetSocketAddress remoteAddress) {
+    public static Data forward(ByteBuf buf, SocketAddress remoteAddress) {
         if (!checkIntegrity(buf)) {
             return new Data("Unable to verify player details");
         }
@@ -38,9 +37,9 @@ public final class ModernForwarding {
                             + MAX_SUPPORTED_FORWARDING_VERSION);
         }
 
-        final InetAddress ip = readAddress(buf);
-        final int port = remoteAddress.getPort();
-        final InetSocketAddress address = new InetSocketAddress(ip, port);
+        final InetSocketAddress address =
+                new InetSocketAddress(
+                        readAddress(buf), ((InetSocketAddress) remoteAddress).getPort());
         final GameProfile profile = createProfile(buf);
 
         return new Data(null, address, profile);

@@ -17,11 +17,11 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(ClientboundCustomQueryPacket.class)
 public interface ClientboundCustomQueryPacketAccessor {
     @Accessor("transactionId")
-    void setTransactionId(int transactionId);
+    void pcf$setTransactionId(int transactionId);
 
     @Accessor("identifier")
-    void setIdentifier(ResourceLocation identifier);
+    void pcf$setIdentifier(ResourceLocation identifier);
 
     @Accessor("data")
-    void setData(FriendlyByteBuf data);
+    void pcf$setData(FriendlyByteBuf data);
 }

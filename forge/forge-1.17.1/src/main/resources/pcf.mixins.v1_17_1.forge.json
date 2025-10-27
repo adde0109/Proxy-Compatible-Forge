@@ -11,6 +11,6 @@
     "v1_17_1.forge.crossstitch.CommandsPacketMixin",
     "v1_17_1.forge.forwarding.modern.ServerLoginPacketListenerImplMixin",
     "v1_17_1.forge.forwarding.modern.ServerLoginPacketListenerPlaceholderMixin",
-    "v1_17_1.forge.network.ConnectionMixin"
+    "v1_17_1.forge.network.ConnectionAccessor"
   ]
 }

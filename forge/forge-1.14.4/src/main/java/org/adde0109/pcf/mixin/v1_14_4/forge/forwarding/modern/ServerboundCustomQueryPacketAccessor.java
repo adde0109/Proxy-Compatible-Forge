@@ -16,8 +16,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(ServerboundCustomQueryPacket.class)
 public interface ServerboundCustomQueryPacketAccessor {
     @Accessor("transactionId")
-    int getTransactionId();
+    int pcf$getTransactionId();
 
     @Accessor("data")
-    FriendlyByteBuf getData();
+    FriendlyByteBuf pcf$getData();
 }

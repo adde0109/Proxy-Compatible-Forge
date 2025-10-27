@@ -26,10 +26,10 @@ import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.common.Connection;
 import org.adde0109.pcf.common.NameAndId;
 import org.adde0109.pcf.common.reflection.StateUtil;
 import org.adde0109.pcf.forwarding.modern.ModernForwarding;
+import org.adde0109.pcf.mixin.v1_17_1.forge.network.ConnectionAccessor;
 import org.objectweb.asm.Opcodes;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
@@ -65,11 +65,11 @@ public abstract class ServerLoginPacketListenerImplMixin {
     private void onHandleHello(ServerboundHelloPacket packet, CallbackInfo ci) {
         if (PCF.instance().forwarding().enabled()) {
             this.pcf$velocityLoginMessageId = ThreadLocalRandom.current().nextInt();
-            final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+            final ByteBuf buf = Unpooled.buffer();
             buf.writeByte(MAX_SUPPORTED_FORWARDING_VERSION);
             this.connection.send(
                     new ClientboundCustomQueryPacket(
-                            this.pcf$velocityLoginMessageId, PLAYER_INFO_CHANNEL, buf));
+                            this.pcf$velocityLoginMessageId, PLAYER_INFO_CHANNEL, new FriendlyByteBuf(buf)));
             PCF.logger.debug("Sent Forward Request");
             ci.cancel();
         }
@@ -90,13 +90,13 @@ public abstract class ServerLoginPacketListenerImplMixin {
             }
 
             final ModernForwarding.Data data =
-                    forward(buf, ((Connection) this.connection).remoteAddress());
+                    forward(buf, ((ConnectionAccessor) this.connection).pcf$getAddress());
             if (data == null) {
                 this.shadow$disconnect(COMPONENT.apply(data.disconnectMsg()));
                 ci.cancel();
                 return;
             }
-            ((Connection) this.connection).setAddress(data.address());
+            ((ConnectionAccessor) this.connection).pcf$setAddress(data.address());
 
             final NameAndId nameAndId = new NameAndId(data.profile());
 

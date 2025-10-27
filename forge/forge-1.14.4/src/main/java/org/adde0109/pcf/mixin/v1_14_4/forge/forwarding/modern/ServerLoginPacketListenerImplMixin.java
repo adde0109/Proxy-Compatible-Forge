@@ -26,9 +26,9 @@ import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.common.Connection;
 import org.adde0109.pcf.common.NameAndId;
 import org.adde0109.pcf.forwarding.modern.ModernForwarding;
+import org.adde0109.pcf.mixin.v1_14_4.forge.network.ConnectionAccessor;
 import org.adde0109.pcf.v1_14_4.forge.reflection.StateUtil;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.Logger;
@@ -67,12 +67,12 @@ public abstract class ServerLoginPacketListenerImplMixin {
         Validate.validState(StateUtil.stateEquals(this, 0), "Unexpected hello packet");
         if (PCF.instance().forwarding().enabled()) {
             this.pcf$velocityLoginMessageId = ThreadLocalRandom.current().nextInt();
-            final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+            final ByteBuf buf = Unpooled.buffer();
             buf.writeByte(MAX_SUPPORTED_FORWARDING_VERSION);
             ClientboundCustomQueryPacket queryPacket = new ClientboundCustomQueryPacket();
-            ((ClientboundCustomQueryPacketAccessor) queryPacket).setTransactionId(this.pcf$velocityLoginMessageId);
-            ((ClientboundCustomQueryPacketAccessor) queryPacket).setIdentifier(PLAYER_INFO_CHANNEL);
-            ((ClientboundCustomQueryPacketAccessor) queryPacket).setData(buf);
+            ((ClientboundCustomQueryPacketAccessor) queryPacket).pcf$setTransactionId(this.pcf$velocityLoginMessageId);
+            ((ClientboundCustomQueryPacketAccessor) queryPacket).pcf$setIdentifier(PLAYER_INFO_CHANNEL);
+            ((ClientboundCustomQueryPacketAccessor) queryPacket).pcf$setData(new FriendlyByteBuf(buf));
             this.connection.send(queryPacket);
             PCF.logger.debug("Sent Forward Request");
             ci.cancel();
@@ -84,11 +84,11 @@ public abstract class ServerLoginPacketListenerImplMixin {
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
     private void onHandleCustomQueryPacket(ServerboundCustomQueryPacket packet, CallbackInfo ci) {
         if (PCF.instance().forwarding().enabled()
-                && ((ServerboundCustomQueryPacketAccessor) packet).getTransactionId()
+                && ((ServerboundCustomQueryPacketAccessor) packet).pcf$getTransactionId()
                         == this.pcf$velocityLoginMessageId) {
             QUERY_IDS.remove(this.pcf$velocityLoginMessageId);
 
-            final ByteBuf buf = ((ServerboundCustomQueryPacketAccessor) packet).getData();
+            final ByteBuf buf = ((ServerboundCustomQueryPacketAccessor) packet).pcf$getData();
             if (buf == null) {
                 this.shadow$disconnect(
                         COMPONENT.apply("This server requires you to connect with Velocity."));
@@ -96,13 +96,13 @@ public abstract class ServerLoginPacketListenerImplMixin {
             }
 
             final ModernForwarding.Data data =
-                    forward(buf, ((Connection) this.connection).remoteAddress());
+                    forward(buf, ((ConnectionAccessor) this.connection).pcf$getAddress());
             if (data == null) {
                 this.shadow$disconnect(COMPONENT.apply(data.disconnectMsg()));
                 ci.cancel();
                 return;
             }
-            ((Connection) this.connection).setAddress(data.address());
+            ((ConnectionAccessor) this.connection).pcf$setAddress(data.address());
 
             final NameAndId nameAndId = new NameAndId(data.profile());
 
