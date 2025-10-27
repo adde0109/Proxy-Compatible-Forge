@@ -2,7 +2,7 @@ package org.adde0109.pcf.mixin.v1_20_2.neoforge.forwarding.modern;
 
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.forward;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MAX_SUPPORTED_FORWARDING_VERSION;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.QUERY_IDS;
+import static org.adde0109.pcf.forwarding.modern.ModernForwarding.QUERY_IDS;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.createProfile;
 import static org.adde0109.pcf.v1_20_2.neoforge.forwarding.FWDBootstrap.COMPONENT;
 import static org.adde0109.pcf.v1_20_2.neoforge.forwarding.FWDBootstrap.PLAYER_INFO_CHANNEL;
@@ -29,6 +29,7 @@ import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.Connection;
 import org.adde0109.pcf.common.NameAndId;
+import org.adde0109.pcf.forwarding.modern.ModernForwarding;
 import org.adde0109.pcf.v1_20_2.neoforge.Compatibility;
 import org.adde0109.pcf.v1_20_2.neoforge.forwarding.modern.PlayerInfoChannelPayload;
 import org.slf4j.Logger;
@@ -40,7 +41,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Optional;
+import java.net.InetSocketAddress;
 import java.util.concurrent.ThreadLocalRandom;
 
 @ReqMappings(Mappings.MOJANG)
@@ -78,8 +79,6 @@ public abstract class ServerLoginPacketListenerImplMixin {
             ServerboundCustomQueryAnswerPacket packet, CallbackInfo ci) {
         if (PCF.instance().forwarding().enabled()
                 && packet.transactionId() == this.pcf$velocityLoginMessageId) {
-            QUERY_IDS.remove(this.pcf$velocityLoginMessageId);
-
             if (packet.payload() == null) {
                 this.shadow$disconnect(
                         COMPONENT.apply("This server requires you to connect with Velocity."));
@@ -92,15 +91,15 @@ public abstract class ServerLoginPacketListenerImplMixin {
             Compatibility.neoForgeReadSimpleQueryPayload(buf);
             Compatibility.applyFFAPIFix(this, this.pcf$velocityLoginMessageId);
 
-            final Optional<String> disconnect = forward(buf, (Connection) this.connection);
-            if (disconnect.isPresent()) {
-                this.shadow$disconnect(COMPONENT.apply(disconnect.get()));
+            final ModernForwarding.Data data = forward(buf, ((Connection) this.connection).remoteAddress());
+            if (data == null) {
+                this.shadow$disconnect(COMPONENT.apply(data.disconnectMsg()));
                 ci.cancel();
                 return;
             }
+            ((Connection) this.connection).setAddress(data.address());
 
-            final GameProfile profile = createProfile(buf);
-            final NameAndId nameAndId = new NameAndId(profile);
+            final NameAndId nameAndId = new NameAndId(data.profile());
 
             // TODO Update handling for lazy sessions, might not even have to do anything?
 
@@ -113,7 +112,7 @@ public abstract class ServerLoginPacketListenerImplMixin {
                     return;
                 }
                 LOGGER.info("UUID of player {} is {}", nameAndId.name(), nameAndId.id());
-                this.shadow$startClientVerification(profile);
+                this.shadow$startClientVerification(data.profile());
             } catch (Exception ex) {
                 this.shadow$disconnect(COMPONENT.apply("Failed to verify username!"));
                 PCF.logger.warn("Exception verifying " + nameAndId.name(), ex);

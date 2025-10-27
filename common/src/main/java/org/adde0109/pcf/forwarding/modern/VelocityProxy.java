@@ -1,8 +1,8 @@
 package org.adde0109.pcf.forwarding.modern;
 
-import static org.adde0109.pcf.common.ByteBufUtils.readUUID;
-import static org.adde0109.pcf.common.ByteBufUtils.readUtf;
-import static org.adde0109.pcf.common.ByteBufUtils.readVarInt;
+import static org.adde0109.pcf.common.FByteBuf.readUUID;
+import static org.adde0109.pcf.common.FByteBuf.readUtf;
+import static org.adde0109.pcf.common.FByteBuf.readVarInt;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.net.InetAddresses;
@@ -25,8 +25,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -45,8 +43,6 @@ import javax.crypto.spec.SecretKeySpec;
  * into the Minecraft login process by using the 1.13 login plugin message packet.
  */
 public final class VelocityProxy {
-    public static final Set<Integer> QUERY_IDS = ConcurrentHashMap.newKeySet();
-
     private static final int SUPPORTED_FORWARDING_VERSION = 1;
     public static final int MODERN_FORWARDING_WITH_KEY = 2;
     public static final int MODERN_FORWARDING_WITH_KEY_V2 = 3;

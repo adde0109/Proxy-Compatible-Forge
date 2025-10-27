@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 @ReqMappings(Mappings.MOJANG)
@@ -20,8 +21,8 @@ import java.net.SocketAddress;
 public abstract class ConnectionMixin {
     @Shadow private SocketAddress address;
 
-    public SocketAddress conn$remoteAddress() {
-        return this.address;
+    public InetSocketAddress conn$remoteAddress() {
+        return (InetSocketAddress) this.address;
     }
 
     public void conn$setAddress(SocketAddress address) {

@@ -2,7 +2,7 @@ package org.adde0109.pcf.mixin.v1_17_1.forge.forwarding.modern;
 
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.forward;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MAX_SUPPORTED_FORWARDING_VERSION;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.QUERY_IDS;
+import static org.adde0109.pcf.forwarding.modern.ModernForwarding.QUERY_IDS;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.createProfile;
 import static org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap.COMPONENT;
 import static org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap.PLAYER_INFO_CHANNEL;
@@ -30,6 +30,7 @@ import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.Connection;
 import org.adde0109.pcf.common.NameAndId;
 import org.adde0109.pcf.common.reflection.StateUtil;
+import org.adde0109.pcf.forwarding.modern.ModernForwarding;
 import org.objectweb.asm.Opcodes;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
@@ -40,7 +41,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Optional;
+import java.net.InetSocketAddress;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -90,15 +91,15 @@ public abstract class ServerLoginPacketListenerImplMixin {
                 return;
             }
 
-            final Optional<String> disconnect = forward(buf, (Connection) this.connection);
-            if (disconnect.isPresent()) {
-                this.shadow$disconnect(COMPONENT.apply(disconnect.get()));
+            final ModernForwarding.Data data = forward(buf, ((Connection) this.connection).remoteAddress());
+            if (data == null) {
+                this.shadow$disconnect(COMPONENT.apply(data.disconnectMsg()));
                 ci.cancel();
                 return;
             }
+            ((Connection) this.connection).setAddress(data.address());
 
-            this.gameProfile = createProfile(buf);
-            final NameAndId nameAndId = new NameAndId(this.gameProfile);
+            final NameAndId nameAndId = new NameAndId(data.profile());
 
             // TODO Update handling for lazy sessions, might not even have to do anything?
 
@@ -110,6 +111,7 @@ public abstract class ServerLoginPacketListenerImplMixin {
                     ci.cancel();
                     return;
                 }
+                this.gameProfile = data.profile();
                 LOGGER.info("UUID of player {} is {}", nameAndId.name(), nameAndId.id());
                 StateUtil.setState(this, 3);
             } catch (Exception ex) {

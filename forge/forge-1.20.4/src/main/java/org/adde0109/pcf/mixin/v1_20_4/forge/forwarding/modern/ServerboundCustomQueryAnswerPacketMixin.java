@@ -1,22 +1,23 @@
 package org.adde0109.pcf.mixin.v1_20_4.forge.forwarding.modern;
 
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.QUERY_IDS;
+import static org.adde0109.pcf.forwarding.modern.ModernForwarding.QUERY_IDS;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import dev.neuralnexus.taterapi.muxins.annotations.ReqMCVersion;
 import dev.neuralnexus.taterapi.muxins.annotations.ReqMappings;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
-import net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload;
+import io.netty.buffer.ByteBuf;
 
-import org.adde0109.pcf.common.abstractions.Payload;
+import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
+
+import org.adde0109.pcf.common.FByteBuf;
 import org.adde0109.pcf.v1_20_4.forge.forwarding.modern.QueryAnswerPayload;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -25,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * href="https://github.com/PaperMC/Paper/blob/bd5867a96f792f0eb32c1d249bb4bbc1d8338d14/patches/server/0009-MC-Utils.patch#L6040-L6050">Adapted
  * from Paper</a>
  */
-@SuppressWarnings("DataFlowIssue")
+// TODO: Merge this with MOJANG mapped mixin
 @ReqMappings(Mappings.SEARGE)
 @ReqMCVersion(min = MinecraftVersion.V20_2, max = MinecraftVersion.V20_4)
 @Mixin(ServerboundCustomQueryAnswerPacket.class)
@@ -34,15 +35,14 @@ public class ServerboundCustomQueryAnswerPacketMixin {
 
     @Inject(method = "readPayload", at = @At("HEAD"), cancellable = true)
     private static void onReadPayload(
-            int queryId,
-            FriendlyByteBuf buf,
-            CallbackInfoReturnable<CustomQueryAnswerPayload> cir) {
+            int queryId, @Coerce ByteBuf buf, CallbackInfoReturnable<Object> cir) {
         if (QUERY_IDS.contains(queryId)) {
+            QUERY_IDS.remove(queryId);
             // spotless:off
-            FriendlyByteBuf buffer = (FriendlyByteBuf) ((Payload) buf).readNullable((buf2) -> {
+            ByteBuf buffer = FByteBuf.wrap(buf).readNullable((buf2) -> {
                 int i = buf2.readableBytes();
                 if (i >= 0 && i <= MAX_PAYLOAD_SIZE) {
-                    return (Payload) new FriendlyByteBuf(buf2.readBytes(i));
+                    return buf2.readBytes(i);
                 } else {
                     throw new IllegalArgumentException("Payload may not be larger than " + MAX_PAYLOAD_SIZE + " bytes");
                 }

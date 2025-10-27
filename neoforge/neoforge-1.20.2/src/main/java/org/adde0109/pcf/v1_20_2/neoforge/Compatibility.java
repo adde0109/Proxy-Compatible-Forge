@@ -6,10 +6,11 @@ import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.meta.Platforms;
 
+import io.netty.buffer.ByteBuf;
+
 import net.fabricmc.fabric.impl.networking.NetworkHandlerExtensions;
 import net.fabricmc.fabric.impl.networking.server.ServerLoginNetworkAddon;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload;
 import net.neoforged.neoforge.network.custom.payload.SimpleQueryPayload;
 
 import org.adde0109.pcf.PCF;
@@ -37,12 +38,12 @@ public final class Compatibility {
     /**
      * Read the id and ResourceLocation so PCF can continue reading the packet as normal
      *
-     * @param buffer The ByteBuf from the packet
+     * @param buf The ByteBuf from the packet
      */
-    public static void neoForgeReadSimpleQueryPayload(FriendlyByteBuf buffer) {
+    public static void neoForgeReadSimpleQueryPayload(FriendlyByteBuf buf) {
         if (isNeoForge1_20_2) {
-            buffer.readVarInt();
-            buffer.readResourceLocation();
+            buf.readVarInt();
+            buf.readResourceLocation();
         }
     }
 
@@ -50,18 +51,17 @@ public final class Compatibility {
      * Set the callback returnable to a SimpleQueryPayload to comply with NeoForge 1.20.2's
      * modification to ServerboundCustomQueryAnswerPacketMixin#readPayload's return type
      *
-     * @param buffer The ByteBuf to send
+     * @param buf The ByteBuf to send
      * @param cir The mixin's callback returnable
      */
     public static void neoForgeReturnSimpleQueryPayload(
-            FriendlyByteBuf buffer,
-            int queryId,
-            CallbackInfoReturnable<CustomQueryAnswerPayload> cir) {
+            ByteBuf buf, int queryId, CallbackInfoReturnable<Object> cir) {
         if (isNeoForge1_20_2) {
             cir.setReturnValue(
-                    buffer == null
+                    buf == null
                             ? null
-                            : SimpleQueryPayload.outbound(buffer, queryId, PLAYER_INFO_CHANNEL));
+                            : SimpleQueryPayload.outbound(
+                                    new FriendlyByteBuf(buf), queryId, PLAYER_INFO_CHANNEL));
         }
     }
 

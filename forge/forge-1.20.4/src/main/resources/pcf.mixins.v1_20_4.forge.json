@@ -10,8 +10,6 @@
   "server": [
     "v1_20_4.forge.crossstitch.ArgumentNodeStubMixin",
     "v1_20_4.forge.forwarding.modern.ServerboundCustomQueryAnswerPacketMixin",
-    "v1_20_4.forge.forwarding.modern.ServerLoginPacketListenerImplMixin",
-    "v1_20_4.forge.network.FriendlyByteBufMixin",
-    "v1_20_4.forge.network.FriendlyByteBufReadNullableMixin"
+    "v1_20_4.forge.forwarding.modern.ServerLoginPacketListenerImplMixin"
   ]
 }
