@@ -11,6 +11,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
 import org.adde0109.pcf.PCF;
+import org.adde0109.pcf.common.FByteBuf;
 import org.adde0109.pcf.v1_14_4.forge.crossstitch.ArgumentTypesUtil;
 
 /**
@@ -25,7 +26,7 @@ public final class CrossStitchUtil17 {
 
     @SuppressWarnings("unchecked")
     public static void writeNode$wrapInVelocityModArgument17(
-            FriendlyByteBuf buf, ArgumentType<?> argumentType) {
+            FByteBuf buf, ArgumentType<?> argumentType) {
         if (!PCF.instance().crossStitch().enabled()) {
             return;
         }
@@ -44,7 +45,7 @@ public final class CrossStitchUtil17 {
         if (!shouldWrapArgument(identifier)) {
             buf.writeResourceLocation(identifier);
             ((ArgumentSerializer<ArgumentType<?>>) ArgumentTypesUtil.getSerializer(entry))
-                    .serializeToNetwork(argumentType, buf);
+                    .serializeToNetwork(argumentType, (FriendlyByteBuf) buf.unwrap());
             if (PCF.instance().debug().enabled()) {
                 PCF.logger.debug("Not wrapping argument with identifier: " + identifier);
             }
@@ -61,9 +62,9 @@ public final class CrossStitchUtil17 {
 
     @SuppressWarnings("unchecked")
     private static void serializeWrappedArgumentType(
-            FriendlyByteBuf buf, ArgumentType<?> argumentType, Object entry) {
+            FByteBuf buf, ArgumentType<?> argumentType, Object entry) {
         buf.writeResourceLocation(MOD_ARGUMENT_INDICATOR);
-        buf.writeResourceLocation((ResourceLocation) ArgumentTypesUtil.getName(entry));
+        buf.writeResourceLocation(ArgumentTypesUtil.getName(entry));
 
         FriendlyByteBuf extraData = new FriendlyByteBuf(Unpooled.buffer());
         ((ArgumentSerializer<ArgumentType<?>>) ArgumentTypesUtil.getSerializer(entry))

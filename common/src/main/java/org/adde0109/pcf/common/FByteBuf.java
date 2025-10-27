@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.DecoderException;
+import io.netty.handler.codec.EncoderException;
 import io.netty.util.ByteProcessor;
 
 import org.jetbrains.annotations.Nullable;
@@ -23,6 +24,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 /** Utils copied from Minecraft's FriendlyByteBuf, Utf8String, and VarInt implementations */
+@SuppressWarnings("UnusedReturnValue")
 public final class FByteBuf extends ByteBuf {
     private final ByteBuf source;
 
@@ -55,8 +57,24 @@ public final class FByteBuf extends ByteBuf {
         return readUUID(this.source);
     }
 
-    public @Nullable <T> T readNullable(Function<FByteBuf, T> function) {
-        return this.readBoolean() ? function.apply(this) : null;
+    public ByteBuf writeUtf(String string, int maxLength) {
+        return writeUtf(this.source, string, maxLength);
+    }
+
+    public ByteBuf writeUtf(String string) {
+        return writeUtf(this.source, string, Short.MAX_VALUE);
+    }
+
+    public ByteBuf writeVarInt(int input) {
+        return writeVarInt(this.source, input);
+    }
+
+    public ByteBuf writeResourceLocation(Object resourceLocationIn) {
+        return writeResourceLocation(this.source, resourceLocationIn);
+    }
+
+    public @Nullable <T> T readNullable(Function<ByteBuf, T> function) {
+        return readNullable(this.source, function);
     }
 
     // ---------------- FriendlyByteBuf static methods -----------------
@@ -75,6 +93,41 @@ public final class FByteBuf extends ByteBuf {
 
     public static UUID readUUID(ByteBuf buf) {
         return new UUID(buf.readLong(), buf.readLong());
+    }
+
+    public static ByteBuf writeUtf(ByteBuf buf, String string, int maxLength) {
+        byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
+        if (bytes.length > maxLength) {
+            throw new EncoderException(
+                    "String too big (was "
+                            + bytes.length
+                            + " bytes encoded, max "
+                            + maxLength
+                            + ")");
+        } else {
+            writeVarInt(buf, bytes.length);
+            buf.writeBytes(bytes);
+            return buf;
+        }
+    }
+
+    public static ByteBuf writeVarInt(ByteBuf buf, int input) {
+        while ((input & -128) != 0) {
+            buf.writeByte(input & 127 | 128);
+            input >>>= 7;
+        }
+
+        buf.writeByte(input);
+        return buf;
+    }
+
+    public static ByteBuf writeResourceLocation(ByteBuf buf, Object resourceLocationIn) {
+        writeUtf(buf, resourceLocationIn.toString(), Short.MAX_VALUE);
+        return buf;
+    }
+
+    public static @Nullable <T> T readNullable(ByteBuf buf, Function<ByteBuf, T> function) {
+        return buf.readBoolean() ? function.apply(buf) : null;
     }
 
     // ---------------- ByteBuf methods -----------------

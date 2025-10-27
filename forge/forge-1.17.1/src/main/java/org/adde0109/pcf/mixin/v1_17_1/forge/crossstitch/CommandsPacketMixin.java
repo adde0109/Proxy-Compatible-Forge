@@ -11,6 +11,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
 
 import org.adde0109.pcf.PCF;
+import org.adde0109.pcf.common.FByteBuf;
 import org.adde0109.pcf.v1_17_1.forge.crossstitch.CrossStitchUtil17;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,10 +26,9 @@ public class CommandsPacketMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/commands/synchronization/ArgumentTypes;serialize(Lnet/minecraft/network/FriendlyByteBuf;Lcom/mojang/brigadier/arguments/ArgumentType;)V"))
     private static void writeNode$wrapInVelocityModArgument(FriendlyByteBuf buf, ArgumentType<?> argumentType) {
         try {
-            CrossStitchUtil17.writeNode$wrapInVelocityModArgument17(buf, argumentType);
+            CrossStitchUtil17.writeNode$wrapInVelocityModArgument17(FByteBuf.wrap(buf), argumentType);
         } catch (Exception e) {
-            PCF.logger.error(
-                    "Failed to serialize command argument type: " + argumentType.getClass().getName(), e);
+            PCF.logger.error("Failed to serialize command argument type: " + argumentType.getClass().getName(), e);
         }
     }
     // spotless:on

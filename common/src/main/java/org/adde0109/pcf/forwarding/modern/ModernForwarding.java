@@ -7,6 +7,7 @@ import static org.adde0109.pcf.forwarding.modern.VelocityProxy.createProfile;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.readAddress;
 
 import com.mojang.authlib.GameProfile;
+
 import io.netty.buffer.ByteBuf;
 
 import org.adde0109.pcf.PCF;
@@ -18,9 +19,7 @@ import java.net.SocketAddress;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Utility class for modern forwarding handling
- */
+/** Utility class for modern forwarding handling */
 public final class ModernForwarding {
     public static final Set<Integer> QUERY_IDS = ConcurrentHashMap.newKeySet();
 
@@ -47,7 +46,10 @@ public final class ModernForwarding {
         return new Data(null, address, profile);
     }
 
-    public record Data(@Nullable String disconnectMsg, @Nullable SocketAddress address, @Nullable GameProfile profile) {
+    public record Data(
+            @Nullable String disconnectMsg,
+            @Nullable SocketAddress address,
+            @Nullable GameProfile profile) {
         public Data(String disconnectMsg) {
             this(disconnectMsg, null, null);
         }

@@ -1,5 +1,6 @@
 package org.adde0109.pcf.mixin.v1_20_2.neoforge.forwarding.modern;
 
+import static org.adde0109.pcf.common.FByteBuf.readNullable;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.QUERY_IDS;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
@@ -38,7 +39,7 @@ public class ServerboundCustomQueryAnswerPacketMixin {
         if (QUERY_IDS.contains(queryId)) {
             QUERY_IDS.remove(queryId);
             // spotless:off
-            ByteBuf buffer = FByteBuf.wrap(buf).readNullable((buf2) -> {
+            ByteBuf buffer = readNullable(buf, (buf2) -> {
                 int i = buf2.readableBytes();
                 if (i >= 0 && i <= pcf$MAX_PAYLOAD_SIZE) {
                     return buf2.readBytes(i);

@@ -1,9 +1,8 @@
 package org.adde0109.pcf.mixin.v1_20_2.neoforge.forwarding.modern;
 
+import static org.adde0109.pcf.forwarding.modern.ModernForwarding.QUERY_IDS;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.forward;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MAX_SUPPORTED_FORWARDING_VERSION;
-import static org.adde0109.pcf.forwarding.modern.ModernForwarding.QUERY_IDS;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.createProfile;
 import static org.adde0109.pcf.v1_20_2.neoforge.forwarding.FWDBootstrap.COMPONENT;
 import static org.adde0109.pcf.v1_20_2.neoforge.forwarding.FWDBootstrap.PLAYER_INFO_CHANNEL;
 
@@ -41,7 +40,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.net.InetSocketAddress;
 import java.util.concurrent.ThreadLocalRandom;
 
 @ReqMappings(Mappings.MOJANG)
@@ -91,7 +89,8 @@ public abstract class ServerLoginPacketListenerImplMixin {
             Compatibility.neoForgeReadSimpleQueryPayload(buf);
             Compatibility.applyFFAPIFix(this, this.pcf$velocityLoginMessageId);
 
-            final ModernForwarding.Data data = forward(buf, ((Connection) this.connection).remoteAddress());
+            final ModernForwarding.Data data =
+                    forward(buf, ((Connection) this.connection).remoteAddress());
             if (data == null) {
                 this.shadow$disconnect(COMPONENT.apply(data.disconnectMsg()));
                 ci.cancel();
