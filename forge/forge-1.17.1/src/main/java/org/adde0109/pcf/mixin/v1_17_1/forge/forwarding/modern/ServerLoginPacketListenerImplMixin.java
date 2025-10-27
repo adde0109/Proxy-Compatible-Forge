@@ -69,7 +69,9 @@ public abstract class ServerLoginPacketListenerImplMixin {
             buf.writeByte(MAX_SUPPORTED_FORWARDING_VERSION);
             this.connection.send(
                     new ClientboundCustomQueryPacket(
-                            this.pcf$velocityLoginMessageId, PLAYER_INFO_CHANNEL, new FriendlyByteBuf(buf)));
+                            this.pcf$velocityLoginMessageId,
+                            PLAYER_INFO_CHANNEL,
+                            new FriendlyByteBuf(buf)));
             PCF.logger.debug("Sent Forward Request");
             ci.cancel();
         }
