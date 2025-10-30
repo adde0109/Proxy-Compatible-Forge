@@ -9,7 +9,6 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
-import net.minecraftforge.network.NetworkConstants;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.v1_14_4.forge.Config;
@@ -23,12 +22,9 @@ public final class Initializer {
         FWDBootstrap.init();
 
         ModLoadingContext context = ModLoadingContext.get();
-
         context.registerExtensionPoint(
                 IExtensionPoint.DisplayTest.class,
-                () ->
-                        new IExtensionPoint.DisplayTest(
-                                () -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+                IExtensionPoint.DisplayTest.IGNORE_SERVER_VERSION);
 
         FMLModContainer container =
                 ModList.get()

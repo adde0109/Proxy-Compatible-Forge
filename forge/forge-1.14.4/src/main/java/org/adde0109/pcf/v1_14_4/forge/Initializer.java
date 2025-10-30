@@ -25,7 +25,10 @@ public final class Initializer {
 
         context.registerExtensionPoint(
                 ExtensionPoint.DISPLAYTEST,
-                () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+                () ->
+                        Pair.of(
+                                () -> FMLNetworkConstants.IGNORESERVERONLY,
+                                (remoteVersion, isFromServer) -> true));
 
         FMLModContainer container =
                 ModList.get()

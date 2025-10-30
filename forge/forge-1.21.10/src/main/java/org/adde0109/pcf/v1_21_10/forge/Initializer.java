@@ -58,13 +58,9 @@ public final class Initializer {
 
         // TODO: Upstream ModLoadingContext getter into TaterLibLite Metadata
         FMLJavaModLoadingContext context = FMLJavaModLoadingContext.get();
-
         context.registerExtensionPoint(
                 IExtensionPoint.DisplayTest.class,
-                () ->
-                        new IExtensionPoint.DisplayTest(
-                                () -> IExtensionPoint.DisplayTest.IGNORESERVERONLY,
-                                (a, b) -> true));
+                IExtensionPoint.DisplayTest.IGNORE_SERVER_VERSION);
 
         ModContainer container = ModList.get().getModContainerById(PCF.MOD_ID).orElseThrow();
         context.registerConfig(ModConfig.Type.COMMON, Config.spec, PCF.CONFIG_FILE_NAME);

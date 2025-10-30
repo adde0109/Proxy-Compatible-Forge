@@ -16,7 +16,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.v1_14_4.forge.Config;
-import org.adde0109.pcf.v1_14_4.forge.forwarding.FWDBootstrap;
+import org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap;
 import org.adde0109.pcf.v1_20_4.forge.crossstitch.CSBootstrap;
 import org.adde0109.pcf.v1_20_4.forge.crossstitch.CSForgeBootstrap;
 
@@ -60,10 +60,7 @@ public final class Initializer {
 
         context.registerExtensionPoint(
                 IExtensionPoint.DisplayTest.class,
-                () ->
-                        new IExtensionPoint.DisplayTest(
-                                () -> IExtensionPoint.DisplayTest.IGNORESERVERONLY,
-                                (a, b) -> true));
+                IExtensionPoint.DisplayTest.IGNORE_SERVER_VERSION);
 
         FMLModContainer container =
                 ModList.get()

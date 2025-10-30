@@ -11,9 +11,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -60,14 +60,10 @@ public final class Initializer {
                     () -> Optional.of(ForgeRegistries.COMMAND_ARGUMENT_TYPES);
         }
 
-        FMLJavaModLoadingContext context = FMLJavaModLoadingContext.get();
-
+        ModLoadingContext context = ModLoadingContext.get();
         context.registerExtensionPoint(
                 IExtensionPoint.DisplayTest.class,
-                () ->
-                        new IExtensionPoint.DisplayTest(
-                                () -> IExtensionPoint.DisplayTest.IGNORESERVERONLY,
-                                (a, b) -> true));
+                IExtensionPoint.DisplayTest.IGNORE_SERVER_VERSION);
 
         FMLModContainer container =
                 ModList.get()
