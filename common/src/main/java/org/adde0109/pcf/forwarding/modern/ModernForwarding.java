@@ -1,7 +1,7 @@
 package org.adde0109.pcf.forwarding.modern;
 
 import static org.adde0109.pcf.common.FByteBuf.readVarInt;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MAX_SUPPORTED_FORWARDING_VERSION;
+import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_MAX_VERSION;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.checkIntegrity;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.createProfile;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.readAddress;
@@ -29,12 +29,12 @@ public final class ModernForwarding {
         PCF.logger.debug("Player-data validated!");
 
         int version = readVarInt(buf);
-        if (version > MAX_SUPPORTED_FORWARDING_VERSION) {
+        if (version > MODERN_MAX_VERSION) {
             throw new IllegalStateException(
                     "Unsupported forwarding version "
                             + version
                             + ", wanted up to "
-                            + MAX_SUPPORTED_FORWARDING_VERSION);
+                            + MODERN_MAX_VERSION);
         }
 
         final InetSocketAddress address =

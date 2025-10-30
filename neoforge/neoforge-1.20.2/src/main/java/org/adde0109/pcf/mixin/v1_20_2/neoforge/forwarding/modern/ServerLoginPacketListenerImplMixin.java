@@ -2,7 +2,7 @@ package org.adde0109.pcf.mixin.v1_20_2.neoforge.forwarding.modern;
 
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.QUERY_IDS;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.forward;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MAX_SUPPORTED_FORWARDING_VERSION;
+import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_PACKET;
 import static org.adde0109.pcf.v1_20_2.neoforge.forwarding.FWDBootstrap.COMPONENT;
 import static org.adde0109.pcf.v1_20_2.neoforge.forwarding.FWDBootstrap.PLAYER_INFO_CHANNEL;
 
@@ -15,7 +15,6 @@ import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import dev.neuralnexus.taterapi.muxins.annotations.ReqMCVersion;
 import dev.neuralnexus.taterapi.muxins.annotations.ReqMappings;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import net.minecraft.network.FriendlyByteBuf;
@@ -61,12 +60,10 @@ public abstract class ServerLoginPacketListenerImplMixin {
         if (PCF.instance().forwarding().enabled()) {
             this.pcf$velocityLoginMessageId = ThreadLocalRandom.current().nextInt();
             QUERY_IDS.add(this.pcf$velocityLoginMessageId);
-            final ByteBuf buf = Unpooled.buffer();
-            buf.writeByte(MAX_SUPPORTED_FORWARDING_VERSION);
             this.connection.send(
                     new ClientboundCustomQueryPacket(
                             this.pcf$velocityLoginMessageId,
-                            new PlayerInfoChannelPayload(PLAYER_INFO_CHANNEL, buf)));
+                            new PlayerInfoChannelPayload(PLAYER_INFO_CHANNEL, PLAYER_INFO_PACKET)));
             PCF.logger.debug("Sent Forward Request");
             ci.cancel();
         }

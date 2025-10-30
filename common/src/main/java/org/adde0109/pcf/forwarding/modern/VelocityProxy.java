@@ -11,9 +11,11 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 
 import dev.neuralnexus.taterapi.meta.MetaAPI;
+import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 import org.adde0109.pcf.PCF;
 import org.jetbrains.annotations.NotNull;
@@ -43,12 +45,24 @@ import javax.crypto.spec.SecretKeySpec;
  * into the Minecraft login process by using the 1.13 login plugin message packet.
  */
 public final class VelocityProxy {
-    private static final int SUPPORTED_FORWARDING_VERSION = 1;
-    public static final int MODERN_FORWARDING_WITH_KEY = 2;
-    public static final int MODERN_FORWARDING_WITH_KEY_V2 = 3;
-    public static final int MODERN_LAZY_SESSION = 4;
-    public static final byte MAX_SUPPORTED_FORWARDING_VERSION =
-            SUPPORTED_FORWARDING_VERSION; // MODERN_LAZY_SESSION;
+    private static final int MODERN_DEFAULT = 1;
+    private static final int MODERN_FORWARDING_WITH_KEY = 2;
+    private static final int MODERN_FORWARDING_WITH_KEY_V2 = 3;
+    private static final int MODERN_LAZY_SESSION = 4;
+    public static final byte MODERN_MAX_VERSION;
+    public static final ByteBuf PLAYER_INFO_PACKET;
+
+    static {
+        final MinecraftVersion version = MetaAPI.instance().version();
+        if (version.isAtLeast(MinecraftVersions.V19_3)) {
+            MODERN_MAX_VERSION = MODERN_DEFAULT; //MODERN_LAZY_SESSION;
+        } else {
+            MODERN_MAX_VERSION = MODERN_DEFAULT;
+        }
+        PLAYER_INFO_PACKET = Unpooled.wrappedBuffer(new byte[] {MODERN_MAX_VERSION}).asReadOnly();
+    }
+
+    private static final String ALGORITHM = "HmacSHA256";
 
     private static final boolean isAtLeast21_9 =
             MetaAPI.instance().version().isAtLeast(MinecraftVersions.V21_9);
@@ -64,11 +78,11 @@ public final class VelocityProxy {
         buf.getBytes(buf.readerIndex(), data);
 
         try {
-            final Mac mac = Mac.getInstance("HmacSHA256");
+            final Mac mac = Mac.getInstance(ALGORITHM);
             mac.init(
                     new SecretKeySpec(
                             PCF.instance().forwarding().secret().getBytes(StandardCharsets.UTF_8),
-                            "HmacSHA256"));
+                            ALGORITHM));
             final byte[] mySignature = mac.doFinal(data);
             if (!MessageDigest.isEqual(signature, mySignature)) {
                 return false;
