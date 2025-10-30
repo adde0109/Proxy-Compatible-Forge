@@ -166,7 +166,7 @@ public final class FByteBuf extends ByteBuf {
 
     @Override
     public ByteBuf unwrap() {
-        return this.source.unwrap();
+        return this.source;
     }
 
     @Override
