@@ -12,7 +12,8 @@ import org.jetbrains.annotations.NotNull;
  * href="https://github.com/PaperMC/Paper/blob/bd5867a96f792f0eb32c1d249bb4bbc1d8338d14/patches/server/0009-MC-Utils.patch#L6059-L6073">Simplified
  * version of Paper's implementation</a>
  */
-public record QueryAnswerPayload(ByteBuf buffer) implements CustomQueryAnswerPayload {
+public record QueryAnswerPayload(ByteBuf buffer)
+        implements CustomQueryAnswerPayload, QueryAnswerPayloadSearge {
     @Override
     public void write(final @NotNull FriendlyByteBuf buf) {
         buf.writeBytes(this.buffer().copy());
