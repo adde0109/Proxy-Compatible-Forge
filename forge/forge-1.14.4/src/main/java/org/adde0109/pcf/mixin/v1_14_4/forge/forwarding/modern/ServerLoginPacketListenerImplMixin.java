@@ -118,7 +118,7 @@ public abstract class ServerLoginPacketListenerImplMixin {
                 }
                 this.gameProfile = data.profile();
                 LOGGER.info("UUID of player {} is {}", nameAndId.name(), nameAndId.id());
-                org.adde0109.pcf.common.reflection.StateUtil.setState(this, 3);
+                StateUtil.setState(this, 3);
             } catch (Exception ex) {
                 this.shadow$disconnect(COMPONENT.apply("Failed to verify username!"));
                 PCF.logger.warn("Exception verifying " + nameAndId.name(), ex);

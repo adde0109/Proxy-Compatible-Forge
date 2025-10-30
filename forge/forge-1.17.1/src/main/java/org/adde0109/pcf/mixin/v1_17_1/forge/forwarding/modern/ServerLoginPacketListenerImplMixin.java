@@ -30,8 +30,10 @@ import org.adde0109.pcf.common.NameAndId;
 import org.adde0109.pcf.common.reflection.StateUtil;
 import org.adde0109.pcf.forwarding.modern.ModernForwarding;
 import org.adde0109.pcf.mixin.v1_17_1.forge.network.ConnectionAccessor;
+import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -52,11 +54,11 @@ import java.util.concurrent.ThreadLocalRandom;
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ServerLoginPacketListenerImplMixin {
     // spotless:off
-    @Shadow @Final static Logger LOGGER;
     @Shadow @Final public net.minecraft.network.Connection connection;
-    @Shadow GameProfile gameProfile;
+    @Shadow @Nullable GameProfile gameProfile;
     @Shadow public abstract void shadow$disconnect(Component reason);
 
+    @Unique private static final Logger pcf$LOGGER = LoggerFactory.getLogger("ServerLoginPacketListenerImpl");
     @Unique private int pcf$velocityLoginMessageId = -1;
 
     @Inject(method = "handleHello", cancellable = true, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD,
@@ -113,7 +115,7 @@ public abstract class ServerLoginPacketListenerImplMixin {
                     return;
                 }
                 this.gameProfile = data.profile();
-                LOGGER.info("UUID of player {} is {}", nameAndId.name(), nameAndId.id());
+                pcf$LOGGER.info("UUID of player {} is {}", nameAndId.name(), nameAndId.id());
                 StateUtil.setState(this, 3);
             } catch (Exception ex) {
                 this.shadow$disconnect(COMPONENT.apply("Failed to verify username!"));
