@@ -36,21 +36,23 @@ public final class ModernForwarding {
                             + ", wanted up to "
                             + MODERN_MAX_VERSION);
         }
+        PCF.logger.debug("Using modern forwarding version: " + version);
 
         final InetSocketAddress address =
                 new InetSocketAddress(
                         readAddress(buf), ((InetSocketAddress) remoteAddress).getPort());
         final GameProfile profile = createProfile(buf);
 
-        return new Data(null, address, profile);
+        return new Data(version, null, address, profile);
     }
 
     public record Data(
+            int version,
             @Nullable String disconnectMsg,
             @Nullable SocketAddress address,
             @Nullable GameProfile profile) {
         public Data(String disconnectMsg) {
-            this(disconnectMsg, null, null);
+            this(-1, disconnectMsg, null, null);
         }
     }
 }

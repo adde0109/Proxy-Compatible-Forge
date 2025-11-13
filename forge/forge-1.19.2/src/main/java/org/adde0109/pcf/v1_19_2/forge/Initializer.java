@@ -31,39 +31,50 @@ public final class Initializer {
         FWDBootstrap.RESOURCE_LOCATION = ResourceLocation::new;
         FWDBootstrap.COMPONENT = Component::nullToEmpty;
         FWDBootstrap.init();
-        CSBootstrap.ARGUMENT_TYPES_REGISTRY = () -> Optional.of(Registry.COMMAND_ARGUMENT_TYPE);
-        CSBootstrap.COMMAND_ARGUMENT_TYPE_KEY =
-                (type) -> {
-                    if (CSBootstrap.isForge) {
-                        Optional<ResourceKey<ArgumentTypeInfo<?, ?>>> entry =
-                                CSForgeBootstrap.getKey(type);
-                        if (entry.isPresent()) {
-                            return entry;
-                        }
-                    }
-                    return CSBootstrap.ARGUMENT_TYPES_REGISTRY
-                            .get()
-                            .flatMap(reg -> reg.getResourceKey(type));
-                };
-        CSBootstrap.COMMAND_ARGUMENT_TYPE_ID =
-                (type) ->
-                        CSBootstrap.ARGUMENT_TYPES_REGISTRY
-                                .get()
-                                .map(reg -> reg.getId(type))
-                                .orElseThrow(
-                                        () ->
-                                                new IllegalStateException(
-                                                        "Could not find ID for argument type: "
-                                                                + type.getClass().getName()));
+
         if (MetaAPI.instance().version().isAtLeast(MinecraftVersions.V19_1)) {
+            CSBootstrap.ARGUMENT_TYPES_REGISTRY = () -> Optional.of(Registry.COMMAND_ARGUMENT_TYPE);
+            CSBootstrap.COMMAND_ARGUMENT_TYPE_KEY =
+                    (type) -> {
+                        if (CSBootstrap.isForge) {
+                            Optional<ResourceKey<ArgumentTypeInfo<?, ?>>> entry =
+                                    CSForgeBootstrap.getKey(type);
+                            if (entry.isPresent()) {
+                                return entry;
+                            }
+                        }
+                        return CSBootstrap.ARGUMENT_TYPES_REGISTRY
+                                .get()
+                                .flatMap(reg -> reg.getResourceKey(type));
+                    };
+            CSBootstrap.COMMAND_ARGUMENT_TYPE_ID =
+                    (type) ->
+                            CSBootstrap.ARGUMENT_TYPES_REGISTRY
+                                    .get()
+                                    .map(reg -> reg.getId(type))
+                                    .orElseThrow(
+                                            () ->
+                                                    new IllegalStateException(
+                                                            "Could not find ID for argument type: "
+                                                                    + type.getClass().getName()));
+
             CSForgeBootstrap.FORGE_ARGUMENT_TYPES_REGISTRY =
                     () -> Optional.of(ForgeRegistries.COMMAND_ARGUMENT_TYPES);
         }
 
         ModLoadingContext context = ModLoadingContext.get();
-        context.registerExtensionPoint(
-                IExtensionPoint.DisplayTest.class,
-                IExtensionPoint.DisplayTest.IGNORE_SERVER_VERSION);
+        if (MetaAPI.instance().version().isOlderThan(MinecraftVersions.V19_2)) {
+            context.registerExtensionPoint(
+                    IExtensionPoint.DisplayTest.class,
+                    () ->
+                            new IExtensionPoint.DisplayTest(
+                                    () -> IExtensionPoint.DisplayTest.IGNORESERVERONLY,
+                                    (a, b) -> true));
+        } else {
+            context.registerExtensionPoint(
+                    IExtensionPoint.DisplayTest.class,
+                    IExtensionPoint.DisplayTest.IGNORE_SERVER_VERSION);
+        }
 
         FMLModContainer container =
                 ModList.get()

@@ -45,21 +45,29 @@ import javax.crypto.spec.SecretKeySpec;
  * into the Minecraft login process by using the 1.13 login plugin message packet.
  */
 public final class VelocityProxy {
-    private static final int MODERN_DEFAULT = 1;
-    private static final int MODERN_FORWARDING_WITH_KEY = 2;
-    private static final int MODERN_FORWARDING_WITH_KEY_V2 = 3;
+    public static final int MODERN_DEFAULT = 1;
+    public static final int MODERN_FORWARDING_WITH_KEY = 2;
+    public static final int MODERN_FORWARDING_WITH_KEY_V2 = 3;
     private static final int MODERN_LAZY_SESSION = 4;
     public static final byte MODERN_MAX_VERSION;
     public static final ByteBuf PLAYER_INFO_PACKET;
 
     static {
         final MinecraftVersion version = MetaAPI.instance().version();
-        if (version.isAtLeast(MinecraftVersions.V19_3)) {
-            MODERN_MAX_VERSION = MODERN_DEFAULT; //MODERN_LAZY_SESSION;
+        if (version.isOlderThan(MinecraftVersions.V19)) {
+            MODERN_MAX_VERSION = MODERN_DEFAULT;
+        } else if (version.is(MinecraftVersions.V19)) {
+            MODERN_MAX_VERSION = MODERN_FORWARDING_WITH_KEY;
+        } else if (version.isInRange(MinecraftVersions.V19_1, MinecraftVersions.V19_2)) {
+            // TODO: See if this can be used with server switching
+            MODERN_MAX_VERSION = MODERN_FORWARDING_WITH_KEY_V2;
+        } else if (version.isAtLeast(MinecraftVersions.V19_3)) {
+            MODERN_MAX_VERSION = MODERN_LAZY_SESSION;
         } else {
             MODERN_MAX_VERSION = MODERN_DEFAULT;
         }
         PLAYER_INFO_PACKET = Unpooled.wrappedBuffer(new byte[] {MODERN_MAX_VERSION}).asReadOnly();
+        PCF.logger.debug("Velocity modern forwarding max version: " + MODERN_MAX_VERSION);
     }
 
     private static final String ALGORITHM = "HmacSHA256";
@@ -135,12 +143,4 @@ public final class VelocityProxy {
         }
         return propertiesBuilder.build();
     }
-
-    //    public static ProfilePublicKey.Data readForwardedKey(FriendlyByteBuf buf) {
-    //        return new ProfilePublicKey.Data(buf);
-    //    }
-
-    //    public static UUID readSignerUuidOrElse(FriendlyByteBuf buf, UUID orElse) {
-    //        return buf.readBoolean() ? buf.readUUID() : orElse;
-    //    }
 }

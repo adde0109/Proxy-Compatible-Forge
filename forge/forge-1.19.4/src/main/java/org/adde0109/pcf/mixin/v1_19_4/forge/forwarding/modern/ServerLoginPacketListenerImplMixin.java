@@ -1,10 +1,11 @@
-package org.adde0109.pcf.mixin.v1_17_1.forge.forwarding.modern;
+package org.adde0109.pcf.mixin.v1_19_4.forge.forwarding.modern;
 
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.QUERY_IDS;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.forward;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_PACKET;
 import static org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap.COMPONENT;
 import static org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap.PLAYER_INFO_CHANNEL;
+import static org.adde0109.pcf.v1_19_4.forge.forwarding.modern.HandleProfileKey.handle;
 
 import com.mojang.authlib.GameProfile;
 
@@ -15,8 +16,7 @@ import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import dev.neuralnexus.taterapi.muxins.annotations.ReqMCVersion;
 import dev.neuralnexus.taterapi.muxins.annotations.ReqMappings;
 
-import io.netty.buffer.ByteBuf;
-
+import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
@@ -44,17 +44,24 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
+ * Adapted from: <br>
  * <a
- * href="https://github.com/PaperMC/Paper-archive/blob/ver/1.19.4/patches/server/0874-Add-Velocity-IP-Forwarding-Support.patch">Adapted
- * from Paper</a>
+ * href="https://github.com/PaperMC/Paper-archive/blob/ver/1.19.4/patches/server/0874-Add-Velocity-IP-Forwarding-Support.patch">Paper
+ * 1.19.1</a> <br>
+ * <a
+ * href="https://github.com/PaperMC/Paper-archive/blob/4074d4ee99a75ad005b05bfba8257e55beeb335f/patches/server/0884-Add-Velocity-IP-Forwarding-Support.patch">Paper
+ * 1.19.2</a> <br>
+ * <a
+ * href="https://github.com/PaperMC/Paper-archive/blob/ver/1.19.4/patches/server/0874-Add-Velocity-IP-Forwarding-Support.patch">Paper
+ * 1.19.4</a>
  */
 @ReqMappings(Mappings.SEARGE)
-@ReqMCVersion(min = MinecraftVersion.V17, max = MinecraftVersion.V18_2)
+@ReqMCVersion(min = MinecraftVersion.V19, max = MinecraftVersion.V20_1)
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ServerLoginPacketListenerImplMixin {
     // spotless:off
-    @Shadow @Final public net.minecraft.network.Connection connection;
-    @Shadow @Nullable GameProfile gameProfile;
+    @Shadow @Final Connection connection;
+    @Shadow @Nullable public GameProfile gameProfile;
     @Shadow public abstract void shadow$disconnect(Component reason);
 
     @Unique private static final Logger pcf$LOGGER = LoggerFactory.getLogger("ServerLoginPacketListenerImpl");
@@ -83,13 +90,15 @@ public abstract class ServerLoginPacketListenerImplMixin {
                 && packet.getTransactionId() == this.pcf$velocityLoginMessageId) {
             QUERY_IDS.remove(this.pcf$velocityLoginMessageId);
 
-            final ByteBuf buf = packet.getData();
+            final FriendlyByteBuf buf = packet.getData();
             if (buf == null) {
                 this.shadow$disconnect(
                         COMPONENT.apply("This server requires you to connect with Velocity."));
+                ci.cancel();
                 return;
             }
 
+            // Handle general forwarding
             final ModernForwarding.Data data =
                     forward(buf, ((ConnectionAccessor) this.connection).pcf$getAddress());
             if (data == null) {
@@ -100,6 +109,19 @@ public abstract class ServerLoginPacketListenerImplMixin {
             ((ConnectionAccessor) this.connection).pcf$setAddress(data.address());
 
             final NameAndId nameAndId = new NameAndId(data.profile());
+
+            // Handle profile key
+            final Component disconnectReason =
+                    handle(
+                            (ServerLoginPacketListenerImpl) (Object) this,
+                            buf,
+                            data.version(),
+                            nameAndId.id());
+            if (disconnectReason != null) {
+                this.shadow$disconnect(disconnectReason);
+                ci.cancel();
+                return;
+            }
 
             // TODO Update handling for lazy sessions, might not even have to do anything?
 

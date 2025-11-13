@@ -49,6 +49,7 @@ include(
         'forge:forge-1.16.5',
         'forge:forge-1.17.1',
         'forge:forge-1.18.2',
+        'forge:forge-1.19',
         'forge:forge-1.19.2',
         'forge:forge-1.19.4',
         'forge:forge-1.20.4',

@@ -69,6 +69,10 @@ public final class FByteBuf extends ByteBuf {
         return writeVarInt(this.source, input);
     }
 
+    public byte[] readByteArray(int maxLength) {
+        return readByteArray(this.source, maxLength);
+    }
+
     public ByteBuf writeResourceLocation(Object resourceLocationIn) {
         return writeResourceLocation(this.source, resourceLocationIn);
     }
@@ -119,6 +123,18 @@ public final class FByteBuf extends ByteBuf {
 
         buf.writeByte(input);
         return buf;
+    }
+
+    public static byte[] readByteArray(ByteBuf buf, int maxLength) {
+        int i = readVarInt(buf);
+        if (i > maxLength) {
+            throw new DecoderException(
+                    "ByteArray with size " + i + " is bigger than allowed " + maxLength);
+        } else {
+            byte[] abyte = new byte[i];
+            buf.readBytes(abyte);
+            return abyte;
+        }
     }
 
     public static ByteBuf writeResourceLocation(ByteBuf buf, Object resourceLocationIn) {
