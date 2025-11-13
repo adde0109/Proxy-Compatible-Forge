@@ -5,7 +5,7 @@ import static org.adde0109.pcf.forwarding.modern.ModernForwarding.forward;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_PACKET;
 import static org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap.COMPONENT;
 import static org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap.PLAYER_INFO_CHANNEL;
-import static org.adde0109.pcf.v1_19_4.forge.forwarding.modern.HandleProfileKey.handle;
+import static org.adde0109.pcf.v1_19_2.forge.forwarding.modern.HandleProfileKey.handle;
 
 import com.mojang.authlib.GameProfile;
 
