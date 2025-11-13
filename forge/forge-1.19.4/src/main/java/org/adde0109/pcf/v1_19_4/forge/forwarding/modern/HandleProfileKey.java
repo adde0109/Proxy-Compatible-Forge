@@ -22,6 +22,7 @@ import net.minecraft.world.entity.player.ProfilePublicKey;
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.mixin.v1_19.forge.forwarding.modern.ServerLoginPacketListenerImplAccessor_V1;
 import org.adde0109.pcf.mixin.v1_19_2.forge.forwarding.modern.ServerLoginPacketListenerImplAccessor_V2;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,18 @@ import java.security.PublicKey;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Adapted from: <br>
+ * <a
+ * href="https://github.com/PaperMC/Paper-archive/blob/ver/1.19.4/patches/server/0874-Add-Velocity-IP-Forwarding-Support.patch">Paper
+ * 1.19.1</a> <br>
+ * <a
+ * href="https://github.com/PaperMC/Paper-archive/blob/4074d4ee99a75ad005b05bfba8257e55beeb335f/patches/server/0884-Add-Velocity-IP-Forwarding-Support.patch">Paper
+ * 1.19.2</a> <br>
+ * <a
+ * href="https://github.com/PaperMC/Paper-archive/blob/ver/1.19.4/patches/server/0874-Add-Velocity-IP-Forwarding-Support.patch">Paper
+ * 1.19.4</a>
+ */
 public final class HandleProfileKey {
     private static final Logger LOGGER = LoggerFactory.getLogger("ServerLoginPacketListenerImpl");
     private static final boolean IS_19_1_2 =
@@ -42,8 +55,10 @@ public final class HandleProfileKey {
             Component.translatable("multiplayer.disconnect.invalid_public_key_signature");
 
     public static @Nullable Component handle(
-            ServerLoginPacketListenerImpl self, FriendlyByteBuf buf, int version, UUID profileId) {
-
+            @NotNull ServerLoginPacketListenerImpl self,
+            @NotNull FriendlyByteBuf buf,
+            int version,
+            @NotNull UUID profileId) {
         // Clear key on 1.19.1 - 1.19.2 if using MODERN_DEFAULT
         if (version == MODERN_DEFAULT && IS_19_1_2) {
             ((ServerLoginPacketListenerImplAccessor_V2) self).pcf$setProfilePublicKeyData(null);
@@ -93,26 +108,45 @@ public final class HandleProfileKey {
         return null;
     }
 
-    /**
-     * Adapted from: <br>
-     * <a
-     * href="https://github.com/PaperMC/Paper-archive/blob/ver/1.19.4/patches/server/0874-Add-Velocity-IP-Forwarding-Support.patch">Paper
-     * 1.19.4</a>
-     */
     private static final int MAX_KEY_SIGNATURE_SIZE = 4096;
+    private static final int MAX_PUBLIC_KEY_LENGTH = 512;
 
-    public static UUID readSignerUuidOrElse(final ByteBuf buf, final UUID orElse) {
+    /**
+     * Modern Forwarding v2 - 1.19 <br>
+     * Reads a ProfilePublicKey from the given ByteBuf
+     *
+     * @param buf The ByteBuf to read from
+     * @return The ProfilePublicKey read from the ByteBuf
+     * @throws CryptException If there was an error reading the key
+     */
+    private static @NotNull ProfilePublicKey readKey(final @NotNull ByteBuf buf)
+            throws CryptException {
+        Instant expiry = Instant.ofEpochMilli(buf.readLong());
+        PublicKey key = Crypt.byteToPublicKey(readByteArray(buf, MAX_PUBLIC_KEY_LENGTH));
+        byte[] signature = readByteArray(buf, MAX_KEY_SIGNATURE_SIZE);
+        return new ProfilePublicKey(new ProfilePublicKey.Data(expiry, key, signature));
+    }
+
+    /**
+     * Modern Forwarding v3 - 1.19.1 - 1.19.2 <br>
+     *
+     * @param buf The ByteBuf to read from
+     * @param orElse The UUID to return if no UUID is present
+     * @return The UUID read from the ByteBuf, or the given UUID if none is present
+     */
+    public static @NotNull UUID readSignerUuidOrElse(
+            final @NotNull ByteBuf buf, final @NotNull UUID orElse) {
         return buf.readBoolean() ? readUUID(buf) : orElse;
     }
 
-    private static ProfilePublicKey.Data readForwardedKey(final FriendlyByteBuf buf) {
+    /**
+     * Modern Forwarding v3 - 1.19.1 - 1.19.2 <br>
+     *
+     * @param buf The ByteBuf to read from
+     * @return The ProfilePublicKey.Data read from the ByteBuf
+     */
+    private static @NotNull ProfilePublicKey.Data readForwardedKey(
+            final @NotNull FriendlyByteBuf buf) {
         return new ProfilePublicKey.Data(buf);
-    }
-
-    private static ProfilePublicKey readKey(final ByteBuf buf) throws CryptException {
-        Instant expiry = Instant.ofEpochMilli(buf.readLong());
-        PublicKey key = Crypt.byteToPublicKey(readByteArray(buf, 512));
-        byte[] signature = readByteArray(buf, MAX_KEY_SIGNATURE_SIZE);
-        return new ProfilePublicKey(new ProfilePublicKey.Data(expiry, key, signature));
     }
 }

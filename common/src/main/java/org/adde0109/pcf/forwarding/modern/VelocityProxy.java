@@ -5,7 +5,6 @@ import static org.adde0109.pcf.common.FByteBuf.readUtf;
 import static org.adde0109.pcf.common.FByteBuf.readVarInt;
 
 import com.google.common.collect.ImmutableMultimap;
-import com.google.common.net.InetAddresses;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
@@ -22,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -48,7 +46,7 @@ public final class VelocityProxy {
     public static final int MODERN_DEFAULT = 1;
     public static final int MODERN_FORWARDING_WITH_KEY = 2;
     public static final int MODERN_FORWARDING_WITH_KEY_V2 = 3;
-    private static final int MODERN_LAZY_SESSION = 4;
+    public static final int MODERN_LAZY_SESSION = 4;
     public static final byte MODERN_MAX_VERSION;
     public static final ByteBuf PLAYER_INFO_PACKET;
 
@@ -59,7 +57,6 @@ public final class VelocityProxy {
         } else if (version.is(MinecraftVersions.V19)) {
             MODERN_MAX_VERSION = MODERN_FORWARDING_WITH_KEY;
         } else if (version.isInRange(MinecraftVersions.V19_1, MinecraftVersions.V19_2)) {
-            // TODO: See if this can be used with server switching
             MODERN_MAX_VERSION = MODERN_FORWARDING_WITH_KEY_V2;
         } else if (version.isAtLeast(MinecraftVersions.V19_3)) {
             MODERN_MAX_VERSION = MODERN_LAZY_SESSION;
@@ -78,7 +75,7 @@ public final class VelocityProxy {
 
     private VelocityProxy() {}
 
-    public static boolean checkIntegrity(final ByteBuf buf) {
+    public static boolean checkIntegrity(final @NotNull ByteBuf buf) {
         final byte[] signature = new byte[32];
         buf.readBytes(signature);
 
@@ -102,12 +99,8 @@ public final class VelocityProxy {
         return true;
     }
 
-    public static InetAddress readAddress(final ByteBuf buf) {
-        return InetAddresses.forString(readUtf(buf));
-    }
-
     @SuppressWarnings("JavaReflectionMemberAccess")
-    public static @NotNull GameProfile createProfile(final ByteBuf buf) {
+    public static @NotNull GameProfile createProfile(final @NotNull ByteBuf buf) {
         final GameProfile profile;
         if (isAtLeast21_9) { // com.mojang:authlib:7.0.0 or newer
             profile =
@@ -131,7 +124,8 @@ public final class VelocityProxy {
         return profile;
     }
 
-    private static ImmutableMultimap<String, Property> readProperties(final ByteBuf buf) {
+    private static @NotNull ImmutableMultimap<String, Property> readProperties(
+            final @NotNull ByteBuf buf) {
         final ImmutableMultimap.Builder<String, Property> propertiesBuilder =
                 ImmutableMultimap.builder();
         final int properties = readVarInt(buf);

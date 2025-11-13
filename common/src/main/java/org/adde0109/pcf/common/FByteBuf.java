@@ -1,5 +1,7 @@
 package org.adde0109.pcf.common;
 
+import com.google.common.net.InetAddresses;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
@@ -8,11 +10,13 @@ import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import io.netty.util.ByteProcessor;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
@@ -26,9 +30,11 @@ import java.util.function.Function;
 /** Utils copied from Minecraft's FriendlyByteBuf, Utf8String, and VarInt implementations */
 @SuppressWarnings("UnusedReturnValue")
 public final class FByteBuf extends ByteBuf {
-    private final ByteBuf source;
+    public static final short MAX_STRING_LENGTH = Short.MAX_VALUE;
 
-    private FByteBuf(ByteBuf buf) {
+    private final @NotNull ByteBuf source;
+
+    private FByteBuf(final @NotNull ByteBuf buf) {
         this.source = buf;
     }
 
@@ -36,16 +42,26 @@ public final class FByteBuf extends ByteBuf {
         this.source = Unpooled.buffer();
     }
 
-    public static FByteBuf wrap(ByteBuf buf) {
+    public static FByteBuf wrap(final @NotNull ByteBuf buf) {
         return new FByteBuf(buf);
     }
 
+    // ---------------- FByteBuf methods -----------------
+    public @NotNull InetAddress readAddress() {
+        return readAddress(this.source);
+    }
+
+    // ---------------- FByteBuf static methods -----------------
+    public static @NotNull InetAddress readAddress(final @NotNull ByteBuf buf) {
+        return InetAddresses.forString(readUtf(buf));
+    }
+
     // ---------------- FriendlyByteBuf methods -----------------
-    public String readUtf() {
+    public @NotNull String readUtf() {
         return readUtf(this.source);
     }
 
-    public String readUtf(int maxLength) {
+    public @NotNull String readUtf(int maxLength) {
         return readUtf(this.source, maxLength);
     }
 
@@ -53,19 +69,19 @@ public final class FByteBuf extends ByteBuf {
         return readVarInt(this.source);
     }
 
-    public UUID readUUID() {
+    public @NotNull UUID readUUID() {
         return readUUID(this.source);
     }
 
-    public ByteBuf writeUtf(String string, int maxLength) {
+    public @NotNull ByteBuf writeUtf(final @NotNull String string, int maxLength) {
         return writeUtf(this.source, string, maxLength);
     }
 
-    public ByteBuf writeUtf(String string) {
-        return writeUtf(this.source, string, Short.MAX_VALUE);
+    public @NotNull ByteBuf writeUtf(String string) {
+        return writeUtf(this.source, string, MAX_STRING_LENGTH);
     }
 
-    public ByteBuf writeVarInt(int input) {
+    public @NotNull ByteBuf writeVarInt(int input) {
         return writeVarInt(this.source, input);
     }
 
@@ -73,33 +89,33 @@ public final class FByteBuf extends ByteBuf {
         return readByteArray(this.source, maxLength);
     }
 
-    public ByteBuf writeResourceLocation(Object resourceLocationIn) {
+    public @NotNull ByteBuf writeResourceLocation(final @NotNull Object resourceLocationIn) {
         return writeResourceLocation(this.source, resourceLocationIn);
     }
 
-    public @Nullable <T> T readNullable(Function<ByteBuf, T> function) {
+    public @Nullable <T> T readNullable(final @NotNull Function<ByteBuf, T> function) {
         return readNullable(this.source, function);
     }
 
     // ---------------- FriendlyByteBuf static methods -----------------
-
-    public static String readUtf(ByteBuf buf) {
-        return readUtf(buf, Short.MAX_VALUE);
+    public static @NotNull String readUtf(final @NotNull ByteBuf buf) {
+        return readUtf(buf, MAX_STRING_LENGTH);
     }
 
-    public static String readUtf(ByteBuf buf, int maxLength) {
+    public static @NotNull String readUtf(final @NotNull ByteBuf buf, int maxLength) {
         return Utf8String.read(buf, maxLength);
     }
 
-    public static int readVarInt(ByteBuf buf) {
+    public static int readVarInt(final @NotNull ByteBuf buf) {
         return VarInt.read(buf);
     }
 
-    public static UUID readUUID(ByteBuf buf) {
+    public static @NotNull UUID readUUID(final @NotNull ByteBuf buf) {
         return new UUID(buf.readLong(), buf.readLong());
     }
 
-    public static ByteBuf writeUtf(ByteBuf buf, String string, int maxLength) {
+    public static @NotNull ByteBuf writeUtf(
+            final @NotNull ByteBuf buf, final @NotNull String string, int maxLength) {
         byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
         if (bytes.length > maxLength) {
             throw new EncoderException(
@@ -115,17 +131,17 @@ public final class FByteBuf extends ByteBuf {
         }
     }
 
-    public static ByteBuf writeVarInt(ByteBuf buf, int input) {
-        while ((input & -128) != 0) {
-            buf.writeByte(input & 127 | 128);
-            input >>>= 7;
+    public static @NotNull ByteBuf writeVarInt(final @NotNull ByteBuf buf, int input) {
+        while ((input & -VarInt.CONTINUATION_BIT_MASK) != 0) {
+            buf.writeByte(input & VarInt.DATA_BITS_MASK | VarInt.CONTINUATION_BIT_MASK);
+            input >>>= VarInt.DATA_BITS_PER_BYTE;
         }
 
         buf.writeByte(input);
         return buf;
     }
 
-    public static byte[] readByteArray(ByteBuf buf, int maxLength) {
+    public static byte[] readByteArray(final @NotNull ByteBuf buf, int maxLength) {
         int i = readVarInt(buf);
         if (i > maxLength) {
             throw new DecoderException(
@@ -137,17 +153,18 @@ public final class FByteBuf extends ByteBuf {
         }
     }
 
-    public static ByteBuf writeResourceLocation(ByteBuf buf, Object resourceLocationIn) {
-        writeUtf(buf, resourceLocationIn.toString(), Short.MAX_VALUE);
+    public static @NotNull ByteBuf writeResourceLocation(
+            final @NotNull ByteBuf buf, final @NotNull Object resourceLocationIn) {
+        writeUtf(buf, resourceLocationIn.toString(), MAX_STRING_LENGTH);
         return buf;
     }
 
-    public static @Nullable <T> T readNullable(ByteBuf buf, Function<ByteBuf, T> function) {
+    public static @Nullable <T> T readNullable(
+            final @NotNull ByteBuf buf, final @NotNull Function<ByteBuf, T> function) {
         return buf.readBoolean() ? function.apply(buf) : null;
     }
 
     // ---------------- ByteBuf methods -----------------
-
     @Override
     public int capacity() {
         return this.source.capacity();
@@ -1069,7 +1086,7 @@ public final class FByteBuf extends ByteBuf {
     }
 
     private static final class Utf8String {
-        public static String read(ByteBuf buf, int maxLength) {
+        public static @NotNull String read(final @NotNull ByteBuf buf, int maxLength) {
             int i = ByteBufUtil.utf8MaxBytes(maxLength);
             int j = VarInt.read(buf);
             if (j > i) {
@@ -1113,27 +1130,27 @@ public final class FByteBuf extends ByteBuf {
         private static final int DATA_BITS_PER_BYTE = 7;
 
         public static int getByteSize(int bytes) {
-            for (int i = 1; i < 5; ++i) {
-                if ((bytes & -1 << i * 7) == 0) {
+            for (int i = 1; i < MAX_VARINT_SIZE; ++i) {
+                if ((bytes & -1 << i * DATA_BITS_PER_BYTE) == 0) {
                     return i;
                 }
             }
-            return 5;
+            return MAX_VARINT_SIZE;
         }
 
         public static boolean hasContinuationBit(byte b) {
-            return (b & 128) == 128;
+            return (b & CONTINUATION_BIT_MASK) == CONTINUATION_BIT_MASK;
         }
 
-        public static int read(ByteBuf buf) {
+        public static int read(final @NotNull ByteBuf buf) {
             int i = 0;
             int j = 0;
 
             byte b0;
             do {
                 b0 = buf.readByte();
-                i |= (b0 & 127) << j++ * 7;
-                if (j > 5) {
+                i |= (b0 & DATA_BITS_MASK) << j++ * DATA_BITS_PER_BYTE;
+                if (j > MAX_VARINT_SIZE) {
                     throw new RuntimeException("VarInt too big");
                 }
             } while (hasContinuationBit(b0));
@@ -1141,15 +1158,13 @@ public final class FByteBuf extends ByteBuf {
             return i;
         }
 
-        public static ByteBuf write(ByteBuf buf, int varInt) {
-            while ((varInt & -128) != 0) {
-                buf.writeByte(varInt & 127 | 128);
-                varInt >>>= 7;
+        public static @NotNull ByteBuf write(final @NotNull ByteBuf buf, int varInt) {
+            while ((varInt & -CONTINUATION_BIT_MASK) != 0) {
+                buf.writeByte(varInt & DATA_BITS_MASK | CONTINUATION_BIT_MASK);
+                varInt >>>= DATA_BITS_PER_BYTE;
             }
             buf.writeByte(varInt);
             return buf;
         }
     }
-
-    // ---------------- ByteBuf methods -----------------
 }

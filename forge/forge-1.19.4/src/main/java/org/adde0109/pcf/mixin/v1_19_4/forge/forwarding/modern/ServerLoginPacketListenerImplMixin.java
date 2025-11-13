@@ -123,8 +123,6 @@ public abstract class ServerLoginPacketListenerImplMixin {
                 return;
             }
 
-            // TODO Update handling for lazy sessions, might not even have to do anything?
-
             // Proceed with login
             try {
                 // TODO: Pull this into a common compat class

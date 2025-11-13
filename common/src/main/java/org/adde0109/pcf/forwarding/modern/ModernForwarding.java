@@ -1,10 +1,10 @@
 package org.adde0109.pcf.forwarding.modern;
 
+import static org.adde0109.pcf.common.FByteBuf.readAddress;
 import static org.adde0109.pcf.common.FByteBuf.readVarInt;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_MAX_VERSION;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.checkIntegrity;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.createProfile;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.readAddress;
 
 import com.mojang.authlib.GameProfile;
 
