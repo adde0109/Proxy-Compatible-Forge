@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v1_19.forge.forwarding.modern;
+package org.adde0109.pcf.mixin.v1_19_2.forge.forwarding.modern;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @ReqMCVersion(MinecraftVersion.V19)
 @Mixin(ServerLoginPacketListenerImpl.class)
 public interface ServerLoginPacketListenerImplAccessor_V1 {
-    @Accessor("playerProfilePublicKey")
+    @SuppressWarnings("MixinAnnotationTarget")
+    @Accessor("f_215255_") // playerProfilePublicKey
     void pcf$setPlayerProfilePublicKey(@Nullable ProfilePublicKey publicKey);
 }

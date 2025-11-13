@@ -21,7 +21,7 @@ import net.minecraft.world.entity.player.ProfilePublicKey;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.FByteBuf.CryptException;
-import org.adde0109.pcf.mixin.v1_19.forge.forwarding.modern.ServerLoginPacketListenerImplAccessor_V1;
+import org.adde0109.pcf.mixin.v1_19_2.forge.forwarding.modern.ServerLoginPacketListenerImplAccessor_V1;
 import org.adde0109.pcf.mixin.v1_19_2.forge.forwarding.modern.ServerLoginPacketListenerImplAccessor_V2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
