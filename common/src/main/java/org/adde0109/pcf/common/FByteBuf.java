@@ -24,10 +24,15 @@ import java.nio.channels.GatheringByteChannel;
 import java.nio.channels.ScatteringByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyFactory;
+import java.security.PublicKey;
+import java.security.spec.EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.time.Instant;
 import java.util.UUID;
 import java.util.function.Function;
 
-/** Utils copied from Minecraft's FriendlyByteBuf, Utf8String, and VarInt implementations */
+/** Utils copied from Minecraft's FriendlyByteBuf, Crypt, Utf8String, and VarInt implementations */
 @SuppressWarnings("UnusedReturnValue")
 public final class FByteBuf extends ByteBuf {
     public static final short MAX_STRING_LENGTH = Short.MAX_VALUE;
@@ -97,6 +102,14 @@ public final class FByteBuf extends ByteBuf {
         return readNullable(this.source, function);
     }
 
+    public @NotNull Instant readInstant() {
+        return readInstant(this.source);
+    }
+
+    public @NotNull PublicKey readPublicKey() {
+        return readPublicKey(this.source);
+    }
+
     // ---------------- FriendlyByteBuf static methods -----------------
     public static @NotNull String readUtf(final @NotNull ByteBuf buf) {
         return readUtf(buf, MAX_STRING_LENGTH);
@@ -162,6 +175,18 @@ public final class FByteBuf extends ByteBuf {
     public static @Nullable <T> T readNullable(
             final @NotNull ByteBuf buf, final @NotNull Function<ByteBuf, T> function) {
         return buf.readBoolean() ? function.apply(buf) : null;
+    }
+
+    public static @NotNull Instant readInstant(final @NotNull ByteBuf buf) {
+        return Instant.ofEpochMilli(buf.readLong());
+    }
+
+    public static @NotNull PublicKey readPublicKey(final @NotNull ByteBuf buf) {
+        try {
+            return Crypt.byteToPublicKey(readByteArray(buf, Crypt.MAX_PUBLIC_KEY_LENGTH));
+        } catch (CryptException e) {
+            throw new DecoderException("Malformed public key bytes", e);
+        }
     }
 
     // ---------------- ByteBuf methods -----------------
@@ -1083,6 +1108,28 @@ public final class FByteBuf extends ByteBuf {
     @Override
     public boolean release(int decrement) {
         return this.source.release(decrement);
+    }
+
+    public static final class Crypt {
+        public static final String ASYMMETRIC_ALGORITHM = "RSA";
+        public static final int MAX_KEY_SIGNATURE_SIZE = 4096;
+        public static final int MAX_PUBLIC_KEY_LENGTH = 512;
+
+        public static PublicKey byteToPublicKey(byte[] bytes) throws CryptException {
+            try {
+                EncodedKeySpec encodedkeyspec = new X509EncodedKeySpec(bytes);
+                KeyFactory keyfactory = KeyFactory.getInstance(ASYMMETRIC_ALGORITHM);
+                return keyfactory.generatePublic(encodedkeyspec);
+            } catch (Exception exception) {
+                throw new CryptException(exception);
+            }
+        }
+    }
+
+    public static final class CryptException extends Exception {
+        public CryptException(final @NotNull Throwable cause) {
+            super(cause);
+        }
     }
 
     private static final class Utf8String {

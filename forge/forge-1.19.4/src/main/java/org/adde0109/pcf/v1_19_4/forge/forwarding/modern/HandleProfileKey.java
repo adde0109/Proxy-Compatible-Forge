@@ -1,6 +1,9 @@
 package org.adde0109.pcf.v1_19_4.forge.forwarding.modern;
 
+import static org.adde0109.pcf.common.FByteBuf.Crypt.MAX_KEY_SIGNATURE_SIZE;
 import static org.adde0109.pcf.common.FByteBuf.readByteArray;
+import static org.adde0109.pcf.common.FByteBuf.readInstant;
+import static org.adde0109.pcf.common.FByteBuf.readPublicKey;
 import static org.adde0109.pcf.common.FByteBuf.readUUID;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_DEFAULT;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_FORWARDING_WITH_KEY;
@@ -11,15 +14,13 @@ import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
 import io.netty.buffer.ByteBuf;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
-import net.minecraft.util.Crypt;
-import net.minecraft.util.CryptException;
 import net.minecraft.world.entity.player.ProfilePublicKey;
 
 import org.adde0109.pcf.PCF;
+import org.adde0109.pcf.common.FByteBuf.CryptException;
 import org.adde0109.pcf.mixin.v1_19.forge.forwarding.modern.ServerLoginPacketListenerImplAccessor_V1;
 import org.adde0109.pcf.mixin.v1_19_2.forge.forwarding.modern.ServerLoginPacketListenerImplAccessor_V2;
 import org.jetbrains.annotations.NotNull;
@@ -27,8 +28,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.security.PublicKey;
-import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -56,7 +55,7 @@ public final class HandleProfileKey {
 
     public static @Nullable Component handle(
             @NotNull ServerLoginPacketListenerImpl self,
-            @NotNull FriendlyByteBuf buf,
+            @NotNull ByteBuf buf,
             int version,
             @NotNull UUID profileId) {
         // Clear key on 1.19.1 - 1.19.2 if using MODERN_DEFAULT
@@ -99,17 +98,13 @@ public final class HandleProfileKey {
                     ((ServerLoginPacketListenerImplAccessor_V2) self)
                             .pcf$setProfilePublicKeyData(forwardedKeyData);
                 } catch (Exception e) {
-                    // net.minecraft.world.entity.player.ProfilePublicKey.ValidationException
                     LOGGER.error("Failed to validate profile key: {}", e.getMessage());
-                    return INVALID_SIGNATURE; // e.getComponent();
+                    return INVALID_SIGNATURE;
                 }
             }
         }
         return null;
     }
-
-    private static final int MAX_KEY_SIGNATURE_SIZE = 4096;
-    private static final int MAX_PUBLIC_KEY_LENGTH = 512;
 
     /**
      * Modern Forwarding v2 - 1.19 <br>
@@ -121,10 +116,7 @@ public final class HandleProfileKey {
      */
     private static @NotNull ProfilePublicKey readKey(final @NotNull ByteBuf buf)
             throws CryptException {
-        Instant expiry = Instant.ofEpochMilli(buf.readLong());
-        PublicKey key = Crypt.byteToPublicKey(readByteArray(buf, MAX_PUBLIC_KEY_LENGTH));
-        byte[] signature = readByteArray(buf, MAX_KEY_SIGNATURE_SIZE);
-        return new ProfilePublicKey(new ProfilePublicKey.Data(expiry, key, signature));
+        return new ProfilePublicKey(readForwardedKey(buf));
     }
 
     /**
@@ -145,8 +137,8 @@ public final class HandleProfileKey {
      * @param buf The ByteBuf to read from
      * @return The ProfilePublicKey.Data read from the ByteBuf
      */
-    private static @NotNull ProfilePublicKey.Data readForwardedKey(
-            final @NotNull FriendlyByteBuf buf) {
-        return new ProfilePublicKey.Data(buf);
+    private static @NotNull ProfilePublicKey.Data readForwardedKey(final @NotNull ByteBuf buf) {
+        return new ProfilePublicKey.Data(
+                readInstant(buf), readPublicKey(buf), readByteArray(buf, MAX_KEY_SIGNATURE_SIZE));
     }
 }
