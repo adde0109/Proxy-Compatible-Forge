@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.security.InvalidKeyException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,7 +24,18 @@ public final class ModernForwarding {
     public static final Set<Integer> QUERY_IDS = ConcurrentHashMap.newKeySet();
 
     public static Data forward(ByteBuf buf, SocketAddress remoteAddress) {
-        if (!checkIntegrity(buf)) {
+        try {
+            if (!checkIntegrity(buf)) {
+                return new Data("Unable to verify player details");
+            }
+        } catch (AssertionError e) {
+            if (e.getCause() instanceof InvalidKeyException
+                    && PCF.instance().forwarding().secret().isBlank()) {
+                PCF.logger.error(
+                        "Please configure the `forwarding.secret` setting in PCF's config file!");
+            } else {
+                PCF.logger.error("An error occurred while validating player details: ", e);
+            }
             return new Data("Unable to verify player details");
         }
         PCF.logger.debug("Player-data validated!");

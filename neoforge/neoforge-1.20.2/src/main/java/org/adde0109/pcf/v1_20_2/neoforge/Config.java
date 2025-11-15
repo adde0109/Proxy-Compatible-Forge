@@ -165,7 +165,7 @@ public final class Config {
         PCF.instance()
                 .setForwarding(
                         new PCF.Forwarding(
-                                Config.config.enableForwarding.get() && !forwardingSecret.isBlank(),
+                                Config.config.enableForwarding.get(),
                                 Config.config.forwardingMode.get(),
                                 forwardingSecret));
         PCF.instance()
