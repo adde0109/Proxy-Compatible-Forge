@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
 import org.adde0109.pcf.PCF;
+import org.adde0109.pcf.common.FByteBuf;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Optional;
@@ -27,7 +28,7 @@ public final class CrossStitchUtil19 {
 
     public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>>
             void writeNode$wrapInVelocityModArgument19(
-                    FriendlyByteBuf buf,
+                    FByteBuf buf,
                     ArgumentTypeInfo<A, T> serializer,
                     ArgumentTypeInfo.Template<A> properties,
                     CallbackInfo ci) {
@@ -65,7 +66,7 @@ public final class CrossStitchUtil19 {
     @SuppressWarnings("unchecked")
     private static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>>
             void serializeWrappedArgumentType19(
-                    FriendlyByteBuf buf,
+                    FByteBuf buf,
                     ArgumentTypeInfo<A, T> serializer,
                     ArgumentTypeInfo.Template<A> properties) {
         buf.writeVarInt(MOD_ARGUMENT_INDICATOR);

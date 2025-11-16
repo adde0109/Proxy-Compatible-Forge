@@ -198,7 +198,7 @@ tasks.register("shadeAndRelocate", ShadowJar) {
     relocate("dev.neuralnexus.conditionalmixins", "org.adde0109.pcf.lib.conditionalmixins")
     relocate("dev.neuralnexus.taterapi", "org.adde0109.pcf.lib.taterapi")
 
-    String mc_version = '1.14-1.21.9'
+    String mc_version = '1.14-1.21.x'
     archiveFileName = "proxy-compatible-forge-${version}-mono.jar"
     destinationDirectory = file("./build/libs")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE

@@ -57,13 +57,9 @@ public final class Initializer {
                                                                 + type.getClass().getName()));
 
         FMLJavaModLoadingContext context = FMLJavaModLoadingContext.get();
-
         context.registerExtensionPoint(
                 IExtensionPoint.DisplayTest.class,
-                () ->
-                        new IExtensionPoint.DisplayTest(
-                                () -> IExtensionPoint.DisplayTest.IGNORESERVERONLY,
-                                (a, b) -> true));
+                IExtensionPoint.DisplayTest.IGNORE_SERVER_VERSION);
 
         FMLModContainer container =
                 ModList.get()

@@ -9,11 +9,10 @@
   "package": "org.adde0109.pcf.mixin",
   "server": [
     "v1_14_4.forge.crossstitch.CommandsPacketMixin",
-    "v1_14_4.forge.login.ClientboundCustomQueryPacketAccessor",
-    "v1_14_4.forge.login.ModernForwardingMixin",
-    "v1_14_4.forge.login.ServerboundCustomQueryPacketAccessor",
-    "v1_14_4.forge.login.ServerLoginPacketListenerPlaceholderMixin",
-    "v1_14_4.forge.network.ConnectionMixin",
-    "v1_14_4.forge.network.FriendlyByteBufMixin"
+    "v1_14_4.forge.forwarding.modern.ClientboundCustomQueryPacketAccessor",
+    "v1_14_4.forge.forwarding.modern.ServerboundCustomQueryPacketAccessor",
+    "v1_14_4.forge.forwarding.modern.ServerLoginPacketListenerImplMixin",
+    "v1_14_4.forge.forwarding.modern.ServerLoginPacketListenerPlaceholderMixin",
+    "v1_14_4.forge.network.ConnectionAccessor"
   ]
 }

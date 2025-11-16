@@ -9,9 +9,8 @@
   "package": "org.adde0109.pcf.mixin",
   "server": [
     "v1_17_1.forge.crossstitch.CommandsPacketMixin",
-    "v1_17_1.forge.login.ModernForwardingMixin",
-    "v1_17_1.forge.login.ServerLoginPacketListenerPlaceholderMixin",
-    "v1_17_1.forge.network.ConnectionMixin",
-    "v1_17_1.forge.network.FriendlyByteBufMixin"
+    "v1_17_1.forge.forwarding.modern.ServerLoginPacketListenerImplMixin",
+    "v1_17_1.forge.forwarding.modern.ServerLoginPacketListenerPlaceholderMixin",
+    "v1_17_1.forge.network.ConnectionAccessor"
   ]
 }

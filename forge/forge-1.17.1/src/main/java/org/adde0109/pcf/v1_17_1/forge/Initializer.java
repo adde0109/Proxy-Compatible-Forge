@@ -23,12 +23,12 @@ public final class Initializer {
         FWDBootstrap.init();
 
         ModLoadingContext context = ModLoadingContext.get();
-
         context.registerExtensionPoint(
                 IExtensionPoint.DisplayTest.class,
                 () ->
                         new IExtensionPoint.DisplayTest(
-                                () -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+                                () -> FMLNetworkConstants.IGNORESERVERONLY,
+                                (remoteVersion, isFromServer) -> true));
 
         FMLModContainer container =
                 ModList.get()

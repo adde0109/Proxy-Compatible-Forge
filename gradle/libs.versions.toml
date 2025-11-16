@@ -4,6 +4,7 @@ shadow = '8.1.7'
 spotless = '8.0.0'
 unimined = '1.3.9'
 taterlib-lite = '0.1.1'
+netty = '4.1.128.Final'
 
 [libraries]
 annotations = { group = "org.jetbrains", name = "annotations", version = "26.0.2" }
@@ -12,7 +13,8 @@ entrypoint-spoof = { group = "dev.neuralnexus", name = "entrypoint-spoof", versi
 guava = { group = "com.google.guava", name = "guava", version = "33.3.1-jre" }
 mixin = { group = "org.spongepowered", name = "mixin", version = "0.8.5-SNAPSHOT" }
 mojang-authlib = { group = "com.mojang", name = "authlib", version = "7.0.61" }
-netty-buffer = { group = "io.netty", name = "netty-buffer", version = "4.1.25.Final" }
+netty-buffer = { group = "io.netty", name = "netty-buffer", version.ref = "netty" }
+netty-codec = { group = "io.netty", name = "netty-codec", version.ref = "netty" }
 taterlib-lite-base = { group = "dev.neuralnexus.taterlib.lite", name = "base", version.ref = "taterlib-lite" }
 taterlib-lite-metadata = { group = "dev.neuralnexus.taterlib.lite", name = "metadata", version.ref = "taterlib-lite" }
 taterlib-lite-muxins = { group = "dev.neuralnexus.taterlib.lite", name = "muxins", version.ref = "taterlib-lite" }
