@@ -1,7 +1,11 @@
 package org.adde0109.pcf;
 
+import dev.neuralnexus.taterapi.loader.EntrypointLoader;
 import dev.neuralnexus.taterapi.logger.Logger;
+import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
+import dev.neuralnexus.taterapi.meta.MinecraftVersion;
+import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 
 import org.adde0109.pcf.forwarding.Mode;
@@ -21,6 +25,30 @@ public final class PCF {
 
     public static PCF instance() {
         return INSTANCE;
+    }
+
+    private static final EntrypointLoader<PCFInitializer> loader =
+            new EntrypointLoader<>(PCFInitializer.class, logger);
+
+    @ApiStatus.Internal
+    void onInit() {
+        MetaAPI api = MetaAPI.instance();
+        MinecraftVersion mcv = api.version();
+        Platform platform = api.platform();
+
+        // spotless:off
+        PCF.logger.info("Initializing Proxy Compatible Forge on "
+                + "Minecraft " + mcv
+                + " (" + platform + " " + api.meta().apiVersion() + ")");
+        // spotless:on
+
+        boolean debug = Constraint.Evaluator.DEBUG;
+        Constraint.Evaluator.DEBUG = this.debug().enabled();
+
+        loader.load();
+        loader.onInit();
+
+        Constraint.Evaluator.DEBUG = debug;
     }
 
     @ApiStatus.Internal

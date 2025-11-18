@@ -1,39 +1,15 @@
 package org.adde0109.pcf;
 
-import dev.neuralnexus.taterapi.logger.Logger;
-import dev.neuralnexus.taterapi.meta.MetaAPI;
-import dev.neuralnexus.taterapi.meta.MinecraftVersion;
-import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.meta.platforms.TaterMetadata;
 
 import net.neoforged.fml.common.Mod;
 
-@Mod(value = PCF.MOD_ID)
+@Mod(PCF.MOD_ID)
 public final class PCFNeo {
-    Logger logger = Logger.create(PCF.MOD_ID);
-
     public PCFNeo() {
         // Bootstrap TaterLibLite Metadata
         TaterMetadata.initNeoForge();
 
-        MetaAPI api = MetaAPI.instance();
-        MinecraftVersion mcv = api.version();
-        // spotless:off
-        logger.info("Initializing Proxy Compatible Forge on "
-                + "Minecraft " + mcv
-                + " (" + api.platform() + " " + api.meta().apiVersion() + ")");
-        // spotless:on
-
-        String className;
-        if (mcv.isInRange(MinecraftVersions.V20_2, MinecraftVersions.V20_6)) {
-            className = "org.adde0109.pcf.v1_20_2.neoforge.Initializer";
-        } else {
-            className = "org.adde0109.pcf.v1_21_10.neoforge.Initializer";
-        }
-        try {
-            Class.forName(className).getMethod("init").invoke(null);
-        } catch (Exception e) {
-            PCF.logger.error("Failed to initialize PCF", e);
-        }
+        PCF.instance().onInit();
     }
 }

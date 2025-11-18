@@ -2,6 +2,10 @@ package org.adde0109.pcf.v1_19_2.forge;
 
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
+import dev.neuralnexus.taterapi.meta.anno.AConstraint;
+import dev.neuralnexus.taterapi.meta.anno.Versions;
+import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
+import dev.neuralnexus.taterapi.meta.enums.Platform;
 
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.Registry;
@@ -18,6 +22,7 @@ import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import org.adde0109.pcf.PCF;
+import org.adde0109.pcf.PCFInitializer;
 import org.adde0109.pcf.v1_14_4.forge.Config;
 import org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap;
 import org.adde0109.pcf.v1_20_4.forge.crossstitch.CSBootstrap;
@@ -25,9 +30,13 @@ import org.adde0109.pcf.v1_20_4.forge.crossstitch.CSForgeBootstrap;
 
 import java.util.Optional;
 
-@SuppressWarnings({"deprecation", "unused"})
-public final class Initializer {
-    public static void init() {
+@AConstraint(
+        platform = Platform.FORGE,
+        version = @Versions(min = MinecraftVersion.V19, max = MinecraftVersion.V19_2))
+public final class Initializer implements PCFInitializer {
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onInit() {
         FWDBootstrap.RESOURCE_LOCATION = ResourceLocation::new;
         FWDBootstrap.COMPONENT = Component::nullToEmpty;
         FWDBootstrap.init();

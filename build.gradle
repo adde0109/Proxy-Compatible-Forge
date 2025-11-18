@@ -134,6 +134,7 @@ subprojects {
         compileOnly(libs.annotations)
         compileOnly(libs.mixin)
         compileOnly(libs.taterlib.lite.base)
+        compileOnly(libs.taterlib.lite.core)
         compileOnly(libs.taterlib.lite.metadata)
         compileOnly(libs.taterlib.lite.muxins)
     }
