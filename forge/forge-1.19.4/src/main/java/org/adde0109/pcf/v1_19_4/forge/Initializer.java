@@ -1,5 +1,6 @@
 package org.adde0109.pcf.v1_19_4.forge;
 
+import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
@@ -10,15 +11,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.PCFInitializer;
-import org.adde0109.pcf.v1_14_4.forge.Config;
 import org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap;
 import org.adde0109.pcf.v1_20_4.forge.crossstitch.CSBootstrap;
 import org.adde0109.pcf.v1_20_4.forge.crossstitch.CSForgeBootstrap;
@@ -26,6 +21,7 @@ import org.adde0109.pcf.v1_20_4.forge.crossstitch.CSForgeBootstrap;
 import java.util.Optional;
 
 @AConstraint(
+        mappings = Mappings.SEARGE,
         platform = Platform.FORGE,
         version = @Versions(min = MinecraftVersion.V19_3, max = MinecraftVersion.V19_4))
 public final class Initializer implements PCFInitializer {
@@ -62,15 +58,5 @@ public final class Initializer implements PCFInitializer {
                                                                 + type.getClass().getName()));
         CSForgeBootstrap.FORGE_ARGUMENT_TYPES_REGISTRY =
                 () -> Optional.of(ForgeRegistries.COMMAND_ARGUMENT_TYPES);
-
-        FMLModContainer container =
-                ModList.get()
-                        .getModContainerById(PCF.MOD_ID)
-                        .map(FMLModContainer.class::cast)
-                        .orElseThrow();
-
-        IEventBus eventBus = container.getEventBus();
-        if (eventBus == null) return;
-        eventBus.addListener((ModConfigEvent.Reloading event) -> Config.reload());
     }
 }

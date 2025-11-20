@@ -10,12 +10,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import org.adde0109.pcf.PCFInitializer;
-import org.adde0109.pcf.v1_14_4.forge.Config;
 import org.adde0109.pcf.v1_20_2.neoforge.crossstitch.CSBootstrap;
 import org.adde0109.pcf.v1_20_2.neoforge.forwarding.FWDBootstrap;
 import org.adde0109.pcf.v1_21_10.forge.crossstitch.CSForgeBootstrap;
@@ -56,11 +53,5 @@ public final class Initializer implements PCFInitializer {
                                                 new IllegalStateException(
                                                         "Could not find ID for argument type: "
                                                                 + type.getClass().getName()));
-
-        // TODO: Upstream ModLoadingContext getter into TaterLibLite Metadata
-        // ModContainer container = ModList.get().getModContainerById(PCF.MOD_ID).orElseThrow();
-
-        ModConfigEvent.Reloading.getBus(FMLJavaModLoadingContext.get().getModBusGroup())
-                .addListener((ModConfigEvent.Reloading event) -> Config.reload());
     }
 }
