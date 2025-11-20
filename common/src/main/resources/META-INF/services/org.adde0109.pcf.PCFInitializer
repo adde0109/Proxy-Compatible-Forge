@@ -10,3 +10,10 @@ org.adde0109.pcf.v1_21_5.forge.Initializer
 org.adde0109.pcf.v1_21_10.forge.Initializer
 org.adde0109.pcf.v1_20_2.neoforge.Initializer
 org.adde0109.pcf.v1_21_10.neoforge.Initializer
+org.adde0109.pcf.v1_14_4.forge.RegisterConfig
+org.adde0109.pcf.v1_14_4.forge.DisplayTest
+org.adde0109.pcf.v1_17_1.forge.RegisterConfig
+org.adde0109.pcf.v1_17_1.forge.DisplayTestInit
+org.adde0109.pcf.v1_17_1.forge.DisplayTest
+org.adde0109.pcf.v1_18_2.forge.DisplayTestInit
+org.adde0109.pcf.v1_18_2.forge.DisplayTest

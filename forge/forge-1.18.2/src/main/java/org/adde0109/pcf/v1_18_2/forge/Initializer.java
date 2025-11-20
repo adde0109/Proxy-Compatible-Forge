@@ -8,10 +8,7 @@ import dev.neuralnexus.taterapi.meta.enums.Platform;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 
@@ -30,17 +27,11 @@ public final class Initializer implements PCFInitializer {
         FWDBootstrap.COMPONENT = Component::nullToEmpty;
         FWDBootstrap.init();
 
-        ModLoadingContext context = ModLoadingContext.get();
-        context.registerExtensionPoint(
-                IExtensionPoint.DisplayTest.class,
-                IExtensionPoint.DisplayTest.IGNORE_SERVER_VERSION);
-
         FMLModContainer container =
                 ModList.get()
                         .getModContainerById(PCF.MOD_ID)
                         .map(FMLModContainer.class::cast)
                         .orElseThrow();
-        context.registerConfig(ModConfig.Type.COMMON, Config.spec, PCF.CONFIG_FILE_NAME);
 
         IEventBus eventBus = container.getEventBus();
         if (eventBus == null) return;

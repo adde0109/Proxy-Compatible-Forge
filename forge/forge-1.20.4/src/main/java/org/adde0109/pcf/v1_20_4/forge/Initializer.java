@@ -11,12 +11,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -67,24 +63,11 @@ public final class Initializer implements PCFInitializer {
                                                         "Could not find ID for argument type: "
                                                                 + type.getClass().getName()));
 
-        FMLJavaModLoadingContext context = FMLJavaModLoadingContext.get();
-
-        // 1.19.4-1.20.1 works fine like this:
-        // context.registerExtensionPoint(
-        //        IExtensionPoint.DisplayTest.class,
-        //        IExtensionPoint.DisplayTest.IGNORE_SERVER_VERSION);
-        // 1.20.2+ requires the cast
-        ((ModLoadingContext) context)
-                .registerExtensionPoint(
-                        IExtensionPoint.DisplayTest.class,
-                        IExtensionPoint.DisplayTest.IGNORE_SERVER_VERSION);
-
         FMLModContainer container =
                 ModList.get()
                         .getModContainerById(PCF.MOD_ID)
                         .map(FMLModContainer.class::cast)
                         .orElseThrow();
-        context.registerConfig(ModConfig.Type.COMMON, Config.spec, PCF.CONFIG_FILE_NAME);
 
         IEventBus eventBus = container.getEventBus();
         if (eventBus == null) return;

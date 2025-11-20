@@ -10,15 +10,10 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.IExtensionPoint;
-import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.PCFInitializer;
 import org.adde0109.pcf.v1_14_4.forge.Config;
 import org.adde0109.pcf.v1_20_2.neoforge.crossstitch.CSBootstrap;
@@ -63,15 +58,9 @@ public final class Initializer implements PCFInitializer {
                                                                 + type.getClass().getName()));
 
         // TODO: Upstream ModLoadingContext getter into TaterLibLite Metadata
-        FMLJavaModLoadingContext context = FMLJavaModLoadingContext.get();
-        context.registerExtensionPoint(
-                IExtensionPoint.DisplayTest.class,
-                IExtensionPoint.DisplayTest.IGNORE_SERVER_VERSION);
+        // ModContainer container = ModList.get().getModContainerById(PCF.MOD_ID).orElseThrow();
 
-        ModContainer container = ModList.get().getModContainerById(PCF.MOD_ID).orElseThrow();
-        context.registerConfig(ModConfig.Type.COMMON, Config.spec, PCF.CONFIG_FILE_NAME);
-
-        ModConfigEvent.Reloading.getBus(context.getModBusGroup())
+        ModConfigEvent.Reloading.getBus(FMLJavaModLoadingContext.get().getModBusGroup())
                 .addListener((ModConfigEvent.Reloading event) -> Config.reload());
     }
 }
