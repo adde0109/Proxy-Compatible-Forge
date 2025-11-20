@@ -1,9 +1,9 @@
 package org.adde0109.pcf.mixin.v1_19_2.forge.forwarding.modern;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
+import dev.neuralnexus.taterapi.meta.anno.AConstraint;
+import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
-import dev.neuralnexus.taterapi.muxins.annotations.ReqMCVersion;
-import dev.neuralnexus.taterapi.muxins.annotations.ReqMappings;
 
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import net.minecraft.util.SignatureValidator;
@@ -16,8 +16,9 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 import java.util.UUID;
 
-@ReqMappings(Mappings.SEARGE)
-@ReqMCVersion(min = MinecraftVersion.V19_1, max = MinecraftVersion.V19_2)
+@AConstraint(
+        mappings = Mappings.SEARGE,
+        version = @Versions(min = MinecraftVersion.V19_1, max = MinecraftVersion.V19_2))
 @Mixin(ServerLoginPacketListenerImpl.class)
 public interface ServerLoginPacketListenerImplAccessor_V2 {
     @Accessor("profilePublicKeyData")

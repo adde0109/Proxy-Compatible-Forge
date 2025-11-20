@@ -3,8 +3,9 @@ package org.adde0109.pcf.mixin.v1_20_2.neoforge.forwarding.modern;
 import static org.adde0109.pcf.common.FByteBuf.readNullable;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.QUERY_IDS;
 
+import dev.neuralnexus.taterapi.meta.anno.AConstraint;
+import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
-import dev.neuralnexus.taterapi.muxins.annotations.ReqMCVersion;
 
 import io.netty.buffer.ByteBuf;
 
@@ -24,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * href="https://github.com/PaperMC/Paper/blob/bd5867a96f792f0eb32c1d249bb4bbc1d8338d14/patches/server/0009-MC-Utils.patch#L6040-L6050">Adapted
  * from Paper</a>
  */
-@ReqMCVersion(min = MinecraftVersion.V20_2)
+@AConstraint(version = @Versions(min = MinecraftVersion.V20_2))
 @Mixin(ServerboundCustomQueryAnswerPacket.class)
 public class ServerboundCustomQueryAnswerPacketMixin {
     @Unique private static final int pcf$MAX_PAYLOAD_SIZE = 1048576;

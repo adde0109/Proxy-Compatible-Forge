@@ -1,7 +1,9 @@
 package org.adde0109.pcf.mixin.v1_17_1.forge.network;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
-import dev.neuralnexus.taterapi.muxins.annotations.ReqMappings;
+import dev.neuralnexus.taterapi.meta.anno.AConstraint;
+import dev.neuralnexus.taterapi.meta.anno.Versions;
+import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 
 import net.minecraft.network.Connection;
 
@@ -10,7 +12,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.net.SocketAddress;
 
-@ReqMappings(Mappings.SEARGE)
+@AConstraint(mappings = Mappings.SEARGE, version = @Versions(min = MinecraftVersion.V17))
 @Mixin(Connection.class)
 public interface ConnectionAccessor {
     @Accessor("address")
