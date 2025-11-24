@@ -23,7 +23,7 @@ import org.adde0109.pcf.PCFInitializer;
                         },
                         min = MinecraftVersion.V17,
                         max = MinecraftVersion.V18_1))
-public final class DisplayTest implements PCFInitializer {
+public final class DisplayTestReg implements PCFInitializer {
     @Override
     public void onInit() {
         ModLoadingContext.get()

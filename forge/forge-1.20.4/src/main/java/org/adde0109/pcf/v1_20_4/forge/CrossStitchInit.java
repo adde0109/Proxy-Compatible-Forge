@@ -7,14 +7,9 @@ import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.enums.Platform;
 
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import org.adde0109.pcf.PCFInitializer;
-import org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap;
 import org.adde0109.pcf.v1_20_4.forge.crossstitch.CSBootstrap;
 import org.adde0109.pcf.v1_20_4.forge.crossstitch.CSForgeBootstrap;
 
@@ -23,18 +18,9 @@ import java.util.Optional;
 @AConstraint(
         mappings = Mappings.SEARGE,
         platform = Platform.FORGE,
-        version = @Versions(min = MinecraftVersion.V20, max = MinecraftVersion.V20_4))
-public final class Initializer implements PCFInitializer {
-    @SuppressWarnings("deprecation")
-    @Override
-    public void onInit() {
-        FWDBootstrap.RESOURCE_LOCATION = ResourceLocation::new;
-        FWDBootstrap.COMPONENT = Component::nullToEmpty;
-        FWDBootstrap.init();
-        CSBootstrap.ARGUMENT_TYPES_REGISTRY =
-                () -> Optional.of(BuiltInRegistries.COMMAND_ARGUMENT_TYPE);
-        CSForgeBootstrap.FORGE_ARGUMENT_TYPES_REGISTRY =
-                () -> Optional.of(ForgeRegistries.COMMAND_ARGUMENT_TYPES);
+        version = @Versions(min = MinecraftVersion.V19_1, max = MinecraftVersion.V20_4))
+public final class CrossStitchInit implements PCFInitializer {
+    public CrossStitchInit() {
         CSBootstrap.COMMAND_ARGUMENT_TYPE_KEY =
                 (type) -> {
                     if (CSBootstrap.isForge) {
@@ -59,4 +45,7 @@ public final class Initializer implements PCFInitializer {
                                                         "Could not find ID for argument type: "
                                                                 + type.getClass().getName()));
     }
+
+    @Override
+    public void onInit() {}
 }

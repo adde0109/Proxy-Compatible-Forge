@@ -1,4 +1,4 @@
-package org.adde0109.pcf.v1_14_4.forge;
+package org.adde0109.pcf.v1_16_5.forge;
 
 import dev.neuralnexus.taterapi.Wrapped;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
@@ -13,11 +13,12 @@ import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.PCFInitializer;
+import org.adde0109.pcf.v1_14_4.forge.Config;
 
 @AConstraint(
         platform = Platform.FORGE,
-        version = @Versions(min = MinecraftVersion.V14, max = MinecraftVersion.V14_4))
-public final class ReloadConfig implements PCFInitializer {
+        version = @Versions(min = MinecraftVersion.V15, max = MinecraftVersion.V16_5))
+public final class ReloadConfigInit implements PCFInitializer {
     @Override
     public void onInit() {
         IEventBus eventBus =
@@ -27,6 +28,6 @@ public final class ReloadConfig implements PCFInitializer {
                         .map(Wrapped::unwrap)
                         .orElseThrow()
                         .getEventBus();
-        eventBus.addListener((ModConfig.ConfigReloading event) -> Config.reload());
+        eventBus.addListener((ModConfig.Reloading event) -> Config.reload());
     }
 }

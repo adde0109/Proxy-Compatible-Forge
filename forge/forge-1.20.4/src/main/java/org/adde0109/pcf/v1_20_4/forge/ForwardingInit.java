@@ -1,4 +1,4 @@
-package org.adde0109.pcf.v1_18_2.forge;
+package org.adde0109.pcf.v1_20_4.forge;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
@@ -13,12 +13,14 @@ import org.adde0109.pcf.v1_17_1.forge.forwarding.FWDBootstrap;
 
 @AConstraint(
         mappings = Mappings.SEARGE,
-        version = @Versions(min = MinecraftVersion.V17, max = MinecraftVersion.V18_2))
-public final class Initializer implements PCFInitializer {
-    @Override
-    public void onInit() {
+        version = @Versions(min = MinecraftVersion.V17, max = MinecraftVersion.V20_4))
+public final class ForwardingInit implements PCFInitializer {
+    public ForwardingInit() {
         FWDBootstrap.RESOURCE_LOCATION = ResourceLocation::new;
         FWDBootstrap.COMPONENT = Component::nullToEmpty;
         FWDBootstrap.init();
     }
+
+    @Override
+    public void onInit() {}
 }

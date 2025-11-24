@@ -16,7 +16,7 @@ import org.adde0109.pcf.PCFInitializer;
         version = @Versions(min = MinecraftVersion.V18_2),
         notVersion =
                 @Versions({MinecraftVersion.V19, MinecraftVersion.V19_3, MinecraftVersion.V20_2}))
-public final class DisplayTest implements PCFInitializer {
+public final class DisplayTestReg implements PCFInitializer {
     @Override
     public void onInit() {
         ModLoadingContext.get().registerDisplayTest(IGNORE_SERVER_VERSION);

@@ -5,13 +5,16 @@ import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
+import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 
 import org.adde0109.pcf.forwarding.Mode;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
 import java.util.List;
 
 public final class PCF {
@@ -27,8 +30,9 @@ public final class PCF {
         return INSTANCE;
     }
 
-    private static final EntrypointLoader<PCFInitializer> loader =
-            new EntrypointLoader<>(PCFInitializer.class, logger);
+    private static final @NotNull String SERVICE_PATH =
+            "META-INF/services/org.adde0109.pcf.PCFInitializer";
+    private static EntrypointLoader<PCFInitializer> loader;
 
     @ApiStatus.Internal
     void onInit() {
@@ -42,8 +46,18 @@ public final class PCF {
                 + " (" + platform + " " + api.meta().apiVersion() + ")");
         // spotless:on
 
-        boolean debug = Constraint.Evaluator.DEBUG;
+        final boolean debug = Constraint.Evaluator.DEBUG;
         Constraint.Evaluator.DEBUG = this.debug().enabled();
+
+        final ModContainer<?> container = MetaAPI.instance().mod(MOD_ID).orElseThrow();
+        final Path servicePath = container.resource().getResourceOrThrow(SERVICE_PATH);
+        loader =
+                EntrypointLoader.builder()
+                        .entrypointClass(PCFInitializer.class)
+                        .logger(logger)
+                        .servicePaths(servicePath)
+                        .forceFallback(false)
+                        .build();
 
         loader.load();
         loader.onInit();
@@ -78,7 +92,7 @@ public final class PCF {
     }
 
     @ApiStatus.Internal
-    public void setForwarding(Forwarding forwarding) {
+    public void setForwarding(final @NotNull Forwarding forwarding) {
         this.forwarding = forwarding;
     }
 
@@ -89,7 +103,7 @@ public final class PCF {
     }
 
     @ApiStatus.Internal
-    public void setCrossStitch(CrossStitch crossStitch) {
+    public void setCrossStitch(final @NotNull CrossStitch crossStitch) {
         this.crossStitch = crossStitch;
     }
 
@@ -100,7 +114,7 @@ public final class PCF {
     }
 
     @ApiStatus.Internal
-    public void setDebug(Debug debug) {
+    public void setDebug(final @NotNull Debug debug) {
         this.debug = debug;
     }
 

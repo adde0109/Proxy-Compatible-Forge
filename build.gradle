@@ -183,7 +183,7 @@ tasks.withType(JavaCompile).configureEach {
 
 var platformVersions = [:]
 platformVersions.put("forge", Arrays.asList("1.14.4", "1.16.5", "1.17.1", "1.18.2",
-        "1.19.2", "1.19.4", "1.20.4", "1.20.6", "1.21.5", "1.21.10"))
+        "1.19.2", "1.19.4", "1.20.4", "1.21.10"))
 platformVersions.put("neoforge", Arrays.asList("1.20.2", "1.21.10"))
 
 tasks.register("buildAllTheStuffNowBcGradleIsDumb", Task) {
@@ -229,6 +229,14 @@ tasks.register("customDowngrade", DowngradeJar) {
     downgradeTo = JavaVersion.VERSION_1_8
     classpath = sourceSets.main.compileClasspath
     archiveClassifier = "downgraded-8"
+
+    multiReleaseOriginal = true
+    multiReleaseVersions = [
+            JavaVersion.VERSION_1_9,
+            JavaVersion.VERSION_11,
+            JavaVersion.VERSION_17,
+            JavaVersion.VERSION_21
+    ]
 }
 
 tasks.register("customShadeDowngradedApi", ShadeJar) {
