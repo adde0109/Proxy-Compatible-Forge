@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v1_19_4.forge.forwarding.modern;
+package org.adde0109.pcf.mixin.v1_19_2.forge.forwarding.modern;
 
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.QUERY_IDS;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.forward;
@@ -57,11 +57,11 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @AConstraint(
         mappings = Mappings.SEARGE,
-        version = @Versions(min = MinecraftVersion.V19_3, max = MinecraftVersion.V20_1))
+        version = @Versions(min = MinecraftVersion.V19, max = MinecraftVersion.V19_2))
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ServerLoginPacketListenerImplMixin {
     // spotless:off
-    @Shadow @Final Connection connection;
+    @Shadow @Final public Connection connection;
     @Shadow @Nullable public GameProfile gameProfile;
     @Shadow public abstract void shadow$disconnect(Component reason);
 
@@ -69,7 +69,7 @@ public abstract class ServerLoginPacketListenerImplMixin {
     @Unique private int pcf$velocityLoginMessageId = -1;
 
     // TODO: Test Muxin method annotations to combine 1.19.x mixins
-    @Inject(method = "handleHello", cancellable = true, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, ordinal = 2,
+    @Inject(method = "handleHello", cancellable = true, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, ordinal = 1,
             target = "Lnet/minecraft/server/network/ServerLoginPacketListenerImpl;state:Lnet/minecraft/server/network/ServerLoginPacketListenerImpl$State;"))
     // spotless:on
     private void onHandleHello(ServerboundHelloPacket packet, CallbackInfo ci) {
