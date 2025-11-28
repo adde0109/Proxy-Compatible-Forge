@@ -6,6 +6,7 @@ import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.ModContainer;
+import dev.neuralnexus.taterapi.meta.ModResource;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 
@@ -50,16 +51,21 @@ public final class PCF {
         Constraint.Evaluator.DEBUG = this.debug().enabled();
 
         final ModContainer<?> container = MetaAPI.instance().mod(MOD_ID).orElseThrow();
-        final Path servicePath = container.resource().getResourceOrThrow(SERVICE_PATH);
-        loader =
-                EntrypointLoader.builder()
-                        .entrypointClass(PCFInitializer.class)
-                        .logger(logger)
-                        .servicePaths(servicePath)
-                        .forceFallback(false)
-                        .build();
+        try (final ModResource resource = container.resource()) {
+            final Path servicePath = resource.getResourceOrThrow(SERVICE_PATH);
+            loader =
+                    EntrypointLoader.builder()
+                            .entrypointClass(PCFInitializer.class)
+                            .logger(logger)
+                            .servicePaths(servicePath)
+                            .useServiceLoader(false)
+                            .useOtherProviders(true)
+                            .build();
 
-        loader.load();
+            loader.load();
+        } catch (final Exception e) {
+            PCF.logger.error("Failed to access PCF Mod Resources", e);
+        }
         loader.onInit();
 
         Constraint.Evaluator.DEBUG = debug;
