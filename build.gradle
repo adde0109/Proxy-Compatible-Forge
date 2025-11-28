@@ -230,13 +230,13 @@ tasks.register("customDowngrade", DowngradeJar) {
     classpath = sourceSets.main.compileClasspath
     archiveClassifier = "downgraded-8"
 
-    multiReleaseOriginal = true
-    multiReleaseVersions = [
-            JavaVersion.VERSION_1_9,
-            JavaVersion.VERSION_11,
-            JavaVersion.VERSION_17,
-            JavaVersion.VERSION_21
-    ]
+    //multiReleaseOriginal = true
+    //multiReleaseVersions = [
+    //        JavaVersion.VERSION_1_9,
+    //        JavaVersion.VERSION_11,
+    //        JavaVersion.VERSION_17,
+    //        JavaVersion.VERSION_21
+    //]
 }
 
 tasks.register("customShadeDowngradedApi", ShadeJar) {
