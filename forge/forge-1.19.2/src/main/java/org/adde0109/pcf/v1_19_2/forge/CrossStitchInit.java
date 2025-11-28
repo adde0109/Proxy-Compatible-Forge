@@ -1,4 +1,4 @@
-package org.adde0109.pcf.v1_20_4.forge;
+package org.adde0109.pcf.v1_19_2.forge;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
@@ -18,7 +18,7 @@ import java.util.Optional;
 @AConstraint(
         mappings = Mappings.SEARGE,
         platform = Platform.FORGE,
-        version = @Versions(min = MinecraftVersion.V19_3, max = MinecraftVersion.V20_4))
+        version = @Versions(min = MinecraftVersion.V19_1, max = MinecraftVersion.V19_2))
 public final class CrossStitchInit implements PCFInitializer {
     public CrossStitchInit() {
         CSBootstrap.COMMAND_ARGUMENT_TYPE_KEY =
