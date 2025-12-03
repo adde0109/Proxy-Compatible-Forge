@@ -64,7 +64,7 @@ public final class PCF {
 
             loader.load();
         } catch (final Exception e) {
-            PCF.logger.error("Failed to access PCF Mod Resources", e);
+            PCF.logger.error("Failed to access PCF Mod Resources: " + e.getClass(), e);
         }
         loader.onInit();
 
