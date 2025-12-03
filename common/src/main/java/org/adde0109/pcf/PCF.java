@@ -1,13 +1,21 @@
 package org.adde0109.pcf;
 
+import dev.neuralnexus.taterapi.loader.EntrypointLoader;
 import dev.neuralnexus.taterapi.logger.Logger;
+import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
+import dev.neuralnexus.taterapi.meta.MinecraftVersion;
+import dev.neuralnexus.taterapi.meta.ModContainer;
+import dev.neuralnexus.taterapi.meta.ModResource;
+import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 
 import org.adde0109.pcf.forwarding.Mode;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
 import java.util.List;
 
 public final class PCF {
@@ -21,6 +29,46 @@ public final class PCF {
 
     public static PCF instance() {
         return INSTANCE;
+    }
+
+    private static final @NotNull String SERVICE_PATH =
+            "META-INF/services/org.adde0109.pcf.PCFInitializer";
+    private static EntrypointLoader<PCFInitializer> loader;
+
+    @ApiStatus.Internal
+    void onInit() {
+        MetaAPI api = MetaAPI.instance();
+        MinecraftVersion mcv = api.version();
+        Platform platform = api.platform();
+
+        // spotless:off
+        PCF.logger.info("Initializing Proxy Compatible Forge on "
+                + "Minecraft " + mcv
+                + " (" + platform + " " + api.meta().apiVersion() + ")");
+        // spotless:on
+
+        final boolean debug = Constraint.Evaluator.DEBUG;
+        Constraint.Evaluator.DEBUG = this.debug().enabled();
+
+        final ModContainer<?> container = MetaAPI.instance().mod(MOD_ID).orElseThrow();
+        try (final ModResource resource = container.resource()) {
+            final Path servicePath = resource.getResourceOrThrow(SERVICE_PATH);
+            loader =
+                    EntrypointLoader.builder()
+                            .entrypointClass(PCFInitializer.class)
+                            .logger(logger)
+                            .servicePaths(servicePath)
+                            .useServiceLoader(false)
+                            .useOtherProviders(true)
+                            .build();
+
+            loader.load();
+        } catch (final Exception e) {
+            PCF.logger.error("Failed to access PCF Mod Resources: " + e.getClass(), e);
+        }
+        loader.onInit();
+
+        Constraint.Evaluator.DEBUG = debug;
     }
 
     @ApiStatus.Internal
@@ -50,7 +98,7 @@ public final class PCF {
     }
 
     @ApiStatus.Internal
-    public void setForwarding(Forwarding forwarding) {
+    public void setForwarding(final @NotNull Forwarding forwarding) {
         this.forwarding = forwarding;
     }
 
@@ -61,7 +109,7 @@ public final class PCF {
     }
 
     @ApiStatus.Internal
-    public void setCrossStitch(CrossStitch crossStitch) {
+    public void setCrossStitch(final @NotNull CrossStitch crossStitch) {
         this.crossStitch = crossStitch;
     }
 
@@ -72,7 +120,7 @@ public final class PCF {
     }
 
     @ApiStatus.Internal
-    public void setDebug(Debug debug) {
+    public void setDebug(final @NotNull Debug debug) {
         this.debug = debug;
     }
 

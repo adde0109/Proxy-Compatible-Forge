@@ -11,9 +11,9 @@ import com.mojang.authlib.GameProfile;
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.Platforms;
+import dev.neuralnexus.taterapi.meta.anno.AConstraint;
+import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
-import dev.neuralnexus.taterapi.muxins.annotations.ReqMCVersion;
-import dev.neuralnexus.taterapi.muxins.annotations.ReqMappings;
 
 import io.netty.buffer.Unpooled;
 
@@ -41,8 +41,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-@ReqMappings(Mappings.MOJANG)
-@ReqMCVersion(min = MinecraftVersion.V20_2)
+/**
+ * Adapted from <a
+ * href="https://github.com/PaperMC/Paper/blob/main/paper-server/patches/sources/net/minecraft/server/network/ServerLoginPacketListenerImpl.java.patch">PaperMC</a>
+ */
+@AConstraint(mappings = Mappings.MOJANG, version = @Versions(min = MinecraftVersion.V20_2))
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ServerLoginPacketListenerImplMixin {
     // spotless:off
@@ -53,7 +56,7 @@ public abstract class ServerLoginPacketListenerImplMixin {
 
     @Unique private int pcf$velocityLoginMessageId = -1;
 
-    @Inject(method = "handleHello", cancellable = true, at = @At(value = "INVOKE",
+    @Inject(method = "handleHello", cancellable = true, at = @At(value = "INVOKE", ordinal = 1,
             target = "Lnet/minecraft/server/network/ServerLoginPacketListenerImpl;startClientVerification(Lcom/mojang/authlib/GameProfile;)V"))
     // spotless:on
     private void onHandleHello(ServerboundHelloPacket packet, CallbackInfo ci) {

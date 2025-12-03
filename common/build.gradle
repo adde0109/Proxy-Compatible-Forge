@@ -15,6 +15,7 @@ dependencies {
 
     compileOnly(libs.entrypoint.spoof)
     implementation(libs.taterlib.lite.base)
+    implementation(libs.taterlib.lite.core)
     implementation(libs.taterlib.lite.metadata)
     implementation(libs.taterlib.lite.muxins)
 }
