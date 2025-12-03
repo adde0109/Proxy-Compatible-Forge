@@ -15,7 +15,7 @@ import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.PCFInitializer;
 
 @AConstraint(platform = Platform.NEOFORGE, version = @Versions(min = MinecraftVersion.V20_2))
-public class ReloadConfigInit implements PCFInitializer {
+public final class ReloadConfigInit implements PCFInitializer {
     @Override
     public void onInit() {
         IEventBus eventBus =
