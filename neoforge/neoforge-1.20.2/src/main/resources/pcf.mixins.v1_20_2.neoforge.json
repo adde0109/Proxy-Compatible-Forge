@@ -11,6 +11,7 @@
     "v1_20_2.neoforge.crossstitch.ArgumentNodeStubMixin",
     "v1_20_2.neoforge.forwarding.modern.ServerboundCustomQueryAnswerPacketMixin",
     "v1_20_2.neoforge.forwarding.modern.ServerLoginPacketListenerImplMixin",
+    "v1_20_2.neoforge.forwarding.modern.ServerLoginPacketListenerPlaceholderMixin",
     "v1_20_2.neoforge.network.ConnectionAccessor"
   ]
 }
