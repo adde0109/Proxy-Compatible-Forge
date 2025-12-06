@@ -58,13 +58,22 @@ ext.mergeMixinConfigs = { List<File> mixinConfigs ->
 // --------------------------- Jar file helper method --------------------------------
 ext.bundleJars = { Map<String, List<String>> platformVersions ->
     def jarFiles = [
+            project(":v14_4").tasks.getByName("remapJar").archiveFile.get().asFile,
+            project(":v16_5").tasks.getByName("remapJar").archiveFile.get().asFile,
+            project(":v17_1").tasks.getByName("remapJar").archiveFile.get().asFile,
+            project(":v18_2").tasks.getByName("remapJar").archiveFile.get().asFile,
+            project(":v19_2").tasks.getByName("remapJar").archiveFile.get().asFile,
+            project(":v19_4").tasks.getByName("remapJar").archiveFile.get().asFile,
+            project(":v20_2").tasks.jar.archiveFile.get().asFile,
+            project(":v20_4").tasks.getByName("remapJar").archiveFile.get().asFile,
+            project(":v21_10").tasks.jar.archiveFile.get().asFile,
             file("./common/build/libs/${project_id}-common-${version}-shaded.jar")
     ]
-    platformVersions.each { platform, versions ->
-        versions.each { mcVersion ->
-            jarFiles.add(file("${platform}/${platform}-${mcVersion}/build/libs/${project_id}-${platform}-${mcVersion}-${version}.jar") as File)
-        }
-    }
+//    platformVersions.each { platform, versions ->
+//        versions.each { mcVersion ->
+//            jarFiles.add(file("${platform}/${platform}-${mcVersion}/build/libs/${project_id}-${platform}-${mcVersion}-${version}.jar") as File)
+//        }
+//    }
     def zipped = jarFiles.collect {
         zipTree(it).matching {
             exclude('pcf.mixins.*')
@@ -187,15 +196,16 @@ platformVersions.put("forge", Arrays.asList("1.14.4", "1.16.5", "1.17.1", "1.18.
 platformVersions.put("neoforge", Arrays.asList("1.20.2", "1.21.10"))
 
 tasks.register("buildAllTheStuffNowBcGradleIsDumb", Task) {
-    dependsOn(":common:build")
-    platformVersions.each { platform, versions ->
-        versions.each { mcVersion ->
-            dependsOn(":${platform}:${platform}-${mcVersion}:build")
-        }
-    }
+    dependsOn(":common:build", ":v14_4:build", ":v16_5:build",
+            ":v17_1:build", ":v18_2:build", ":v19_2:build",
+            ":v19_4:build", ":v20_2:build", ":v20_4:build", ":v21_10:build")
 }
 
 tasks.register("shadeAndRelocate", ShadowJar) {
+    dependsOn(":common:build", ":v14_4:build", ":v16_5:build",
+            ":v17_1:build", ":v18_2:build", ":v19_2:build",
+            ":v19_4:build", ":v20_2:build", ":v20_4:build", ":v21_10:build")
+
     relocate("dev.neuralnexus.conditionalmixins", "org.adde0109.pcf.lib.conditionalmixins")
     relocate("dev.neuralnexus.taterapi", "org.adde0109.pcf.lib.taterapi")
 
