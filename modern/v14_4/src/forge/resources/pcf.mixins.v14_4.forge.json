@@ -8,11 +8,11 @@
   "plugin": "org.adde0109.pcf.mixin.plugin.PCFMixinPlugin",
   "package": "org.adde0109.pcf.mixin",
   "server": [
-    "v1_14_4.forge.crossstitch.CommandsPacketMixin",
-    "v1_14_4.forge.forwarding.modern.ClientboundCustomQueryPacketAccessor",
-    "v1_14_4.forge.forwarding.modern.ServerboundCustomQueryPacketAccessor",
-    "v1_14_4.forge.forwarding.modern.ServerLoginPacketListenerImplMixin",
-    "v1_14_4.forge.forwarding.modern.ServerLoginPacketListenerPlaceholderMixin",
-    "v1_14_4.forge.network.ConnectionAccessor"
+    "v14_4.forge.crossstitch.CommandsPacketMixin",
+    "v14_4.forge.forwarding.modern.ClientboundCustomQueryPacketAccessor",
+    "v14_4.forge.forwarding.modern.ServerboundCustomQueryPacketAccessor",
+    "v14_4.forge.forwarding.modern.ServerLoginPacketListenerImplMixin",
+    "v14_4.forge.forwarding.modern.ServerLoginPacketListenerPlaceholderMixin",
+    "v14_4.forge.network.ConnectionAccessor"
   ]
 }

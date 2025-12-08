@@ -8,7 +8,7 @@
   "plugin": "org.adde0109.pcf.mixin.plugin.PCFMixinPlugin",
   "package": "org.adde0109.pcf.mixin",
   "server": [
-    "v1_20_4.forge.crossstitch.ArgumentNodeStubMixin",
-    "v1_20_4.forge.forwarding.modern.ServerLoginPacketListenerImplMixin"
+    "v20_4.forge.crossstitch.ArgumentNodeStubMixin",
+    "v20_4.forge.forwarding.modern.ServerLoginPacketListenerImplMixin"
   ]
 }

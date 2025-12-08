@@ -9,6 +9,6 @@
   "package": "org.adde0109.pcf.mixin",
   "server": [],
   "mixins": [
-    "v1_16_5.forge.crossstitch.CommandsPacketMixin"
+    "v16_5.forge.crossstitch.CommandsPacketMixin"
   ]
 }

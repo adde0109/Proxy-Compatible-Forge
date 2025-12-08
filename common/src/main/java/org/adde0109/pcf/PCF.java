@@ -75,11 +75,11 @@ public final class PCF {
     public static void forceLoadConfig() {
         try {
             if (MetaAPI.instance().isPlatformPresent(Platforms.FORGE)) {
-                Class.forName("org.adde0109.pcf.v1_14_4.forge.Config")
+                Class.forName("org.adde0109.pcf.v14_4.forge.Config")
                         .getMethod("reload")
                         .invoke(null);
             } else if (MetaAPI.instance().isPlatformPresent(Platforms.NEOFORGE)) {
-                Class.forName("org.adde0109.pcf.v1_20_2.neoforge.Config")
+                Class.forName("org.adde0109.pcf.v20_2.neoforge.Config")
                         .getMethod("reload")
                         .invoke(null);
             }
