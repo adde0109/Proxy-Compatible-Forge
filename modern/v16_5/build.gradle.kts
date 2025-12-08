@@ -1,25 +1,36 @@
-dependencies {
-    compileOnly(project(":v14_4"))
-    compileOnly(project(":common"))
+val forge: SourceSet by sourceSets.creating
+val mainCompileOnly: Configuration by configurations.getting
+configurations.compileOnly.get().extendsFrom(mainCompileOnly)
+val forgeCompileOnly: Configuration by configurations.getting {
+    extendsFrom(mainCompileOnly)
 }
 
 unimined.minecraft {
     version(minecraftVersion)
-    minecraftForge {
-        loader(forgeVersion)
-        mixinConfig("pcf.mixins.v1_16_5.forge.json")
-    }
     mappings {
         parchment(parchmentMinecraft, parchmentVersion)
         mojmap()
         devFallbackNamespace("official")
     }
     defaultRemapJar = false
-    remap(tasks.jar.get()) {
-        prodNamespace("searge")
-        mixinRemap {
-            disableRefmap()
-        }
-        archiveClassifier = "remapped"
+}
+
+unimined.minecraft(forge) {
+    combineWith(sourceSets.main.get())
+    minecraftForge {
+        loader(forgeVersion)
+        mixinConfig("$modId.mixins.v1_16_5.forge.json")
     }
+    defaultRemapJar = true
+}
+
+dependencies {
+    forgeCompileOnly(srcSetAsDep(":modern:v14_4", "forge"))
+    forgeCompileOnly(project(":common"))
+}
+
+tasks.jar {
+    dependsOn("remapForgeJar")
+    from(jarToFiles("remapForgeJar"))
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

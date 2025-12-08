@@ -1,10 +1,14 @@
 import org.gradle.api.Project
-import org.gradle.api.artifacts.Configuration
-import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.Task
 import org.gradle.api.file.FileCollection
+import org.gradle.api.file.FileTree
+import org.gradle.api.file.RegularFile
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.bundling.Jar
-import org.gradle.api.tasks.SourceSet
+import groovy.json.JsonSlurper;
+import groovy.json.JsonOutput;
+import java.io.File
 
 object PCF
 
@@ -30,7 +34,6 @@ val Project.neoforgeVersion: String get() = properties["neoforge_version"].toStr
 
 val Project.javaVersion: String get() = properties["java_version"].toString()
 
-
 fun Project.jarToFiles(taskName: String): FileCollection {
     val jar: Jar = when (val task = tasks.getByName(taskName)) {
         is Jar -> task
@@ -39,6 +42,24 @@ fun Project.jarToFiles(taskName: String): FileCollection {
     return zipTree(jar.archiveFile.get().asFile)
 }
 
+fun Project.jarToFiles(projectName: String, taskName: String): FileCollection {
+    val jar: Jar = when (val task = rootProject.project(projectName).tasks.getByName(taskName)) {
+        is Jar -> task
+        else -> throw IllegalArgumentException("Task $taskName is not a Jar task")
+    }
+    return zipTree(jar.archiveFile.get().asFile)
+}
+
 val Project.srcSetAsDep: (String, String) -> FileCollection get() = { projName, srcSetName ->
     files(rootProject.project(projName).extensions.getByType(JavaPluginExtension::class.java).sourceSets.getByName(srcSetName).output)
+}
+
+fun Project.bundleJars(jarTasks: List<Task>): List<Provider<FileTree>> {
+    return jarTasks.map { task ->
+        val jar = (task as Jar)
+        provider {
+            zipTree(jar.archiveFile)
+                .matching { exclude("pcf.mixins.*") }
+        }
+    }
 }

@@ -1,7 +1,6 @@
 val forge: SourceSet by sourceSets.creating
 val neoforge: SourceSet by sourceSets.creating
-
-val mainCompileOnly: Configuration by configurations.creating
+val mainCompileOnly: Configuration by configurations.getting
 configurations.compileOnly.get().extendsFrom(mainCompileOnly)
 val forgeCompileOnly: Configuration by configurations.getting {
     extendsFrom(mainCompileOnly)
@@ -41,10 +40,10 @@ dependencies {
     mainCompileOnly(libs.taterlib.lite.core)
     mainCompileOnly(libs.taterlib.lite.metadata)
     mainCompileOnly(libs.taterlib.lite.muxins)
-    forgeCompileOnly(project(":v14_4"))
-    forgeCompileOnly(project(":v20_2"))
+    forgeCompileOnly(srcSetAsDep(":modern:v14_4", "forge"))
+    forgeCompileOnly(project(":modern:v20_2"))
     forgeCompileOnly(project(":common"))
-    neoforgeCompileOnly(project(":v20_2"))
+    neoforgeCompileOnly(project(":modern:v20_2"))
     neoforgeCompileOnly(project(":common"))
 }
 

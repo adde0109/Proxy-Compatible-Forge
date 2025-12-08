@@ -35,6 +35,5 @@ val modernVersions = listOf(
     "20_4",
     "21_10"
 ).forEach { version ->
-    include(":v$version")
-    project(":v$version").projectDir = file("modern/v$version")
+    include(":modern:v$version")
 }

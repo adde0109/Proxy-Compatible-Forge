@@ -3,12 +3,13 @@ plugins {
 }
 
 base {
-    archivesName = "${project_id}-common"
+    archivesName = "$modId-common"
 }
 
 dependencies {
     compileOnly(libs.mojang.authlib)
     compileOnly(libs.guava)
+    compileOnly(libs.mixin)
     compileOnly(libs.netty.buffer)
     compileOnly(libs.netty.codec)
     compileOnly(libs.asm.tree)
@@ -20,18 +21,18 @@ dependencies {
     implementation(libs.taterlib.lite.muxins)
 }
 
-tasks.withType(ProcessResources).configureEach {
-    filesMatching([
+tasks.withType<ProcessResources> {
+    filesMatching(listOf(
             "META-INF/mods.toml",
             "META-INF/neoforge.mods.toml",
             "pack.mcmeta",
-    ]) {
-        expand project.properties
+    )) {
+        expand(project.properties)
     }
 }
 
-shadowJar {
+tasks.shadowJar {
     archiveClassifier = "shaded"
 }
 
-tasks.build.dependsOn(shadowJar)
+tasks.build.get().dependsOn(tasks.shadowJar)
