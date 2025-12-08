@@ -19,7 +19,7 @@ unimined.minecraft(forge) {
     combineWith(sourceSets.main.get())
     minecraftForge {
         loader(forgeVersion)
-        mixinConfig("$modId.mixins.v1_16_5.forge.json")
+        mixinConfig("$modId.mixins.v16_5.forge.json")
     }
     defaultRemapJar = true
 }
