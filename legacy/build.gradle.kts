@@ -1,0 +1,25 @@
+import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
+
+subprojects {
+    apply(plugin = rootProject.libs.plugins.unimined.get().pluginId)
+
+    base {
+        archivesName = "${modId}-${minecraftVersion}"
+    }
+
+    tasks.withType<RemapJarTask>().configureEach {
+        mixinRemap {
+            enableBaseMixin()
+            disableRefmap()
+        }
+    }
+
+    var mainCompileOnly = configurations.maybeCreate("mainCompileOnly")
+
+    dependencies {
+        mainCompileOnly(rootProject.libs.taterlib.lite.base)
+        mainCompileOnly(rootProject.libs.taterlib.lite.core)
+        mainCompileOnly(rootProject.libs.taterlib.lite.metadata)
+        mainCompileOnly(rootProject.libs.taterlib.lite.muxins)
+    }
+}

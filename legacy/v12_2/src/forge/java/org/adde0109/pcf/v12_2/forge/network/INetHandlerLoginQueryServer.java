@@ -1,0 +1,7 @@
+package org.adde0109.pcf.v12_2.forge.network;
+
+import net.minecraft.network.INetHandler;
+
+public interface INetHandlerLoginQueryServer extends INetHandler {
+    void handleCustomQuery(SCustomQueryPacket packet);
+}

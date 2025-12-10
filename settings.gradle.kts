@@ -23,6 +23,13 @@ plugins {
 rootProject.name = "proxy-compatible-forge"
 
 include(":common")
+include(":legacy")
+val legacyVersions = listOf(
+    "12_2"
+).forEach { version ->
+    include(":legacy:v$version")
+}
+
 include(":modern")
 val modernVersions = listOf(
     "14_4",

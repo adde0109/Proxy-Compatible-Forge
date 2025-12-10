@@ -4,11 +4,11 @@ import com.google.common.net.InetAddresses;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import io.netty.util.ByteProcessor;
+import io.netty.util.CharsetUtil;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -1167,6 +1167,15 @@ public final class FByteBuf extends ByteBuf {
                     }
                 }
             }
+        }
+    }
+
+    private static final class ByteBufUtil {
+        private static final int MAX_BYTES_PER_CHAR_UTF8 =
+                (int) CharsetUtil.encoder(CharsetUtil.UTF_8).maxBytesPerChar();
+
+        public static int utf8MaxBytes(final int seqLength) {
+            return seqLength * MAX_BYTES_PER_CHAR_UTF8;
         }
     }
 

@@ -82,7 +82,10 @@ repositories {
     maven("https://maven.neuralnexus.dev/releases")
 }
 
-val modern = listOf(
+//val legacy = listOf(":legacy:v12_2")
+
+val projs = listOf(
+    ":legacy:v12_2",
     ":modern:v14_4",
     ":modern:v16_5",
     ":modern:v17_1",
@@ -96,14 +99,12 @@ val modern = listOf(
 
 val mergeMixins = tasks.register("mergeMixins", MergeMixinConfigs::class) {
     dependsOn(":common:build")
-    modern.forEach { dependsOn("$it:build") }
+    projs.forEach { dependsOn("$it:build") }
 
-    val jarTasks = mutableListOf<TaskProvider<out Jar>>()
-    jarTasks.add(rootProject.project(":common").tasks.named<ShadowJar>("shadowJar"))
-    modern.forEach {
-        jarTasks.add(rootProject.project(it).tasks.named<Jar>("jar"))
-    }
-    inputFiles.set(jarTasks.map { it.get().archiveFile.get() })
+    val jars = mutableListOf<RegularFile>()
+    jars.add(rootProject.project(":common").tasks.shadowJar.get().archiveFile.get())
+    projs.forEach { jars.add(rootProject.project(it).tasks.jar.get().archiveFile.get()) }
+    inputFiles.set(jars)
     outputFile.set(layout.buildDirectory.file("tmp/$modId.mixins.json"))
 
     config.set(mapOf(
@@ -134,6 +135,8 @@ val shadeAndRelocate = tasks.register<ShadowJar>("shadeAndRelocate") {
                 "Implementation-Version" to version,
                 "Implementation-Vendor" to "adde0109",
                 "Implementation-Timestamp" to Instant.now().toString(),
+                "FMLCorePluginContainsFMLMod" to "true",
+                "TweakClass" to "org.spongepowered.asm.launch.MixinTweaker",
                 "MixinConfigs" to "$modId.mixins.json"
             )
         )
@@ -148,7 +151,7 @@ val shadeAndRelocate = tasks.register<ShadowJar>("shadeAndRelocate") {
     evaluationDependsOn(":common")
     dependsOn(":common:build")
     jarTasks.add(rootProject.project(":common").tasks.named<ShadowJar>("shadowJar").get())
-    modern.forEach {
+    projs.forEach {
         evaluationDependsOn(it)
         dependsOn("$it:build")
         jarTasks.add(rootProject.project(it).tasks.jar.get())
