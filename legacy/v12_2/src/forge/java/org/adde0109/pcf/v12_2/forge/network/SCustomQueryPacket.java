@@ -11,7 +11,7 @@ import net.minecraft.network.login.INetHandlerLoginServer;
 
 import java.io.IOException;
 
-public class SCustomQueryPacket implements Packet<INetHandlerLoginServer> {
+public final class SCustomQueryPacket implements Packet<INetHandlerLoginServer> {
     private int transactionId;
     private ByteBuf data;
 

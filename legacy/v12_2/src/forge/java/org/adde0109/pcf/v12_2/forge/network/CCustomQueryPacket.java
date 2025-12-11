@@ -14,7 +14,7 @@ import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
 
-public class CCustomQueryPacket implements Packet<INetHandlerLoginClient> {
+public final class CCustomQueryPacket implements Packet<INetHandlerLoginClient> {
     private int transactionId;
     private ResourceLocation identifier;
     private ByteBuf data;
