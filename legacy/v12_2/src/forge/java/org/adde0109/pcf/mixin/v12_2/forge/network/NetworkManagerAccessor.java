@@ -16,7 +16,7 @@ import java.net.SocketAddress;
         mappings = Mappings.LEGACY_SEARGE,
         version = @Versions(min = MinecraftVersion.V12, max = MinecraftVersion.V12_2))
 @Mixin(NetworkManager.class)
-public interface ConnectionAccessor {
+public interface NetworkManagerAccessor {
     @Accessor("socketAddress")
     void pcf$setAddress(SocketAddress address);
 }

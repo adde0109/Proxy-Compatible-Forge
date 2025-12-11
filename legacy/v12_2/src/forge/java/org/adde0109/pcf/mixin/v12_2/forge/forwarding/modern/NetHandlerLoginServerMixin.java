@@ -23,7 +23,7 @@ import net.minecraft.util.text.TextComponentString;
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.NameAndId;
 import org.adde0109.pcf.forwarding.modern.ModernForwarding;
-import org.adde0109.pcf.mixin.v12_2.forge.network.ConnectionAccessor;
+import org.adde0109.pcf.mixin.v12_2.forge.network.NetworkManagerAccessor;
 import org.adde0109.pcf.v12_2.forge.network.CCustomQueryPacket;
 import org.adde0109.pcf.v12_2.forge.network.INetHandlerLoginQueryServer;
 import org.adde0109.pcf.v12_2.forge.network.SCustomQueryPacket;
@@ -71,7 +71,7 @@ public abstract class NetHandlerLoginServerMixin {
         if (PCF.instance().forwarding().enabled()) {
             this.pcf$velocityLoginMessageId = ThreadLocalRandom.current().nextInt();
             this.networkManager.sendPacket(
-                    new CCustomQueryPacket(
+                    new SCustomQueryPacket(
                             this.pcf$velocityLoginMessageId,
                             PLAYER_INFO_CHANNEL, PLAYER_INFO_PACKET));
             PCF.logger.debug("Sent Forward Request");
@@ -80,10 +80,10 @@ public abstract class NetHandlerLoginServerMixin {
     }
     // spotless:on
 
-    public void pcf$handleCustomQuery(SCustomQueryPacket packet) {
+    public void pcf$handleCustomQuery(CCustomQueryPacket packet) {
         if (PCF.instance().forwarding().enabled()
-                && packet.getTransactionId() == this.pcf$velocityLoginMessageId) {
-            final ByteBuf buf = packet.getData();
+                && packet.transactionId() == this.pcf$velocityLoginMessageId) {
+            final ByteBuf buf = packet.data();
             if (buf == null) {
                 this.shadow$onDisconnect(
                         new TextComponentString(
@@ -96,7 +96,7 @@ public abstract class NetHandlerLoginServerMixin {
                 this.shadow$onDisconnect(new TextComponentString(data.disconnectMsg()));
                 return;
             }
-            ((ConnectionAccessor) this.networkManager).pcf$setAddress(data.address());
+            ((NetworkManagerAccessor) this.networkManager).pcf$setAddress(data.address());
 
             final NameAndId nameAndId = new NameAndId(data.profile());
 

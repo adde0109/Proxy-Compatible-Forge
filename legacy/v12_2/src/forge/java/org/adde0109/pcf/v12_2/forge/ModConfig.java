@@ -12,20 +12,17 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 
-@SuppressWarnings("InstantiationOfUtilityClass")
+@SuppressWarnings({"InstantiationOfUtilityClass", "unused"})
 @Config(modid = PCF.MOD_ID, name = "proxy-compatible-forge")
 public final class ModConfig {
     @Comment("Config version, DO NOT CHANGE THIS")
     private static Double version = 2.0d;
 
     @Comment("Player Info Forwarding Settings")
-    private static Forwarding forwarding = new Forwarding();
-
-    @Comment("CrossStitch Settings - For Wrapping Modded Command Arguments")
-    private static CrossStitch crossStitch = new CrossStitch();
+    private static final Forwarding forwarding = new Forwarding();
 
     @Comment("Debug Settings")
-    private static Debug debug = new Debug();
+    private static final Debug debug = new Debug();
 
     private static final class Forwarding {
         @RequiresMcRestart
@@ -38,20 +35,6 @@ public final class ModConfig {
 
         @Comment("The forwarding secret shared with the proxy")
         public static String secret = "";
-    }
-
-    private static final class CrossStitch {
-        @RequiresMcRestart
-        @Comment(
-                "Enable or disable CrossStitch support. Changing this setting requires a server restart.")
-        public static Boolean enabled = true;
-
-        @Comment("Add any incompatible modded or vanilla command argument types here")
-        public static List<String> forceWrappedArguments = List.of();
-
-        @Comment(
-                "Force wrap vanilla command argument types. Useful for when the above setting gets a bit excessive.")
-        public static Boolean forceWrapVanillaArguments = false;
     }
 
     private static final class Debug {
@@ -98,26 +81,6 @@ public final class ModConfig {
                 config.getString(
                         "secret", "forwarding", "", "The forwarding secret shared with the proxy");
 
-        CrossStitch.enabled =
-                config.getBoolean(
-                        "enabled",
-                        "crossstitch",
-                        true,
-                        "Enable or disable CrossStitch support. Changing this setting requires a server restart.");
-        CrossStitch.forceWrappedArguments =
-                List.of(
-                        config.getStringList(
-                                "forceWrappedArguments",
-                                "crossstitch",
-                                new String[0],
-                                "Add any incompatible modded or vanilla command argument types here"));
-        CrossStitch.forceWrapVanillaArguments =
-                config.getBoolean(
-                        "forceWrapVanillaArguments",
-                        "crossstitch",
-                        false,
-                        "Force wrap vanilla command argument types. Useful for when the above setting gets a bit excessive.");
-
         Debug.enabled =
                 config.getBoolean("enabled", "debug", false, "Enable or disable debug mode.");
         Debug.disabledMixins =
@@ -134,12 +97,7 @@ public final class ModConfig {
         PCF.instance()
                 .setForwarding(
                         new PCF.Forwarding(Forwarding.enabled, Forwarding.mode, forwardingSecret));
-        PCF.instance()
-                .setCrossStitch(
-                        new PCF.CrossStitch(
-                                CrossStitch.enabled,
-                                CrossStitch.forceWrappedArguments,
-                                CrossStitch.forceWrapVanillaArguments));
+        PCF.instance().setCrossStitch(new PCF.CrossStitch(false, List.of(), false));
         PCF.instance().setDebug(new PCF.Debug(Debug.enabled, Debug.disabledMixins));
     }
 }

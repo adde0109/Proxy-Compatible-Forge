@@ -10,6 +10,6 @@
   "server": [
     "v12_2.forge.forwarding.modern.EnumConnectionStateMixin",
     "v12_2.forge.forwarding.modern.NetHandlerLoginServerMixin",
-    "v12_2.forge.network.ConnectionAccessor"
+    "v12_2.forge.network.NetworkManagerAccessor"
   ]
 }

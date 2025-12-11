@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(EnumConnectionState.class)
 public abstract class EnumConnectionStateMixin {
     // spotless:off
-    @Shadow protected abstract EnumConnectionState shadow$registerPacket(EnumPacketDirection enumPacketDirection, Class<? extends Packet<?>> packetClass);
+    @Shadow protected abstract EnumConnectionState shadow$registerPacket(EnumPacketDirection direction, Class<? extends Packet<?>> packetClass);
     // spotless:on
 
     @Inject(method = "registerPacket", at = @At(value = "RETURN"))
@@ -34,22 +34,9 @@ public abstract class EnumConnectionStateMixin {
             Class<? extends Packet<?>> packetClass,
             CallbackInfoReturnable<EnumConnectionState> cir) {
         if (packetClass == SPacketEnableCompression.class) {
-            this.shadow$registerPacket(EnumPacketDirection.CLIENTBOUND, CCustomQueryPacket.class);
+            this.shadow$registerPacket(EnumPacketDirection.CLIENTBOUND, SCustomQueryPacket.class);
         } else if (packetClass == CPacketEncryptionResponse.class) {
-            this.shadow$registerPacket(EnumPacketDirection.SERVERBOUND, SCustomQueryPacket.class);
-        }
-    }
-
-    // TODO: See if this is necessary
-    @Inject(method = "getPacketId", at = @At("HEAD"), cancellable = true)
-    private void onGetPacketId(
-            EnumPacketDirection direction,
-            Packet<?> packetIn,
-            CallbackInfoReturnable<Integer> cir) {
-        if (packetIn instanceof CCustomQueryPacket) {
-            cir.setReturnValue(0x4);
-        } else if (packetIn instanceof SCustomQueryPacket) {
-            cir.setReturnValue(0x2);
+            this.shadow$registerPacket(EnumPacketDirection.SERVERBOUND, CCustomQueryPacket.class);
         }
     }
 }
