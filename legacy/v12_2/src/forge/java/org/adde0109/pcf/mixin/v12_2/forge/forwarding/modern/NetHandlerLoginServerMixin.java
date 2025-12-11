@@ -80,39 +80,34 @@ public abstract class NetHandlerLoginServerMixin {
     // spotless:on
 
     public void pcf$handleCustomQuery(SCustomQueryPacket packet) {
-        try {
-            if (PCF.instance().forwarding().enabled()
-                    && packet.getTransactionId() == this.pcf$velocityLoginMessageId) {
-                final ByteBuf buf = packet.getData();
-                if (buf == null) {
-                    this.shadow$onDisconnect(
-                            new TextComponentString(
-                                    "This server requires you to connect with Velocity."));
-                    return;
-                }
-
-                final ModernForwarding.Data data =
-                        forward(buf, this.networkManager.getRemoteAddress());
-                if (data == null) {
-                    this.shadow$onDisconnect(new TextComponentString(data.disconnectMsg()));
-                    return;
-                }
-                ((ConnectionAccessor) this.networkManager).pcf$setAddress(data.address());
-
-                final NameAndId nameAndId = new NameAndId(data.profile());
-
-                // Proceed with login
-                try {
-                    this.loginGameProfile = data.profile();
-                    LOGGER.info("UUID of player {} is {}", nameAndId.name(), nameAndId.id());
-                    StateUtil.setState(this, 3);
-                } catch (Exception ex) {
-                    this.shadow$onDisconnect(new TextComponentString("Failed to verify username!"));
-                    PCF.logger.warn("Exception verifying " + nameAndId.name(), ex);
-                }
+        if (PCF.instance().forwarding().enabled()
+                && packet.getTransactionId() == this.pcf$velocityLoginMessageId) {
+            final ByteBuf buf = packet.getData();
+            if (buf == null) {
+                this.shadow$onDisconnect(
+                        new TextComponentString(
+                                "This server requires you to connect with Velocity."));
+                return;
             }
-        } catch (Exception ex) {
-            PCF.logger.error("Error during forwarding process", ex);
+
+            final ModernForwarding.Data data = forward(buf, this.networkManager.getRemoteAddress());
+            if (data == null) {
+                this.shadow$onDisconnect(new TextComponentString(data.disconnectMsg()));
+                return;
+            }
+            ((ConnectionAccessor) this.networkManager).pcf$setAddress(data.address());
+
+            final NameAndId nameAndId = new NameAndId(data.profile());
+
+            // Proceed with login
+            try {
+                this.loginGameProfile = data.profile();
+                LOGGER.info("UUID of player {} is {}", nameAndId.name(), nameAndId.id());
+                StateUtil.setState(this, 3);
+            } catch (Exception ex) {
+                this.shadow$onDisconnect(new TextComponentString("Failed to verify username!"));
+                PCF.logger.warn("Exception verifying " + nameAndId.name(), ex);
+            }
         }
     }
 }

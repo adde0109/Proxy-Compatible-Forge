@@ -24,10 +24,15 @@ public class PCFMixinPlugin implements IMixinConfigPlugin {
     // TODO: Conditionally apply mixins based on enable configs
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        // TODO: Undo this
-        // PCF.forceLoadConfig();
-        PCF.Debug debug = new PCF.Debug(true, List.of()); // PCF.instance().debug();
-        return Muxins.shouldApplyMixin(mixinClassName, debug.disabledMixins(), debug.enabled());
+        try {
+            PCF.forceLoadConfig();
+            PCF.Debug debug = PCF.instance().debug();
+            return Muxins.shouldApplyMixin(mixinClassName, debug.disabledMixins(), debug.enabled());
+        } catch (Exception e) {
+            PCF.logger.error("Error while checking whether to apply mixin: " + mixinClassName);
+            e.printStackTrace();
+            return true;
+        }
     }
 
     @Override
