@@ -25,6 +25,8 @@ rootProject.name = "proxy-compatible-forge"
 include(":common")
 include(":legacy")
 val legacyVersions = listOf(
+    "7_10",
+    "8_9",
     "12_2"
 ).forEach { version ->
     include(":legacy:v$version")

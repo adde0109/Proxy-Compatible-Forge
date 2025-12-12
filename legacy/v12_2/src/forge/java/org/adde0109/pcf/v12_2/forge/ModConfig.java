@@ -2,7 +2,6 @@ package org.adde0109.pcf.v12_2.forge;
 
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.Config.Comment;
-import net.minecraftforge.common.config.Config.RequiresMcRestart;
 import net.minecraftforge.common.config.Configuration;
 
 import org.adde0109.pcf.PCF;
@@ -12,6 +11,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 
+// TODO: Figure out how wire up to ConfigChangedEvent.OnConfigChangedEvent
 @SuppressWarnings({"InstantiationOfUtilityClass", "unused"})
 @Config(modid = PCF.MOD_ID, name = "proxy-compatible-forge")
 public final class ModConfig {
@@ -25,7 +25,6 @@ public final class ModConfig {
     private static final Debug debug = new Debug();
 
     private static final class Forwarding {
-        @RequiresMcRestart
         @Comment(
                 "Enable or disable player info forwarding. Changing this setting requires a server restart.")
         public static Boolean enabled = true;

@@ -1,4 +1,4 @@
-package org.adde0109.pcf.v12_2.forge.network;
+package org.adde0109.pcf.v12_2.forge.forwarding.modern;
 
 import static org.adde0109.pcf.common.FByteBuf.readNullable;
 import static org.adde0109.pcf.common.FByteBuf.readVarInt;
@@ -27,6 +27,7 @@ public final class CCustomQueryPacket implements Packet<INetHandlerLoginServer> 
         this.data = Unpooled.copiedBuffer(data);
     }
 
+    @Override
     public void readPacketData(PacketBuffer buf) throws IOException {
         this.transactionId = readVarInt(buf);
         this.data =
@@ -45,11 +46,13 @@ public final class CCustomQueryPacket implements Packet<INetHandlerLoginServer> 
                         });
     }
 
+    @Override
     public void writePacketData(PacketBuffer buffer) throws IOException {
         writeVarInt(buffer, this.transactionId);
         buffer.writeBytes(this.data.copy());
     }
 
+    @Override
     public void processPacket(INetHandlerLoginServer handler) {
         ((INetHandlerLoginQueryServer) handler).handleCustomQuery(this);
     }

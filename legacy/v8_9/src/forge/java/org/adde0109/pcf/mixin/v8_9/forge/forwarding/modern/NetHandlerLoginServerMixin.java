@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v12_2.forge.forwarding.modern;
+package org.adde0109.pcf.mixin.v8_9.forge.forwarding.modern;
 
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.forward;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_PACKET;
@@ -15,9 +15,9 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.server.network.NetHandlerLoginServer;
 import net.minecraft.server.network.NetHandlerLoginServer.LoginState;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.NameAndId;
@@ -49,16 +49,16 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @AConstraint(
         mappings = Mappings.LEGACY_SEARGE,
-        version = @Versions(min = MinecraftVersion.V9, max = MinecraftVersion.V12_2))
+        version = @Versions(min = MinecraftVersion.V8, max = MinecraftVersion.V8_9))
 @Implements(@Interface(iface = INetHandlerLoginQueryServer.class, prefix = "pcf$"))
 @Mixin(NetHandlerLoginServer.class)
 public abstract class NetHandlerLoginServerMixin {
     // spotless:off
-    @Shadow @Final private static Logger LOGGER;
+    @Shadow @Final private static Logger logger;
     @Shadow @Final public NetworkManager networkManager;
     @Shadow private GameProfile loginGameProfile;
     @Shadow private LoginState currentLoginState;
-    @Shadow public abstract void shadow$onDisconnect(ITextComponent reason);
+    @Shadow public abstract void shadow$onDisconnect(IChatComponent reason);
 
     @Unique private int pcf$velocityLoginMessageId = -1;
 
@@ -86,14 +86,14 @@ public abstract class NetHandlerLoginServerMixin {
             final ByteBuf buf = packet.data();
             if (buf == null) {
                 this.shadow$onDisconnect(
-                        new TextComponentString(
+                        new ChatComponentText(
                                 "This server requires you to connect with Velocity."));
                 return;
             }
 
             final ModernForwarding.Data data = forward(buf, this.networkManager.getRemoteAddress());
             if (data == null) {
-                this.shadow$onDisconnect(new TextComponentString(data.disconnectMsg()));
+                this.shadow$onDisconnect(new ChatComponentText(data.disconnectMsg()));
                 return;
             }
             ((NetworkManagerAccessor) this.networkManager).pcf$setAddress(data.address());
@@ -103,10 +103,10 @@ public abstract class NetHandlerLoginServerMixin {
             // Proceed with login
             try {
                 this.loginGameProfile = data.profile();
-                LOGGER.info("UUID of player {} is {}", nameAndId.name(), nameAndId.id());
+                logger.info("UUID of player {} is {}", nameAndId.name(), nameAndId.id());
                 this.currentLoginState = LoginState.READY_TO_ACCEPT;
             } catch (Exception ex) {
-                this.shadow$onDisconnect(new TextComponentString("Failed to verify username!"));
+                this.shadow$onDisconnect(new ChatComponentText("Failed to verify username!"));
                 PCF.logger.warn("Exception verifying " + nameAndId.name(), ex);
             }
         }
