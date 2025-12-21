@@ -2,7 +2,6 @@ package org.adde0109.pcf.mixin.v7_10.forge.forwarding.modern;
 
 import static org.adde0109.pcf.common.Component.literal;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.DIRECT_CONNECT_ERR;
-import static org.adde0109.pcf.forwarding.modern.ModernForwarding.FAILED_TO_VERIFY;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.forward;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_CHANNEL;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_PACKET;
@@ -95,17 +94,9 @@ public abstract class NetHandlerLoginServerMixin implements NetHandlerLoginServe
 
             final NameAndId nameAndId = new NameAndId(data.profile());
 
-            // Proceed with login
-            try {
-                this.loginGameProfile = data.profile();
-                this.bridge$logger_info(
-                        "UUID of player {} is {}", nameAndId.name(), nameAndId.id());
-                this.currentLoginState = LoginState.READY_TO_ACCEPT;
-            } catch (Exception ex) {
-                this.bridge$onDisconnect(FAILED_TO_VERIFY());
-                PCF.logger.warn(
-                        "Failed to verify " + nameAndId.name() + " via modern forwarding", ex);
-            }
+            this.loginGameProfile = data.profile();
+            this.bridge$logger_info("UUID of player {} is {}", nameAndId.name(), nameAndId.id());
+            this.currentLoginState = LoginState.READY_TO_ACCEPT;
         }
     }
 }
