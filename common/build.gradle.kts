@@ -25,6 +25,7 @@ tasks.withType<ProcessResources> {
     filesMatching(listOf(
             "META-INF/mods.toml",
             "META-INF/neoforge.mods.toml",
+            "mcmod.info",
             "pack.mcmeta",
     )) {
         expand(project.properties)

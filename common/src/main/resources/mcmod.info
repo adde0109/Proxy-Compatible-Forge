@@ -1,0 +1,19 @@
+[
+  {
+    "modid": "${mod_id}",
+    "name": "${mod_name}",
+    "license": "${license}",
+    "description": "${description}",
+    "version": "${version}",
+    "url": "${homepage_url}",
+    "updateUrl": "${update_json_url}",
+    "authorList": [
+      "${authors}"
+    ],
+    "credits": "${authors}",
+    "screenshots": [],
+    "useDependencyInformation": true,
+    "dependencies": [],
+    "dependants": []
+  }
+]
