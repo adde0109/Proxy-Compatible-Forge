@@ -9,6 +9,7 @@
   "package": "org.adde0109.pcf.mixin",
   "server": [
     "v7_10.forge.forwarding.modern.EnumConnectionStateMixin",
-    "v7_10.forge.forwarding.modern.NetHandlerLoginServerMixin"
+    "v7_10.forge.forwarding.modern.NetHandlerLoginServerMixin",
+    "v7_10.forge.forwarding.modern.NetHandlerLoginServerMixin_Impl"
   ]
 }

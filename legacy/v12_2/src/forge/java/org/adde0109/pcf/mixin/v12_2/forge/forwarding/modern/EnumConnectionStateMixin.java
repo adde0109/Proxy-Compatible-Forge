@@ -52,12 +52,12 @@ public abstract class EnumConnectionStateMixin {
                                                     "net.minecraft.network.login.client.CPacketEncryptionResponse")
                                             .asSubclass(Packet.class);
                 } else {
-                    this.pcf$CCheckClass =
+                    this.pcf$SCheckClass =
                             (Class<? extends Packet<?>>)
                                     Class.forName(
                                                     "net.minecraft.network.login.server.S03PacketEnableCompression")
                                             .asSubclass(Packet.class);
-                    this.pcf$SCheckClass =
+                    this.pcf$CCheckClass =
                             (Class<? extends Packet<?>>)
                                     Class.forName(
                                                     "net.minecraft.network.login.client.C01PacketEncryptionResponse")

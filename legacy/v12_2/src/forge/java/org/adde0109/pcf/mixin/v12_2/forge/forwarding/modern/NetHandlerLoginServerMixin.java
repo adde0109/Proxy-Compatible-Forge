@@ -1,6 +1,10 @@
 package org.adde0109.pcf.mixin.v12_2.forge.forwarding.modern;
 
+import static org.adde0109.pcf.common.Component.literal;
+import static org.adde0109.pcf.forwarding.modern.ModernForwarding.DIRECT_CONNECT_ERR;
+import static org.adde0109.pcf.forwarding.modern.ModernForwarding.FAILED_TO_VERIFY;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.forward;
+import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_CHANNEL;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_PACKET;
 
 import com.mojang.authlib.GameProfile;
@@ -15,9 +19,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.server.network.NetHandlerLoginServer;
 import net.minecraft.server.network.NetHandlerLoginServer.LoginState;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.NameAndId;
@@ -25,9 +26,9 @@ import org.adde0109.pcf.forwarding.modern.ModernForwarding;
 import org.adde0109.pcf.mixin.v12_2.forge.forwarding.NetworkManagerAccessor;
 import org.adde0109.pcf.v12_2.forge.forwarding.modern.CCustomQueryPacket;
 import org.adde0109.pcf.v12_2.forge.forwarding.modern.INetHandlerLoginQueryServer;
+import org.adde0109.pcf.v12_2.forge.forwarding.modern.NetHandlerLoginServerBridge;
 import org.adde0109.pcf.v12_2.forge.forwarding.modern.SCustomQueryPacket;
 import org.apache.commons.lang3.Validate;
-import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Implements;
@@ -36,7 +37,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -49,31 +49,30 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @AConstraint(
         mappings = Mappings.LEGACY_SEARGE,
-        version = @Versions(min = MinecraftVersion.V9, max = MinecraftVersion.V12_2))
+        version = @Versions(min = MinecraftVersion.V8, max = MinecraftVersion.V12_2))
 @Implements(@Interface(iface = INetHandlerLoginQueryServer.class, prefix = "pcf$"))
 @Mixin(NetHandlerLoginServer.class)
-public abstract class NetHandlerLoginServerMixin {
+public abstract class NetHandlerLoginServerMixin implements NetHandlerLoginServerBridge {
     // spotless:off
-    @Shadow @Final private static Logger LOGGER;
     @Shadow @Final public NetworkManager networkManager;
     @Shadow private GameProfile loginGameProfile;
     @Shadow private LoginState currentLoginState;
-    @Shadow public abstract void shadow$onDisconnect(ITextComponent reason);
 
     @Unique private int pcf$velocityLoginMessageId = -1;
 
-    @Unique private static final ResourceLocation PLAYER_INFO_CHANNEL = new ResourceLocation("velocity:player_info");
-
-    @Inject(method = "processLoginStart", cancellable = true, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, ordinal = 1,
+    @SuppressWarnings({"MixinAnnotationTarget", "UnresolvedMixinReference"})
+    @Inject(method = { "func_147316_a(Lnet/minecraft/network/login/client/C00PacketLoginStart;)V", // 1.8-1.8.9
+                       "func_147316_a(Lnet/minecraft/network/login/client/CPacketLoginStart;)V" }, // 1.9-1.12.2
+            require = 0, cancellable = true, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, ordinal = 1,
             target = "Lnet/minecraft/server/network/NetHandlerLoginServer;currentLoginState:Lnet/minecraft/server/network/NetHandlerLoginServer$LoginState;"))
-    private void onHandleHello(@Coerce Object packetIn, CallbackInfo ci) {
-        Validate.validState(this.currentLoginState == LoginState.HELLO, "Unexpected hello packet");
+    private void onHandleHello(CallbackInfo ci) {
         if (PCF.instance().forwarding().enabled()) {
+            Validate.validState(this.currentLoginState == LoginState.HELLO, "Unexpected hello packet");
             this.pcf$velocityLoginMessageId = ThreadLocalRandom.current().nextInt();
             this.networkManager.sendPacket(
                     new SCustomQueryPacket(
                             this.pcf$velocityLoginMessageId,
-                            PLAYER_INFO_CHANNEL, PLAYER_INFO_PACKET));
+                            PLAYER_INFO_CHANNEL(), PLAYER_INFO_PACKET));
             PCF.logger.debug("Sent Forward Request");
             ci.cancel();
         }
@@ -85,15 +84,13 @@ public abstract class NetHandlerLoginServerMixin {
                 && packet.transactionId() == this.pcf$velocityLoginMessageId) {
             final ByteBuf buf = packet.data();
             if (buf == null) {
-                this.shadow$onDisconnect(
-                        new TextComponentString(
-                                "This server requires you to connect with Velocity."));
+                this.bridge$onDisconnect(DIRECT_CONNECT_ERR());
                 return;
             }
 
             final ModernForwarding.Data data = forward(buf, this.networkManager.getRemoteAddress());
-            if (data == null) {
-                this.shadow$onDisconnect(new TextComponentString(data.disconnectMsg()));
+            if (data.profile() == null) {
+                this.bridge$onDisconnect(literal(data.disconnectMsg()));
                 return;
             }
             ((NetworkManagerAccessor) this.networkManager).pcf$setAddress(data.address());
@@ -103,11 +100,13 @@ public abstract class NetHandlerLoginServerMixin {
             // Proceed with login
             try {
                 this.loginGameProfile = data.profile();
-                LOGGER.info("UUID of player {} is {}", nameAndId.name(), nameAndId.id());
+                this.bridge$logger_info(
+                        "UUID of player {} is {}", nameAndId.name(), nameAndId.id());
                 this.currentLoginState = LoginState.READY_TO_ACCEPT;
             } catch (Exception ex) {
-                this.shadow$onDisconnect(new TextComponentString("Failed to verify username!"));
-                PCF.logger.warn("Exception verifying " + nameAndId.name(), ex);
+                this.bridge$onDisconnect(FAILED_TO_VERIFY());
+                PCF.logger.warn(
+                        "Failed to verify " + nameAndId.name() + " via modern forwarding", ex);
             }
         }
     }

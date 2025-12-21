@@ -2,6 +2,9 @@ package org.adde0109.pcf.common;
 
 import com.google.common.net.InetAddresses;
 
+import dev.neuralnexus.taterapi.meta.MetaAPI;
+import dev.neuralnexus.taterapi.meta.MinecraftVersions;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
@@ -237,6 +240,7 @@ public final class FByteBuf extends ByteBuf {
         return this.source.isReadOnly();
     }
 
+    // Note: Added in Netty 4.1, not available below 1.12
     @Override
     public ByteBuf asReadOnly() {
         return this.source.asReadOnly();
@@ -1171,8 +1175,18 @@ public final class FByteBuf extends ByteBuf {
     }
 
     private static final class ByteBufUtil {
-        private static final int MAX_BYTES_PER_CHAR_UTF8 =
-                (int) CharsetUtil.encoder(CharsetUtil.UTF_8).maxBytesPerChar();
+        private static final int MAX_BYTES_PER_CHAR_UTF8;
+
+        static { // Netty 4.1 differences
+            if (MetaAPI.instance().version().isAtLeast(MinecraftVersions.V12)) {
+                MAX_BYTES_PER_CHAR_UTF8 =
+                        (int) CharsetUtil.encoder(CharsetUtil.UTF_8).maxBytesPerChar();
+            } else {
+                //noinspection deprecation
+                MAX_BYTES_PER_CHAR_UTF8 =
+                        (int) CharsetUtil.getEncoder(CharsetUtil.UTF_8).maxBytesPerChar();
+            }
+        }
 
         public static int utf8MaxBytes(final int seqLength) {
             return seqLength * MAX_BYTES_PER_CHAR_UTF8;
