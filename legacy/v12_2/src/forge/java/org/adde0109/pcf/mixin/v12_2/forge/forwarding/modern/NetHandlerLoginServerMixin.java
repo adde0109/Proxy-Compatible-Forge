@@ -25,10 +25,10 @@ import org.adde0109.pcf.common.NameAndId;
 import org.adde0109.pcf.forwarding.modern.ModernForwarding;
 import org.adde0109.pcf.forwarding.network.CustomQueryPayloadImpl;
 import org.adde0109.pcf.mixin.v12_2.forge.forwarding.NetworkManagerAccessor;
-import org.adde0109.pcf.v12_2.forge.forwarding.modern.CCustomQueryPacket;
-import org.adde0109.pcf.v12_2.forge.forwarding.modern.INetHandlerLoginQueryServer;
 import org.adde0109.pcf.v12_2.forge.forwarding.modern.NetHandlerLoginServerBridge;
-import org.adde0109.pcf.v12_2.forge.forwarding.modern.SCustomQueryPacket;
+import org.adde0109.pcf.v12_2.forge.forwarding.network.C2SCustomQueryPacket;
+import org.adde0109.pcf.v12_2.forge.forwarding.network.S2CCustomQueryPacket;
+import org.adde0109.pcf.v12_2.forge.forwarding.network.ServerLoginQueryListener;
 import org.apache.commons.lang3.Validate;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
@@ -51,7 +51,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @AConstraint(
         mappings = Mappings.LEGACY_SEARGE,
         version = @Versions(min = MinecraftVersion.V8, max = MinecraftVersion.V12_2))
-@Implements(@Interface(iface = INetHandlerLoginQueryServer.class, prefix = "pcf$"))
+@Implements(@Interface(iface = ServerLoginQueryListener.class, prefix = "pcf$"))
 @Mixin(NetHandlerLoginServer.class)
 public abstract class NetHandlerLoginServerMixin implements NetHandlerLoginServerBridge {
     // spotless:off
@@ -71,7 +71,7 @@ public abstract class NetHandlerLoginServerMixin implements NetHandlerLoginServe
             Validate.validState(this.currentLoginState == LoginState.HELLO, "Unexpected hello packet");
             this.pcf$velocityLoginMessageId = ThreadLocalRandom.current().nextInt();
             this.networkManager.sendPacket(
-                    new SCustomQueryPacket(
+                    new S2CCustomQueryPacket(
                             this.pcf$velocityLoginMessageId,
                             new CustomQueryPayloadImpl(PLAYER_INFO_CHANNEL(), PLAYER_INFO_PACKET)));
             PCF.logger.debug("Sent Forward Request");
@@ -80,7 +80,7 @@ public abstract class NetHandlerLoginServerMixin implements NetHandlerLoginServe
     }
     // spotless:on
 
-    public void pcf$handleCustomQueryPacket(CCustomQueryPacket packet) {
+    public void pcf$handleCustomQueryPacket(C2SCustomQueryPacket packet) {
         if (PCF.instance().forwarding().enabled()
                 && packet.transactionId() == this.pcf$velocityLoginMessageId) {
             if (packet.payload() == null) {

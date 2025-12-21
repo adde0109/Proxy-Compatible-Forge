@@ -1,4 +1,4 @@
-package org.adde0109.pcf.v7_10.forge.forwarding.modern;
+package org.adde0109.pcf.v7_10.forge.forwarding.network;
 
 import static org.adde0109.pcf.common.Identifier.identifier;
 
@@ -12,16 +12,17 @@ import org.adde0109.pcf.forwarding.network.CustomQueryPayload;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused")
-public final class SCustomQueryPacket extends Packet {
+public final class S2CCustomQueryPacket extends Packet {
     private ClientboundCustomQueryPacket packet;
 
-    public SCustomQueryPacket() {}
+    public S2CCustomQueryPacket() {}
 
-    public SCustomQueryPacket(final @NotNull ClientboundCustomQueryPacket packet) {
+    public S2CCustomQueryPacket(final @NotNull ClientboundCustomQueryPacket packet) {
         this.packet = packet;
     }
 
-    public SCustomQueryPacket(final int transactionId, final @NotNull CustomQueryPayload payload) {
+    public S2CCustomQueryPacket(
+            final int transactionId, final @NotNull CustomQueryPayload payload) {
         this.packet = new ClientboundCustomQueryPacket(transactionId, payload);
     }
 
@@ -37,7 +38,7 @@ public final class SCustomQueryPacket extends Packet {
 
     @Override
     public void processPacket(@NotNull INetHandler handler) {
-        ((INetHandlerLoginQueryClient) handler).handleCustomQuery(this);
+        ((ClientLoginQueryListener) handler).handleCustomQuery(this);
     }
 
     public int transactionId() {

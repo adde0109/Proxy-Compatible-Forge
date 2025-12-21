@@ -1,4 +1,4 @@
-package org.adde0109.pcf.v12_2.forge.forwarding.modern;
+package org.adde0109.pcf.v12_2.forge.forwarding.network;
 
 import static org.adde0109.pcf.common.Identifier.identifier;
 
@@ -14,16 +14,17 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 
 @SuppressWarnings({"RedundantThrows", "unused"})
-public final class SCustomQueryPacket implements Packet<INetHandlerLoginClient> {
+public final class S2CCustomQueryPacket implements Packet<INetHandlerLoginClient> {
     private ClientboundCustomQueryPacket packet;
 
-    public SCustomQueryPacket() {}
+    public S2CCustomQueryPacket() {}
 
-    public SCustomQueryPacket(final @NotNull ClientboundCustomQueryPacket packet) {
+    public S2CCustomQueryPacket(final @NotNull ClientboundCustomQueryPacket packet) {
         this.packet = packet;
     }
 
-    public SCustomQueryPacket(final int transactionId, final @NotNull CustomQueryPayload payload) {
+    public S2CCustomQueryPacket(
+            final int transactionId, final @NotNull CustomQueryPayload payload) {
         this.packet = new ClientboundCustomQueryPacket(transactionId, payload);
     }
 
@@ -39,7 +40,7 @@ public final class SCustomQueryPacket implements Packet<INetHandlerLoginClient> 
 
     @Override
     public void processPacket(@NotNull INetHandlerLoginClient handler) {
-        ((INetHandlerLoginQueryClient) handler).handleCustomQuery(this);
+        ((ClientLoginQueryListener) handler).handleCustomQuery(this);
     }
 
     public int transactionId() {

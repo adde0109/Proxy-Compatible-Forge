@@ -10,9 +10,9 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.login.client.C01PacketEncryptionResponse;
 import net.minecraft.network.login.server.S02PacketLoginSuccess;
 
-import org.adde0109.pcf.v7_10.forge.forwarding.modern.CCustomQueryPacket;
-import org.adde0109.pcf.v7_10.forge.forwarding.modern.SCustomQueryPacket;
-import org.adde0109.pcf.v7_10.forge.forwarding.modern.SDummyPacket;
+import org.adde0109.pcf.v7_10.forge.forwarding.network.C2SCustomQueryPacket;
+import org.adde0109.pcf.v7_10.forge.forwarding.network.S2CCustomQueryPacket;
+import org.adde0109.pcf.v7_10.forge.forwarding.network.S2CDummyPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,15 +31,15 @@ public abstract class EnumConnectionStateMixin {
     @Inject(method = {"func_150751_a"}, at = @At(value = "RETURN"))
     private void onRegisterC2S(int id, Class<? extends Packet> packetClass, CallbackInfoReturnable<EnumConnectionState> cir) {
         if (packetClass == C01PacketEncryptionResponse.class) {
-            this.shadow$func_150751_a(0x2, CCustomQueryPacket.class);
+            this.shadow$func_150751_a(0x2, C2SCustomQueryPacket.class);
         }
     }
 
     @Inject(method = {"func_150756_b"}, at = @At(value = "RETURN"))
     private void onRegisterS2C(int id, Class<? extends Packet> packetClass, CallbackInfoReturnable<EnumConnectionState> cir) {
         if (packetClass == S02PacketLoginSuccess.class) {
-            this.shadow$func_150756_b(0x3, SDummyPacket.class);
-            this.shadow$func_150756_b(0x4, SCustomQueryPacket.class);
+            this.shadow$func_150756_b(0x3, S2CDummyPacket.class);
+            this.shadow$func_150756_b(0x4, S2CCustomQueryPacket.class);
         }
     }
     // spotless:on

@@ -11,8 +11,8 @@ import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.EnumPacketDirection;
 import net.minecraft.network.Packet;
 
-import org.adde0109.pcf.v12_2.forge.forwarding.modern.CCustomQueryPacket;
-import org.adde0109.pcf.v12_2.forge.forwarding.modern.SCustomQueryPacket;
+import org.adde0109.pcf.v12_2.forge.forwarding.network.C2SCustomQueryPacket;
+import org.adde0109.pcf.v12_2.forge.forwarding.network.S2CCustomQueryPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -69,9 +69,9 @@ public abstract class EnumConnectionStateMixin {
         }
 
         if (packetClass == this.pcf$SCheckClass) {
-            this.shadow$registerPacket(EnumPacketDirection.CLIENTBOUND, SCustomQueryPacket.class);
+            this.shadow$registerPacket(EnumPacketDirection.CLIENTBOUND, S2CCustomQueryPacket.class);
         } else if (packetClass == this.pcf$CCheckClass) {
-            this.shadow$registerPacket(EnumPacketDirection.SERVERBOUND, CCustomQueryPacket.class);
+            this.shadow$registerPacket(EnumPacketDirection.SERVERBOUND, C2SCustomQueryPacket.class);
         }
     }
 }

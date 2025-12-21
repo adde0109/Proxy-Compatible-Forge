@@ -1,48 +1,46 @@
-package org.adde0109.pcf.v12_2.forge.forwarding.modern;
+package org.adde0109.pcf.v7_10.forge.forwarding.network;
 
+import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.login.INetHandlerLoginServer;
 
 import org.adde0109.pcf.forwarding.network.CustomQueryAnswerPayload;
 import org.adde0109.pcf.forwarding.network.ServerboundCustomQueryAnswerPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-
-@SuppressWarnings({"RedundantThrows", "unused"})
-public final class CCustomQueryPacket implements Packet<INetHandlerLoginServer> {
+@SuppressWarnings("unused")
+public final class C2SCustomQueryPacket extends Packet {
     private ServerboundCustomQueryAnswerPacket packet;
 
-    public CCustomQueryPacket() {}
+    public C2SCustomQueryPacket() {}
 
-    public CCustomQueryPacket(final @NotNull ServerboundCustomQueryAnswerPacket packet) {
+    public C2SCustomQueryPacket(final @NotNull ServerboundCustomQueryAnswerPacket packet) {
         this.packet = packet;
     }
 
-    public CCustomQueryPacket(
+    public C2SCustomQueryPacket(
             final int transactionId, final @Nullable CustomQueryAnswerPayload payload) {
         this.packet = new ServerboundCustomQueryAnswerPacket(transactionId, payload);
     }
 
-    public CCustomQueryPacket(final int transactionId) {
+    public C2SCustomQueryPacket(final int transactionId) {
         this.packet = new ServerboundCustomQueryAnswerPacket(transactionId);
     }
 
     @Override
-    public void readPacketData(final @NotNull PacketBuffer buf) throws IOException {
+    public void readPacketData(final @NotNull PacketBuffer buf) {
         this.packet = ServerboundCustomQueryAnswerPacket.read(buf);
     }
 
     @Override
-    public void writePacketData(final @NotNull PacketBuffer buf) throws IOException {
+    public void writePacketData(final @NotNull PacketBuffer buf) {
         this.packet.write(buf);
     }
 
     @Override
-    public void processPacket(final @NotNull INetHandlerLoginServer handler) {
-        ((INetHandlerLoginQueryServer) handler).handleCustomQueryPacket(this);
+    public void processPacket(final @NotNull INetHandler handler) {
+        ((ServerLoginQueryListener) handler).handleCustomQueryPacket(this);
     }
 
     public int transactionId() {
