@@ -32,13 +32,21 @@ import java.security.PublicKey;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-/** Utils copied from Minecraft's FriendlyByteBuf, Crypt, Utf8String, and VarInt implementations */
+/**
+ * Utils copied (in part, as needed) from Minecraft's FriendlyByteBuf, Crypt, Utf8String, and VarInt
+ * implementations. <br>
+ * Given that, any who use this class must comply with Minecraft's EULA. This class exists purely
+ * for compatibility's sake when dealing with multi-version code.
+ */
 @SuppressWarnings("UnusedReturnValue")
 public final class FByteBuf extends ByteBuf {
     public static final short MAX_STRING_LENGTH = Short.MAX_VALUE;
+    public static final int MAX_PAYLOAD_SIZE = 1048576; // 20 bits
 
     private final @NotNull ByteBuf source;
 
@@ -59,9 +67,77 @@ public final class FByteBuf extends ByteBuf {
         return readAddress(this.source);
     }
 
+    public @NotNull ByteBuf readPayload(int maxSize) {
+        return readPayload(this.source, maxSize);
+    }
+
+    public @NotNull ByteBuf readPayload() {
+        return readPayload(this.source);
+    }
+
+    public @Nullable ByteBuf readNullablePayload(int maxSize) {
+        return readNullablePayload(this.source, maxSize);
+    }
+
+    public @Nullable ByteBuf readNullablePayload() {
+        return readNullablePayload(this.source);
+    }
+
     // ---------------- FByteBuf static methods -----------------
     public static @NotNull InetAddress readAddress(final @NotNull ByteBuf buf) {
         return InetAddresses.forString(readUtf(buf));
+    }
+
+    public static @NotNull ByteBuf readPayload(final @NotNull ByteBuf buf, int maxSize) {
+        int i = buf.readableBytes();
+        if (i >= 0 && i <= maxSize) {
+            return buf.readBytes(i);
+        } else {
+            throw new IllegalArgumentException(
+                    "Payload may not be larger than " + maxSize + " bytes");
+        }
+    }
+
+    public static @NotNull ByteBuf readPayload(final @NotNull ByteBuf buf) {
+        return readPayload(buf, MAX_PAYLOAD_SIZE);
+    }
+
+    public static @Nullable ByteBuf readNullablePayload(final @NotNull ByteBuf buf, int maxSize) {
+        return readNullable(buf, (b) -> readPayload(b, maxSize));
+    }
+
+    public static @Nullable ByteBuf readNullablePayload(final @NotNull ByteBuf buf) {
+        return readNullable(buf, FByteBuf::readPayload);
+    }
+
+    public static void writePayload(
+            final @NotNull ByteBuf buf, final @NotNull ByteBuf payload, int maxSize) {
+        if (payload.readableBytes() > maxSize) {
+            throw new IllegalArgumentException(
+                    "Payload may not be larger than " + maxSize + " bytes");
+        }
+        buf.writeBytes(payload.slice());
+    }
+
+    public static void writePayload(final @NotNull ByteBuf buf, final @NotNull ByteBuf payload) {
+        writePayload(buf, payload, MAX_PAYLOAD_SIZE);
+    }
+
+    public static void writeNullablePayload(
+            final @NotNull ByteBuf buf, final @Nullable ByteBuf payload, int maxSize) {
+        writeNullable(
+                buf,
+                payload,
+                (b, p) -> {
+                    if (p != null) {
+                        writePayload(b, p, maxSize);
+                    }
+                });
+    }
+
+    public static void writeNullablePayload(
+            final @NotNull ByteBuf buf, final @Nullable ByteBuf payload) {
+        writeNullablePayload(buf, payload, MAX_PAYLOAD_SIZE);
     }
 
     // ---------------- FriendlyByteBuf methods -----------------
@@ -101,8 +177,23 @@ public final class FByteBuf extends ByteBuf {
         return writeResourceLocation(this.source, resourceLocationIn);
     }
 
-    public @Nullable <T> T readNullable(final @NotNull Function<ByteBuf, T> function) {
-        return readNullable(this.source, function);
+    public <T> Optional<T> readOptional(final @NotNull Reader<T> reader) {
+        return readOptional(this.source, reader);
+    }
+
+    public <T> void writeOptional(
+            @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+                    final @NotNull Optional<T> optional,
+            final @NotNull Writer<T> writer) {
+        writeOptional(this.source, optional, writer);
+    }
+
+    public @Nullable <T> T readNullable(final @NotNull Reader<T> reader) {
+        return readNullable(this.source, reader);
+    }
+
+    public <T> void writeNullable(final @Nullable T nullable, final @NotNull Writer<T> writer) {
+        writeNullable(this.source, nullable, writer);
     }
 
     public @NotNull Instant readInstant() {
@@ -175,9 +266,39 @@ public final class FByteBuf extends ByteBuf {
         return buf;
     }
 
+    public static <T> Optional<T> readOptional(
+            final @NotNull ByteBuf buf, final @NotNull Reader<T> reader) {
+        return buf.readBoolean() ? Optional.of(reader.apply(buf)) : Optional.empty();
+    }
+
+    public static <T> void writeOptional(
+            final ByteBuf buf,
+            @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+                    final @NotNull Optional<T> optional,
+            final @NotNull Writer<T> writer) {
+        if (optional.isPresent()) {
+            buf.writeBoolean(true);
+            writer.accept(buf, optional.get());
+        } else {
+            buf.writeBoolean(false);
+        }
+    }
+
     public static @Nullable <T> T readNullable(
-            final @NotNull ByteBuf buf, final @NotNull Function<ByteBuf, T> function) {
-        return buf.readBoolean() ? function.apply(buf) : null;
+            final @NotNull ByteBuf buf, final @NotNull Reader<T> reader) {
+        return buf.readBoolean() ? reader.apply(buf) : null;
+    }
+
+    public static <T> void writeNullable(
+            final @NotNull ByteBuf buf,
+            final @Nullable T nullable,
+            final @NotNull Writer<T> writer) {
+        if (nullable != null) {
+            buf.writeBoolean(true);
+            writer.accept(buf, nullable);
+        } else {
+            buf.writeBoolean(false);
+        }
     }
 
     public static @NotNull Instant readInstant(final @NotNull ByteBuf buf) {
@@ -1112,6 +1233,20 @@ public final class FByteBuf extends ByteBuf {
     @Override
     public boolean release(int decrement) {
         return this.source.release(decrement);
+    }
+
+    @FunctionalInterface
+    public interface Reader<T> extends Function<ByteBuf, T> {
+        default Reader<Optional<T>> asOptional() {
+            return buf -> readOptional(buf, this);
+        }
+    }
+
+    @FunctionalInterface
+    public interface Writer<T> extends BiConsumer<ByteBuf, T> {
+        default Writer<Optional<T>> asOptional() {
+            return (buf, optional) -> writeOptional(buf, optional, this);
+        }
     }
 
     public static final class Crypt {
