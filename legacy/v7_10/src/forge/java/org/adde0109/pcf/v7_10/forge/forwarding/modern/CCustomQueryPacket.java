@@ -1,66 +1,53 @@
 package org.adde0109.pcf.v7_10.forge.forwarding.modern;
 
-import static org.adde0109.pcf.common.FByteBuf.readNullable;
-import static org.adde0109.pcf.common.FByteBuf.readVarInt;
-import static org.adde0109.pcf.common.FByteBuf.writeVarInt;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 
+import org.adde0109.pcf.forwarding.network.CustomQueryAnswerPayload;
+import org.adde0109.pcf.forwarding.network.ServerboundCustomQueryAnswerPacket;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 @SuppressWarnings("unused")
 public final class CCustomQueryPacket extends Packet {
-    private static final int pcf$MAX_PAYLOAD_SIZE = 1048576;
-
-    private int transactionId;
-    private ByteBuf data;
+    private ServerboundCustomQueryAnswerPacket packet;
 
     public CCustomQueryPacket() {}
 
-    @SuppressWarnings("VulnerableCodeUsages")
-    public CCustomQueryPacket(int transactionId, ByteBuf data) {
-        this.transactionId = transactionId;
-        this.data = Unpooled.copiedBuffer(data);
+    public CCustomQueryPacket(final @NotNull ServerboundCustomQueryAnswerPacket packet) {
+        this.packet = packet;
+    }
+
+    public CCustomQueryPacket(
+            final int transactionId, final @Nullable CustomQueryAnswerPayload payload) {
+        this.packet = new ServerboundCustomQueryAnswerPacket(transactionId, payload);
+    }
+
+    public CCustomQueryPacket(final int transactionId) {
+        this.packet = new ServerboundCustomQueryAnswerPacket(transactionId);
     }
 
     @Override
-    public void readPacketData(PacketBuffer buf) {
-        this.transactionId = readVarInt(buf);
-        this.data =
-                readNullable(
-                        buf,
-                        (buf2) -> {
-                            int i = buf2.readableBytes();
-                            if (i >= 0 && i <= pcf$MAX_PAYLOAD_SIZE) {
-                                return buf2.readBytes(i);
-                            } else {
-                                throw new IllegalArgumentException(
-                                        "Payload may not be larger than "
-                                                + pcf$MAX_PAYLOAD_SIZE
-                                                + " bytes");
-                            }
-                        });
+    public void readPacketData(final @NotNull PacketBuffer buf) {
+        this.packet = ServerboundCustomQueryAnswerPacket.read(buf);
     }
 
     @Override
-    public void writePacketData(PacketBuffer buffer) {
-        writeVarInt(buffer, this.transactionId);
-        buffer.writeBytes(this.data.copy());
+    public void writePacketData(final @NotNull PacketBuffer buf) {
+        this.packet.write(buf);
     }
 
     @Override
-    public void processPacket(INetHandler handler) {
-        ((INetHandlerLoginQueryServer) handler).handleCustomQuery(this);
+    public void processPacket(final @NotNull INetHandler handler) {
+        ((INetHandlerLoginQueryServer) handler).handleCustomQueryPacket(this);
     }
 
     public int transactionId() {
-        return this.transactionId;
+        return this.packet.transactionId();
     }
 
-    public ByteBuf data() {
-        return this.data;
+    public @Nullable CustomQueryAnswerPayload payload() {
+        return this.packet.payload();
     }
 }

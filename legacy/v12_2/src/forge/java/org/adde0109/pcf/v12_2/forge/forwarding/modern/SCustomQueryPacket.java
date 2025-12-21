@@ -1,56 +1,56 @@
 package org.adde0109.pcf.v12_2.forge.forwarding.modern;
 
-import static org.adde0109.pcf.common.FByteBuf.readUtf;
-import static org.adde0109.pcf.common.FByteBuf.readVarInt;
-import static org.adde0109.pcf.common.FByteBuf.writeResourceLocation;
-import static org.adde0109.pcf.common.FByteBuf.writeVarInt;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import static org.adde0109.pcf.common.Identifier.identifier;
 
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.login.INetHandlerLoginClient;
 import net.minecraft.util.ResourceLocation;
 
+import org.adde0109.pcf.forwarding.network.ClientboundCustomQueryPacket;
+import org.adde0109.pcf.forwarding.network.CustomQueryPayload;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 
 @SuppressWarnings({"RedundantThrows", "unused"})
 public final class SCustomQueryPacket implements Packet<INetHandlerLoginClient> {
-    private static final int pcf$MAX_PAYLOAD_SIZE = 1048576;
-
-    private int transactionId;
-    private ResourceLocation identifier;
-    private ByteBuf data;
+    private ClientboundCustomQueryPacket packet;
 
     public SCustomQueryPacket() {}
 
-    public SCustomQueryPacket(int transactionId, ResourceLocation identifier, ByteBuf data) {
-        this.transactionId = transactionId;
-        this.identifier = identifier;
-        this.data = Unpooled.copiedBuffer(data);
+    public SCustomQueryPacket(final @NotNull ClientboundCustomQueryPacket packet) {
+        this.packet = packet;
+    }
+
+    public SCustomQueryPacket(final int transactionId, final @NotNull CustomQueryPayload payload) {
+        this.packet = new ClientboundCustomQueryPacket(transactionId, payload);
     }
 
     @Override
-    public void readPacketData(PacketBuffer buf) throws IOException {
-        this.transactionId = readVarInt(buf);
-        this.identifier = new ResourceLocation(readUtf(buf));
-        int i = buf.readableBytes();
-        if (i >= 0 && i <= pcf$MAX_PAYLOAD_SIZE) {
-            this.data = buf.readBytes(i);
-        } else {
-            throw new IllegalArgumentException(
-                    "Payload may not be larger than " + pcf$MAX_PAYLOAD_SIZE + " bytes");
-        }
+    public void readPacketData(@NotNull PacketBuffer buf) throws IOException {
+        this.packet = ClientboundCustomQueryPacket.read(buf);
     }
 
     @Override
-    public void writePacketData(PacketBuffer buffer) throws IOException {
-        writeVarInt(buffer, this.transactionId);
-        writeResourceLocation(buffer, this.identifier);
-        buffer.writeBytes(this.data.copy());
+    public void writePacketData(@NotNull PacketBuffer buf) throws IOException {
+        this.packet.write(buf);
     }
 
     @Override
-    public void processPacket(INetHandlerLoginClient handler) {}
+    public void processPacket(@NotNull INetHandlerLoginClient handler) {
+        ((INetHandlerLoginQueryClient) handler).handleCustomQuery(this);
+    }
+
+    public int transactionId() {
+        return this.packet.transactionId();
+    }
+
+    public @NotNull ResourceLocation id() {
+        return identifier(this.packet.payload().id());
+    }
+
+    public @NotNull CustomQueryPayload payload() {
+        return this.packet.payload();
+    }
 }

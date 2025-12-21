@@ -23,6 +23,7 @@ import net.minecraft.server.network.NetHandlerLoginServer.LoginState;
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.NameAndId;
 import org.adde0109.pcf.forwarding.modern.ModernForwarding;
+import org.adde0109.pcf.forwarding.network.CustomQueryPayloadImpl;
 import org.adde0109.pcf.mixin.v12_2.forge.forwarding.NetworkManagerAccessor;
 import org.adde0109.pcf.v12_2.forge.forwarding.modern.NetHandlerLoginServerBridge;
 import org.adde0109.pcf.v7_10.forge.forwarding.modern.CCustomQueryPacket;
@@ -69,21 +70,21 @@ public abstract class NetHandlerLoginServerMixin implements NetHandlerLoginServe
             this.networkManager.scheduleOutboundPacket(
                     new SCustomQueryPacket(
                             this.pcf$velocityLoginMessageId,
-                            PLAYER_INFO_CHANNEL(), PLAYER_INFO_PACKET));
+                            new CustomQueryPayloadImpl(PLAYER_INFO_CHANNEL(), PLAYER_INFO_PACKET)));
             PCF.logger.debug("Sent Forward Request");
             ci.cancel();
         }
     }
     // spotless:on
 
-    public void pcf$handleCustomQuery(CCustomQueryPacket packet) {
+    public void pcf$handleCustomQueryPacket(CCustomQueryPacket packet) {
         if (PCF.instance().forwarding().enabled()
                 && packet.transactionId() == this.pcf$velocityLoginMessageId) {
-            final ByteBuf buf = packet.data();
-            if (buf == null) {
+            if (packet.payload() == null) {
                 this.bridge$onDisconnect(DIRECT_CONNECT_ERR());
                 return;
             }
+            final ByteBuf buf = packet.payload().data();
 
             final ModernForwarding.Data data = forward(buf, this.networkManager.getRemoteAddress());
             if (data.profile() == null) {
