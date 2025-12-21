@@ -166,7 +166,7 @@ public final class VelocityProxy {
     }
 
     /**
-     * Required for Minecraft 1.7.x due to classloader issues with Guava
+     * Required for Forge 1.7.x due to classloader issues with Guava
      *
      * @param buf the buffer
      * @return a list of properties
