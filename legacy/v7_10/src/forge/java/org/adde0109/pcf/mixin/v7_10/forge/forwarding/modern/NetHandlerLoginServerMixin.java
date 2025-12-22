@@ -22,6 +22,7 @@ import net.minecraft.server.network.NetHandlerLoginServer.LoginState;
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.NameAndId;
 import org.adde0109.pcf.forwarding.modern.ModernForwarding;
+import org.adde0109.pcf.forwarding.network.ClientboundCustomQueryPacket;
 import org.adde0109.pcf.forwarding.network.CustomQueryPayloadImpl;
 import org.adde0109.pcf.mixin.v12_2.forge.forwarding.NetworkManagerAccessor;
 import org.adde0109.pcf.v12_2.forge.forwarding.modern.NetHandlerLoginServerBridge;
@@ -67,9 +68,9 @@ public abstract class NetHandlerLoginServerMixin implements NetHandlerLoginServe
             Validate.validState(this.currentLoginState == LoginState.HELLO, "Unexpected hello packet");
             this.pcf$velocityLoginMessageId = ThreadLocalRandom.current().nextInt();
             this.networkManager.scheduleOutboundPacket(
-                    new S2CCustomQueryPacket(
+                    new S2CCustomQueryPacket(new ClientboundCustomQueryPacket(
                             this.pcf$velocityLoginMessageId,
-                            new CustomQueryPayloadImpl(PLAYER_INFO_CHANNEL(), PLAYER_INFO_PACKET)));
+                            new CustomQueryPayloadImpl(PLAYER_INFO_CHANNEL(), PLAYER_INFO_PACKET))));
             PCF.logger.debug("Sent Forward Request");
             ci.cancel();
         }

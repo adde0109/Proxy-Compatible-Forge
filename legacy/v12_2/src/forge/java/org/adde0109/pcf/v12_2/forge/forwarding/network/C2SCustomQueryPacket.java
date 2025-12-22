@@ -21,23 +21,14 @@ public final class C2SCustomQueryPacket implements Packet<INetHandlerLoginServer
         this.packet = packet;
     }
 
-    public C2SCustomQueryPacket(
-            final int transactionId, final @Nullable CustomQueryAnswerPayload payload) {
-        this.packet = new ServerboundCustomQueryAnswerPacket(transactionId, payload);
-    }
-
-    public C2SCustomQueryPacket(final int transactionId) {
-        this.packet = new ServerboundCustomQueryAnswerPacket(transactionId);
-    }
-
     @Override
     public void readPacketData(final @NotNull PacketBuffer buf) throws IOException {
-        this.packet = ServerboundCustomQueryAnswerPacket.read(buf);
+        this.packet = ServerboundCustomQueryAnswerPacket.STREAM_CODEC.decode(buf);
     }
 
     @Override
     public void writePacketData(final @NotNull PacketBuffer buf) throws IOException {
-        this.packet.write(buf);
+        ServerboundCustomQueryAnswerPacket.STREAM_CODEC.encode(buf, this.packet);
     }
 
     @Override

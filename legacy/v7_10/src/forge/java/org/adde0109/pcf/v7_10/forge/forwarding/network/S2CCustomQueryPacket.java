@@ -21,19 +21,14 @@ public final class S2CCustomQueryPacket extends Packet {
         this.packet = packet;
     }
 
-    public S2CCustomQueryPacket(
-            final int transactionId, final @NotNull CustomQueryPayload payload) {
-        this.packet = new ClientboundCustomQueryPacket(transactionId, payload);
-    }
-
     @Override
     public void readPacketData(@NotNull PacketBuffer buf) {
-        this.packet = ClientboundCustomQueryPacket.read(buf);
+        this.packet = ClientboundCustomQueryPacket.STREAM_CODEC.decode(buf);
     }
 
     @Override
     public void writePacketData(@NotNull PacketBuffer buf) {
-        this.packet.write(buf);
+        ClientboundCustomQueryPacket.STREAM_CODEC.encode(buf, this.packet);
     }
 
     @Override

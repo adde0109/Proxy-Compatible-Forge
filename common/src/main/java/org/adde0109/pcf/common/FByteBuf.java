@@ -13,6 +13,8 @@ import io.netty.handler.codec.EncoderException;
 import io.netty.util.ByteProcessor;
 import io.netty.util.CharsetUtil;
 
+import org.adde0109.pcf.forwarding.network.codec.StreamDecoder;
+import org.adde0109.pcf.forwarding.network.codec.StreamEncoder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,8 +36,6 @@ import java.security.spec.X509EncodedKeySpec;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 /**
  * Utils copied (in part, as needed) from Minecraft's FriendlyByteBuf, Crypt, Utf8String, and VarInt
@@ -177,23 +177,24 @@ public final class FByteBuf extends ByteBuf {
         return writeResourceLocation(this.source, resourceLocationIn);
     }
 
-    public <T> Optional<T> readOptional(final @NotNull Reader<T> reader) {
-        return readOptional(this.source, reader);
+    public <T> Optional<T> readOptional(final @NotNull StreamDecoder<? super ByteBuf, T> decoder) {
+        return readOptional(this.source, decoder);
     }
 
     public <T> void writeOptional(
             @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
                     final @NotNull Optional<T> optional,
-            final @NotNull Writer<T> writer) {
-        writeOptional(this.source, optional, writer);
+            final @NotNull StreamEncoder<? super ByteBuf, T> encoder) {
+        writeOptional(this.source, optional, encoder);
     }
 
-    public @Nullable <T> T readNullable(final @NotNull Reader<T> reader) {
-        return readNullable(this.source, reader);
+    public @Nullable <T> T readNullable(final @NotNull StreamDecoder<? super ByteBuf, T> decoder) {
+        return readNullable(this.source, decoder);
     }
 
-    public <T> void writeNullable(final @Nullable T nullable, final @NotNull Writer<T> writer) {
-        writeNullable(this.source, nullable, writer);
+    public <T> void writeNullable(
+            final @Nullable T nullable, final @NotNull StreamEncoder<? super ByteBuf, T> encoder) {
+        writeNullable(this.source, nullable, encoder);
     }
 
     public @NotNull Instant readInstant() {
@@ -267,35 +268,35 @@ public final class FByteBuf extends ByteBuf {
     }
 
     public static <T> Optional<T> readOptional(
-            final @NotNull ByteBuf buf, final @NotNull Reader<T> reader) {
-        return buf.readBoolean() ? Optional.of(reader.apply(buf)) : Optional.empty();
+            final @NotNull ByteBuf buf, final @NotNull StreamDecoder<? super ByteBuf, T> decoder) {
+        return buf.readBoolean() ? Optional.of(decoder.decode(buf)) : Optional.empty();
     }
 
     public static <T> void writeOptional(
             final ByteBuf buf,
             @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
                     final @NotNull Optional<T> optional,
-            final @NotNull Writer<T> writer) {
+            final @NotNull StreamEncoder<? super ByteBuf, T> encoder) {
         if (optional.isPresent()) {
             buf.writeBoolean(true);
-            writer.accept(buf, optional.get());
+            encoder.encode(buf, optional.get());
         } else {
             buf.writeBoolean(false);
         }
     }
 
     public static @Nullable <T> T readNullable(
-            final @NotNull ByteBuf buf, final @NotNull Reader<T> reader) {
-        return buf.readBoolean() ? reader.apply(buf) : null;
+            final @NotNull ByteBuf buf, final @NotNull StreamDecoder<? super ByteBuf, T> decoder) {
+        return buf.readBoolean() ? decoder.decode(buf) : null;
     }
 
     public static <T> void writeNullable(
             final @NotNull ByteBuf buf,
             final @Nullable T nullable,
-            final @NotNull Writer<T> writer) {
+            final @NotNull StreamEncoder<? super ByteBuf, T> encoder) {
         if (nullable != null) {
             buf.writeBoolean(true);
-            writer.accept(buf, nullable);
+            encoder.encode(buf, nullable);
         } else {
             buf.writeBoolean(false);
         }
@@ -1233,20 +1234,6 @@ public final class FByteBuf extends ByteBuf {
     @Override
     public boolean release(int decrement) {
         return this.source.release(decrement);
-    }
-
-    @FunctionalInterface
-    public interface Reader<T> extends Function<ByteBuf, T> {
-        default Reader<Optional<T>> asOptional() {
-            return buf -> readOptional(buf, this);
-        }
-    }
-
-    @FunctionalInterface
-    public interface Writer<T> extends BiConsumer<ByteBuf, T> {
-        default Writer<Optional<T>> asOptional() {
-            return (buf, optional) -> writeOptional(buf, optional, this);
-        }
     }
 
     public static final class Crypt {
