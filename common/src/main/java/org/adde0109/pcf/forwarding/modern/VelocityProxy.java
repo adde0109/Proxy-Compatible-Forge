@@ -22,6 +22,7 @@ import io.netty.buffer.Unpooled;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.FByteBuf;
+import org.adde0109.pcf.forwarding.network.CustomQueryPayload;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -91,6 +92,9 @@ public final class VelocityProxy {
         }
         PCF.logger.debug("Velocity modern forwarding max version: " + MODERN_MAX_VERSION);
     }
+
+    public static final @NotNull CustomQueryPayload PLAYER_INFO_PAYLOAD =
+            new PlayerInfoChannelPayload("velocity:player_info", PLAYER_INFO_PACKET);
 
     private static final String ALGORITHM = "HmacSHA256";
 

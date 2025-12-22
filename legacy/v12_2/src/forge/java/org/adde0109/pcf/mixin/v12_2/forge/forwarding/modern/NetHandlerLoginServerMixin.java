@@ -3,8 +3,7 @@ package org.adde0109.pcf.mixin.v12_2.forge.forwarding.modern;
 import static org.adde0109.pcf.common.Component.literal;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.DIRECT_CONNECT_ERR;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.forward;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_CHANNEL;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_PACKET;
+import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_PAYLOAD;
 
 import com.mojang.authlib.GameProfile;
 
@@ -23,7 +22,6 @@ import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.NameAndId;
 import org.adde0109.pcf.forwarding.modern.ModernForwarding;
 import org.adde0109.pcf.forwarding.network.ClientboundCustomQueryPacket;
-import org.adde0109.pcf.forwarding.network.CustomQueryPayloadImpl;
 import org.adde0109.pcf.mixin.v12_2.forge.forwarding.NetworkManagerAccessor;
 import org.adde0109.pcf.v12_2.forge.forwarding.modern.NetHandlerLoginServerBridge;
 import org.adde0109.pcf.v12_2.forge.forwarding.network.C2SCustomQueryPacket;
@@ -61,19 +59,16 @@ public abstract class NetHandlerLoginServerMixin implements NetHandlerLoginServe
 
     @Unique private int pcf$velocityLoginMessageId = -1;
 
-    @SuppressWarnings({"MixinAnnotationTarget", "UnresolvedMixinReference"})
-    @Inject(method = { "func_147316_a(Lnet/minecraft/network/login/client/C00PacketLoginStart;)V", // 1.8-1.8.9
-                       "func_147316_a(Lnet/minecraft/network/login/client/CPacketLoginStart;)V" }, // 1.9-1.12.2
-            require = 0, cancellable = true, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, ordinal = 1,
+    @Inject(method = "processLoginStart*", // * b/c signature differs in 1.8.x
+            cancellable = true, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, ordinal = 1,
             target = "Lnet/minecraft/server/network/NetHandlerLoginServer;currentLoginState:Lnet/minecraft/server/network/NetHandlerLoginServer$LoginState;"))
     private void onHandleHello(CallbackInfo ci) {
         if (PCF.instance().forwarding().enabled()) {
             Validate.validState(this.currentLoginState == LoginState.HELLO, "Unexpected hello packet");
             this.pcf$velocityLoginMessageId = ThreadLocalRandom.current().nextInt();
             this.networkManager.sendPacket(
-                    new S2CCustomQueryPacket(new ClientboundCustomQueryPacket(
-                            this.pcf$velocityLoginMessageId,
-                            new CustomQueryPayloadImpl(PLAYER_INFO_CHANNEL(), PLAYER_INFO_PACKET))));
+                new S2CCustomQueryPacket(new ClientboundCustomQueryPacket(
+                    this.pcf$velocityLoginMessageId, PLAYER_INFO_PAYLOAD)));
             PCF.logger.debug("Sent Forward Request");
             ci.cancel();
         }

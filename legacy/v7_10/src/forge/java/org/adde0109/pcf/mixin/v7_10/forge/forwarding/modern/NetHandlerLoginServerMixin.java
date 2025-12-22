@@ -3,8 +3,7 @@ package org.adde0109.pcf.mixin.v7_10.forge.forwarding.modern;
 import static org.adde0109.pcf.common.Component.literal;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.DIRECT_CONNECT_ERR;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.forward;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_CHANNEL;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_PACKET;
+import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_PAYLOAD;
 
 import com.mojang.authlib.GameProfile;
 
@@ -23,7 +22,6 @@ import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.NameAndId;
 import org.adde0109.pcf.forwarding.modern.ModernForwarding;
 import org.adde0109.pcf.forwarding.network.ClientboundCustomQueryPacket;
-import org.adde0109.pcf.forwarding.network.CustomQueryPayloadImpl;
 import org.adde0109.pcf.mixin.v12_2.forge.forwarding.NetworkManagerAccessor;
 import org.adde0109.pcf.v12_2.forge.forwarding.modern.NetHandlerLoginServerBridge;
 import org.adde0109.pcf.v7_10.forge.forwarding.network.C2SCustomQueryPacket;
@@ -68,9 +66,8 @@ public abstract class NetHandlerLoginServerMixin implements NetHandlerLoginServe
             Validate.validState(this.currentLoginState == LoginState.HELLO, "Unexpected hello packet");
             this.pcf$velocityLoginMessageId = ThreadLocalRandom.current().nextInt();
             this.networkManager.scheduleOutboundPacket(
-                    new S2CCustomQueryPacket(new ClientboundCustomQueryPacket(
-                            this.pcf$velocityLoginMessageId,
-                            new CustomQueryPayloadImpl(PLAYER_INFO_CHANNEL(), PLAYER_INFO_PACKET))));
+                new S2CCustomQueryPacket(new ClientboundCustomQueryPacket(
+                    this.pcf$velocityLoginMessageId, PLAYER_INFO_PAYLOAD)));
             PCF.logger.debug("Sent Forward Request");
             ci.cancel();
         }
