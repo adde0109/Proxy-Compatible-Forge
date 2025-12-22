@@ -85,7 +85,7 @@ public abstract class NetHandlerLoginServerMixin implements NetHandlerLoginServe
             final ByteBuf buf = packet.payload().data();
 
             final ModernForwarding.Data data = forward(buf, this.networkManager.getRemoteAddress());
-            if (data.profile() == null) {
+            if (data.disconnectMsg() != null) {
                 this.bridge$onDisconnect(literal(data.disconnectMsg()));
                 return;
             }

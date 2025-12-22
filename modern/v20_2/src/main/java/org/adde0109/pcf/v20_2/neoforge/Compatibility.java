@@ -1,6 +1,6 @@
 package org.adde0109.pcf.v20_2.neoforge;
 
-import static org.adde0109.pcf.v20_2.neoforge.forwarding.FWDBootstrap.PLAYER_INFO_CHANNEL;
+import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_CHANNEL;
 
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
@@ -61,7 +61,7 @@ public final class Compatibility {
                     buf == null
                             ? null
                             : SimpleQueryPayload.outbound(
-                                    new FriendlyByteBuf(buf), queryId, PLAYER_INFO_CHANNEL));
+                                    new FriendlyByteBuf(buf), queryId, PLAYER_INFO_CHANNEL()));
         }
     }
 
