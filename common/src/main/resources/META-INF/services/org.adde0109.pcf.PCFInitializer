@@ -17,7 +17,6 @@ org.adde0109.pcf.v19_2.forge.CrossStitchInit
 
 org.adde0109.pcf.v20_4.forge.ArgRegistryInit
 org.adde0109.pcf.v20_4.forge.CrossStitchInit
-org.adde0109.pcf.v20_4.forge.ForwardingInit
 
 
 org.adde0109.pcf.v21_10.forge.CmdArgTypeKeyInit
@@ -29,7 +28,5 @@ org.adde0109.pcf.v20_2.neoforge.CmdArgTypeKeyInit
 org.adde0109.pcf.v20_2.neoforge.Initializer
 org.adde0109.pcf.v20_2.neoforge.RegisterConfig
 org.adde0109.pcf.v20_2.neoforge.ReloadConfigInit
-org.adde0109.pcf.v20_2.neoforge.ResourceLocationInit
 
 org.adde0109.pcf.v21_10.neoforge.RegisterConfig
-org.adde0109.pcf.v21_10.neoforge.ResourceLocationInit

@@ -6,8 +6,6 @@ import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.enums.Platform;
 
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
@@ -16,7 +14,6 @@ import net.minecraftforge.fml.network.FMLNetworkConstants;
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.PCFInitializer;
 import org.adde0109.pcf.v14_4.forge.Config;
-import org.adde0109.pcf.v14_4.forge.forwarding.FWDBootstrap;
 import org.apache.commons.lang3.tuple.Pair;
 
 @AConstraint(
@@ -24,12 +21,6 @@ import org.apache.commons.lang3.tuple.Pair;
         platform = Platform.FORGE,
         version = @Versions(min = MinecraftVersion.V14, max = MinecraftVersion.V16_5))
 public final class Initializer implements PCFInitializer {
-    public Initializer() {
-        FWDBootstrap.RESOURCE_LOCATION = ResourceLocation::new;
-        FWDBootstrap.COMPONENT = TextComponent::new;
-        FWDBootstrap.init();
-    }
-
     @Override
     public void onInit() {
         this.displayTest();

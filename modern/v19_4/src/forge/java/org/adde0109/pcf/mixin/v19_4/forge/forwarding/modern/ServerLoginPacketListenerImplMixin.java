@@ -1,10 +1,11 @@
 package org.adde0109.pcf.mixin.v19_4.forge.forwarding.modern;
 
-import static org.adde0109.pcf.forwarding.modern.ModernForwarding.QUERY_IDS;
+import static org.adde0109.pcf.common.Component.literal;
+import static org.adde0109.pcf.common.Component.translatable;
+import static org.adde0109.pcf.forwarding.modern.ModernForwarding.DIRECT_CONNECT_ERR;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.forward;
+import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_CHANNEL;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_PACKET;
-import static org.adde0109.pcf.v17_1.forge.forwarding.FWDBootstrap.COMPONENT;
-import static org.adde0109.pcf.v17_1.forge.forwarding.FWDBootstrap.PLAYER_INFO_CHANNEL;
 import static org.adde0109.pcf.v19_2.forge.forwarding.modern.HandleProfileKey.handle;
 
 import com.mojang.authlib.GameProfile;
@@ -78,7 +79,7 @@ public abstract class ServerLoginPacketListenerImplMixin {
             this.connection.send(
                     new ClientboundCustomQueryPacket(
                             this.pcf$velocityLoginMessageId,
-                            PLAYER_INFO_CHANNEL,
+                            PLAYER_INFO_CHANNEL(),
                             new FriendlyByteBuf(PLAYER_INFO_PACKET)));
             PCF.logger.debug("Sent Forward Request");
             ci.cancel();
@@ -90,12 +91,9 @@ public abstract class ServerLoginPacketListenerImplMixin {
     private void onHandleCustomQueryPacket(ServerboundCustomQueryPacket packet, CallbackInfo ci) {
         if (PCF.instance().forwarding().enabled()
                 && packet.getTransactionId() == this.pcf$velocityLoginMessageId) {
-            QUERY_IDS.remove(this.pcf$velocityLoginMessageId);
-
             final FriendlyByteBuf buf = packet.getData();
             if (buf == null) {
-                this.shadow$disconnect(
-                        COMPONENT.apply("This server requires you to connect with Velocity."));
+                this.shadow$disconnect(DIRECT_CONNECT_ERR());
                 ci.cancel();
                 return;
             }
@@ -103,8 +101,8 @@ public abstract class ServerLoginPacketListenerImplMixin {
             // Handle general forwarding
             final ModernForwarding.Data data =
                     forward(buf, ((ConnectionAccessor) this.connection).pcf$getAddress());
-            if (data == null) {
-                this.shadow$disconnect(COMPONENT.apply(data.disconnectMsg()));
+            if (data.disconnectMsg() != null) {
+                this.shadow$disconnect(literal(data.disconnectMsg()));
                 ci.cancel();
                 return;
             }
@@ -137,7 +135,7 @@ public abstract class ServerLoginPacketListenerImplMixin {
                 pcf$LOGGER.info("UUID of player {} is {}", nameAndId.name(), nameAndId.id());
                 StateUtil.setState(this, 3);
             } catch (Exception ex) {
-                this.shadow$disconnect(COMPONENT.apply("Failed to verify username!"));
+                this.shadow$disconnect(translatable("multiplayer.disconnect.unverified_username"));
                 PCF.logger.warn("Exception verifying " + nameAndId.name(), ex);
             }
             ci.cancel();
