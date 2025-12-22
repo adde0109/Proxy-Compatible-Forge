@@ -2,14 +2,19 @@ package org.adde0109.pcf.common;
 
 import com.google.common.net.InetAddresses;
 
+import dev.neuralnexus.taterapi.meta.MetaAPI;
+import dev.neuralnexus.taterapi.meta.MinecraftVersions;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import io.netty.util.ByteProcessor;
+import io.netty.util.CharsetUtil;
 
+import org.adde0109.pcf.forwarding.network.codec.StreamDecoder;
+import org.adde0109.pcf.forwarding.network.codec.StreamEncoder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,13 +34,19 @@ import java.security.PublicKey;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
 
-/** Utils copied from Minecraft's FriendlyByteBuf, Crypt, Utf8String, and VarInt implementations */
+/**
+ * Utils copied (in part, as needed) from Minecraft's FriendlyByteBuf, Crypt, Utf8String, and VarInt
+ * implementations. <br>
+ * Given that, any who use this class must comply with Minecraft's EULA. This class exists purely
+ * for compatibility's sake when dealing with multi-version code.
+ */
 @SuppressWarnings("UnusedReturnValue")
 public final class FByteBuf extends ByteBuf {
     public static final short MAX_STRING_LENGTH = Short.MAX_VALUE;
+    public static final int MAX_PAYLOAD_SIZE = 1048576; // 20 bits
 
     private final @NotNull ByteBuf source;
 
@@ -56,9 +67,77 @@ public final class FByteBuf extends ByteBuf {
         return readAddress(this.source);
     }
 
+    public @NotNull ByteBuf readPayload(int maxSize) {
+        return readPayload(this.source, maxSize);
+    }
+
+    public @NotNull ByteBuf readPayload() {
+        return readPayload(this.source);
+    }
+
+    public @Nullable ByteBuf readNullablePayload(int maxSize) {
+        return readNullablePayload(this.source, maxSize);
+    }
+
+    public @Nullable ByteBuf readNullablePayload() {
+        return readNullablePayload(this.source);
+    }
+
     // ---------------- FByteBuf static methods -----------------
     public static @NotNull InetAddress readAddress(final @NotNull ByteBuf buf) {
         return InetAddresses.forString(readUtf(buf));
+    }
+
+    public static @NotNull ByteBuf readPayload(final @NotNull ByteBuf buf, int maxSize) {
+        int i = buf.readableBytes();
+        if (i >= 0 && i <= maxSize) {
+            return buf.readBytes(i);
+        } else {
+            throw new IllegalArgumentException(
+                    "Payload may not be larger than " + maxSize + " bytes");
+        }
+    }
+
+    public static @NotNull ByteBuf readPayload(final @NotNull ByteBuf buf) {
+        return readPayload(buf, MAX_PAYLOAD_SIZE);
+    }
+
+    public static @Nullable ByteBuf readNullablePayload(final @NotNull ByteBuf buf, int maxSize) {
+        return readNullable(buf, (b) -> readPayload(b, maxSize));
+    }
+
+    public static @Nullable ByteBuf readNullablePayload(final @NotNull ByteBuf buf) {
+        return readNullable(buf, FByteBuf::readPayload);
+    }
+
+    public static void writePayload(
+            final @NotNull ByteBuf buf, final @NotNull ByteBuf payload, int maxSize) {
+        if (payload.readableBytes() > maxSize) {
+            throw new IllegalArgumentException(
+                    "Payload may not be larger than " + maxSize + " bytes");
+        }
+        buf.writeBytes(payload.slice());
+    }
+
+    public static void writePayload(final @NotNull ByteBuf buf, final @NotNull ByteBuf payload) {
+        writePayload(buf, payload, MAX_PAYLOAD_SIZE);
+    }
+
+    public static void writeNullablePayload(
+            final @NotNull ByteBuf buf, final @Nullable ByteBuf payload, int maxSize) {
+        writeNullable(
+                buf,
+                payload,
+                (b, p) -> {
+                    if (p != null) {
+                        writePayload(b, p, maxSize);
+                    }
+                });
+    }
+
+    public static void writeNullablePayload(
+            final @NotNull ByteBuf buf, final @Nullable ByteBuf payload) {
+        writeNullablePayload(buf, payload, MAX_PAYLOAD_SIZE);
     }
 
     // ---------------- FriendlyByteBuf methods -----------------
@@ -98,8 +177,24 @@ public final class FByteBuf extends ByteBuf {
         return writeResourceLocation(this.source, resourceLocationIn);
     }
 
-    public @Nullable <T> T readNullable(final @NotNull Function<ByteBuf, T> function) {
-        return readNullable(this.source, function);
+    public <T> Optional<T> readOptional(final @NotNull StreamDecoder<? super ByteBuf, T> decoder) {
+        return readOptional(this.source, decoder);
+    }
+
+    public <T> void writeOptional(
+            @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+                    final @NotNull Optional<T> optional,
+            final @NotNull StreamEncoder<? super ByteBuf, T> encoder) {
+        writeOptional(this.source, optional, encoder);
+    }
+
+    public @Nullable <T> T readNullable(final @NotNull StreamDecoder<? super ByteBuf, T> decoder) {
+        return readNullable(this.source, decoder);
+    }
+
+    public <T> void writeNullable(
+            final @Nullable T nullable, final @NotNull StreamEncoder<? super ByteBuf, T> encoder) {
+        writeNullable(this.source, nullable, encoder);
     }
 
     public @NotNull Instant readInstant() {
@@ -172,9 +267,39 @@ public final class FByteBuf extends ByteBuf {
         return buf;
     }
 
+    public static <T> Optional<T> readOptional(
+            final @NotNull ByteBuf buf, final @NotNull StreamDecoder<? super ByteBuf, T> decoder) {
+        return buf.readBoolean() ? Optional.of(decoder.decode(buf)) : Optional.empty();
+    }
+
+    public static <T> void writeOptional(
+            final ByteBuf buf,
+            @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+                    final @NotNull Optional<T> optional,
+            final @NotNull StreamEncoder<? super ByteBuf, T> encoder) {
+        if (optional.isPresent()) {
+            buf.writeBoolean(true);
+            encoder.encode(buf, optional.get());
+        } else {
+            buf.writeBoolean(false);
+        }
+    }
+
     public static @Nullable <T> T readNullable(
-            final @NotNull ByteBuf buf, final @NotNull Function<ByteBuf, T> function) {
-        return buf.readBoolean() ? function.apply(buf) : null;
+            final @NotNull ByteBuf buf, final @NotNull StreamDecoder<? super ByteBuf, T> decoder) {
+        return buf.readBoolean() ? decoder.decode(buf) : null;
+    }
+
+    public static <T> void writeNullable(
+            final @NotNull ByteBuf buf,
+            final @Nullable T nullable,
+            final @NotNull StreamEncoder<? super ByteBuf, T> encoder) {
+        if (nullable != null) {
+            buf.writeBoolean(true);
+            encoder.encode(buf, nullable);
+        } else {
+            buf.writeBoolean(false);
+        }
     }
 
     public static @NotNull Instant readInstant(final @NotNull ByteBuf buf) {
@@ -237,6 +362,7 @@ public final class FByteBuf extends ByteBuf {
         return this.source.isReadOnly();
     }
 
+    // Note: Added in Netty 4.1, not available below 1.12
     @Override
     public ByteBuf asReadOnly() {
         return this.source.asReadOnly();
@@ -1167,6 +1293,25 @@ public final class FByteBuf extends ByteBuf {
                     }
                 }
             }
+        }
+    }
+
+    private static final class ByteBufUtil {
+        private static final int MAX_BYTES_PER_CHAR_UTF8;
+
+        static { // Netty 4.1 differences
+            if (MetaAPI.instance().version().isAtLeast(MinecraftVersions.V12)) {
+                MAX_BYTES_PER_CHAR_UTF8 =
+                        (int) CharsetUtil.encoder(CharsetUtil.UTF_8).maxBytesPerChar();
+            } else {
+                //noinspection deprecation
+                MAX_BYTES_PER_CHAR_UTF8 =
+                        (int) CharsetUtil.getEncoder(CharsetUtil.UTF_8).maxBytesPerChar();
+            }
+        }
+
+        public static int utf8MaxBytes(final int seqLength) {
+            return seqLength * MAX_BYTES_PER_CHAR_UTF8;
         }
     }
 

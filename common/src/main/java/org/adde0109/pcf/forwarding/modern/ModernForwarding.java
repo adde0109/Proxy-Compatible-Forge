@@ -1,5 +1,7 @@
 package org.adde0109.pcf.forwarding.modern;
 
+import static org.adde0109.pcf.common.Component.literal;
+import static org.adde0109.pcf.common.Component.translatable;
 import static org.adde0109.pcf.common.FByteBuf.readAddress;
 import static org.adde0109.pcf.common.FByteBuf.readVarInt;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_MAX_VERSION;
@@ -11,6 +13,7 @@ import com.mojang.authlib.GameProfile;
 import io.netty.buffer.ByteBuf;
 
 import org.adde0109.pcf.PCF;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.InetSocketAddress;
@@ -23,7 +26,23 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class ModernForwarding {
     public static final Set<Integer> QUERY_IDS = ConcurrentHashMap.newKeySet();
 
-    public static Data forward(ByteBuf buf, SocketAddress remoteAddress) {
+    private static final @NotNull Object direct_conn_err =
+            literal("This server requires you to connect with Velocity.");
+    private static final @NotNull Object failed_to_verify =
+            translatable("multiplayer.disconnect.unverified_username");
+
+    @SuppressWarnings("unchecked")
+    public static <T> @NotNull T DIRECT_CONNECT_ERR() {
+        return (T) direct_conn_err;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> @NotNull T FAILED_TO_VERIFY() {
+        return (T) failed_to_verify;
+    }
+
+    public static @NotNull Data forward(
+            final @NotNull ByteBuf buf, final @NotNull SocketAddress remoteAddress) {
         try {
             if (!checkIntegrity(buf)) {
                 return new Data("Unable to verify player details");
@@ -63,7 +82,7 @@ public final class ModernForwarding {
             @Nullable String disconnectMsg,
             @Nullable SocketAddress address,
             @Nullable GameProfile profile) {
-        public Data(String disconnectMsg) {
+        public Data(final @NotNull String disconnectMsg) {
             this(-1, disconnectMsg, null, null);
         }
     }
