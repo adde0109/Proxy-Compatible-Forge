@@ -9,6 +9,7 @@ import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_DEFAULT;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_FORWARDING_WITH_KEY;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_FORWARDING_WITH_KEY_V2;
 
+import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
@@ -44,10 +45,8 @@ import java.util.UUID;
  */
 public final class HandleProfileKey {
     private static final Logger LOGGER = LoggerFactory.getLogger("ServerLoginPacketListenerImpl");
-    private static final boolean IS_19_1_2 =
-            MetaAPI.instance()
-                    .version()
-                    .isInRange(MinecraftVersions.V19_1, MinecraftVersions.V19_2);
+    private static final Constraint IS_19_1_2 =
+            Constraint.builder().min(MinecraftVersions.V19_1).max(MinecraftVersions.V19_2).build();
     private static final Component MISSING_PROFILE_PUBLIC_KEY =
             Component.translatable("multiplayer.disconnect.missing_public_key");
     private static final Component INVALID_SIGNATURE =
@@ -59,7 +58,7 @@ public final class HandleProfileKey {
             int version,
             @NotNull UUID profileId) {
         // Clear key on 1.19.1 - 1.19.2 if using MODERN_DEFAULT
-        if (version == MODERN_DEFAULT && IS_19_1_2) {
+        if (version == MODERN_DEFAULT && IS_19_1_2.result()) {
             ((ServerLoginPacketListenerImplAccessor_V2) self).pcf$setProfilePublicKeyData(null);
         }
 

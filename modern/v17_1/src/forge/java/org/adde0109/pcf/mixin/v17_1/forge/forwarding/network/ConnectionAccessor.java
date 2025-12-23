@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v17_1.forge.network;
+package org.adde0109.pcf.mixin.v17_1.forge.forwarding.network;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;

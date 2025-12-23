@@ -1,12 +1,11 @@
 package org.adde0109.pcf.mixin.v20_2.neoforge.forwarding.modern;
 
 import static org.adde0109.pcf.common.Component.literal;
-import static org.adde0109.pcf.common.Component.translatable;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.DIRECT_CONNECT_ERR;
+import static org.adde0109.pcf.forwarding.modern.ModernForwarding.FAILED_TO_VERIFY;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.QUERY_IDS;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.forward;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_CHANNEL;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_PACKET;
+import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_PAYLOAD;
 
 import com.mojang.authlib.GameProfile;
 
@@ -17,21 +16,18 @@ import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.ByteBuf;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.login.ClientboundCustomQueryPacket;
-import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
-import net.minecraft.network.protocol.login.ServerboundHelloPacket;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.NameAndId;
 import org.adde0109.pcf.forwarding.modern.ModernForwarding;
+import org.adde0109.pcf.forwarding.network.ClientboundCustomQueryPacket;
+import org.adde0109.pcf.forwarding.network.ServerboundCustomQueryAnswerPacket;
 import org.adde0109.pcf.mixin.v20_2.neoforge.network.ConnectionAccessor;
 import org.adde0109.pcf.v20_2.neoforge.Compatibility;
-import org.adde0109.pcf.v20_2.neoforge.forwarding.modern.PlayerInfoChannelPayload;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -61,15 +57,14 @@ public abstract class ServerLoginPacketListenerImplMixin {
     @Inject(method = "handleHello", cancellable = true, at = @At(value = "INVOKE", ordinal = 1,
             target = "Lnet/minecraft/server/network/ServerLoginPacketListenerImpl;startClientVerification(Lcom/mojang/authlib/GameProfile;)V"))
     // spotless:on
-    private void onHandleHello(ServerboundHelloPacket packet, CallbackInfo ci) {
+    private void onHandleHello(CallbackInfo ci) {
         if (PCF.instance().forwarding().enabled()) {
             this.pcf$velocityLoginMessageId = ThreadLocalRandom.current().nextInt();
             QUERY_IDS.add(this.pcf$velocityLoginMessageId);
             this.connection.send(
                     new ClientboundCustomQueryPacket(
-                            this.pcf$velocityLoginMessageId,
-                            new PlayerInfoChannelPayload(
-                                    PLAYER_INFO_CHANNEL(), PLAYER_INFO_PACKET)));
+                                    this.pcf$velocityLoginMessageId, PLAYER_INFO_PAYLOAD)
+                            .toMC());
             PCF.logger.debug("Sent Forward Request");
             ci.cancel();
         }
@@ -77,16 +72,19 @@ public abstract class ServerLoginPacketListenerImplMixin {
 
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
     private void onHandleCustomQueryPacket(
-            ServerboundCustomQueryAnswerPacket packet, CallbackInfo ci) {
+            net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket mcPacket,
+            CallbackInfo ci) {
         if (PCF.instance().forwarding().enabled()
-                && packet.transactionId() == this.pcf$velocityLoginMessageId) {
+                && mcPacket.transactionId() == this.pcf$velocityLoginMessageId) {
+            final ServerboundCustomQueryAnswerPacket packet =
+                    ServerboundCustomQueryAnswerPacket.fromMC(mcPacket);
+
             if (packet.payload() == null) {
                 this.shadow$disconnect(DIRECT_CONNECT_ERR());
                 ci.cancel();
                 return;
             }
-            final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-            packet.payload().write(buf);
+            final ByteBuf buf = packet.payload().data();
 
             Compatibility.neoForgeReadSimpleQueryPayload(buf);
             Compatibility.applyFFAPIFix(this, this.pcf$velocityLoginMessageId);
@@ -112,9 +110,10 @@ public abstract class ServerLoginPacketListenerImplMixin {
                 }
                 LOGGER.info("UUID of player {} is {}", nameAndId.name(), nameAndId.id());
                 this.shadow$startClientVerification(data.profile());
-            } catch (Exception ex) {
-                this.shadow$disconnect(translatable("multiplayer.disconnect.unverified_username"));
-                PCF.logger.warn("Exception verifying " + nameAndId.name(), ex);
+            } catch (Exception e) {
+                this.shadow$disconnect(FAILED_TO_VERIFY());
+                LOGGER.error("Exception while forwarding user {}", nameAndId.name());
+                e.printStackTrace();
             }
             ci.cancel();
         }

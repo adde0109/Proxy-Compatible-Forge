@@ -1,5 +1,7 @@
 package org.adde0109.pcf.common;
 
+import static org.adde0109.pcf.common.Identifier.identifier;
+
 import com.google.common.net.InetAddresses;
 
 import dev.neuralnexus.taterapi.meta.MetaAPI;
@@ -173,6 +175,10 @@ public final class FByteBuf extends ByteBuf {
         return readByteArray(this.source, maxLength);
     }
 
+    public <T> @NotNull T readResourceLocation() {
+        return readResourceLocation(this.source);
+    }
+
     public @NotNull ByteBuf writeResourceLocation(final @NotNull Object resourceLocationIn) {
         return writeResourceLocation(this.source, resourceLocationIn);
     }
@@ -259,6 +265,10 @@ public final class FByteBuf extends ByteBuf {
             buf.readBytes(abyte);
             return abyte;
         }
+    }
+
+    public static <T> @NotNull T readResourceLocation(final @NotNull ByteBuf buf) {
+        return identifier(readUtf(buf));
     }
 
     public static @NotNull ByteBuf writeResourceLocation(

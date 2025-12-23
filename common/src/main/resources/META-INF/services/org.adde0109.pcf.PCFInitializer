@@ -3,7 +3,7 @@ org.adde0109.pcf.v14_4.forge.ReloadConfigInit
 org.adde0109.pcf.v16_5.forge.Initializer
 org.adde0109.pcf.v16_5.forge.ReloadConfigInit
 
-
+org.adde0109.pcf.v17_1.forge.AdapterRegistryInit
 org.adde0109.pcf.v17_1.forge.DisplayTestInit
 org.adde0109.pcf.v17_1.forge.DisplayTestReg
 org.adde0109.pcf.v17_1.forge.RegisterConfig
@@ -15,14 +15,13 @@ org.adde0109.pcf.v18_2.forge.DisplayTestReg
 org.adde0109.pcf.v19_2.forge.ArgRegistryInit
 org.adde0109.pcf.v19_2.forge.CrossStitchInit
 
+org.adde0109.pcf.v20_4.forge.AdapterRegistryInit
 org.adde0109.pcf.v20_4.forge.ArgRegistryInit
 org.adde0109.pcf.v20_4.forge.CrossStitchInit
-
 
 org.adde0109.pcf.v21_10.forge.CmdArgTypeKeyInit
 org.adde0109.pcf.v21_10.forge.ArgRegistryInit
 org.adde0109.pcf.v21_10.forge.ReloadConfigInit
-
 
 org.adde0109.pcf.v20_2.neoforge.CmdArgTypeKeyInit
 org.adde0109.pcf.v20_2.neoforge.Initializer

@@ -27,7 +27,6 @@ import org.adde0109.pcf.v12_2.forge.forwarding.modern.NetHandlerLoginServerBridg
 import org.adde0109.pcf.v12_2.forge.forwarding.network.C2SCustomQueryPacket;
 import org.adde0109.pcf.v12_2.forge.forwarding.network.S2CCustomQueryPacket;
 import org.adde0109.pcf.v12_2.forge.forwarding.network.ServerLoginQueryListener;
-import org.apache.commons.lang3.Validate;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Implements;
@@ -64,7 +63,6 @@ public abstract class NetHandlerLoginServerMixin implements NetHandlerLoginServe
             target = "Lnet/minecraft/server/network/NetHandlerLoginServer;currentLoginState:Lnet/minecraft/server/network/NetHandlerLoginServer$LoginState;"))
     private void onHandleHello(CallbackInfo ci) {
         if (PCF.instance().forwarding().enabled()) {
-            Validate.validState(this.currentLoginState == LoginState.HELLO, "Unexpected hello packet");
             this.pcf$velocityLoginMessageId = ThreadLocalRandom.current().nextInt();
             this.networkManager.sendPacket(
                 new S2CCustomQueryPacket(new ClientboundCustomQueryPacket(
