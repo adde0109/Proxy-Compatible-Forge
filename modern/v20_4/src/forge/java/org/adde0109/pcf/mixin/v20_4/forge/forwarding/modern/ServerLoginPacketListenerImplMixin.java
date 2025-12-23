@@ -17,6 +17,7 @@ import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 
 import io.netty.buffer.ByteBuf;
 
+import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
@@ -48,7 +49,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public abstract class ServerLoginPacketListenerImplMixin {
     // spotless:off
     @Shadow @Final static Logger LOGGER;
-    @Shadow @Final net.minecraft.network.Connection connection;
+    @Shadow @Final Connection connection;
     @Shadow abstract void shadow$startClientVerification(GameProfile profile);
     @Shadow public abstract void shadow$disconnect(Component reason);
 
