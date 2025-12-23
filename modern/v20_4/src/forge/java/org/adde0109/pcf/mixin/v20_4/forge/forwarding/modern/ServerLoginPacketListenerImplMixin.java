@@ -3,8 +3,9 @@ package org.adde0109.pcf.mixin.v20_4.forge.forwarding.modern;
 import static org.adde0109.pcf.common.Component.literal;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.DIRECT_CONNECT_ERR;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.FAILED_TO_VERIFY;
+import static org.adde0109.pcf.forwarding.modern.ModernForwarding.QUERY_IDS;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.forward;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_PAYLOAD;
+import static org.adde0109.pcf.forwarding.modern.ModernForwarding.handleHello;
 
 import com.mojang.authlib.GameProfile;
 
@@ -23,20 +24,18 @@ import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.NameAndId;
+import org.adde0109.pcf.forwarding.Mode;
 import org.adde0109.pcf.forwarding.modern.ModernForwarding;
-import org.adde0109.pcf.forwarding.network.ClientboundCustomQueryPacket;
+import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
 import org.adde0109.pcf.forwarding.network.ServerboundCustomQueryAnswerPacket;
-import org.adde0109.pcf.mixin.v17_1.forge.forwarding.network.ConnectionAccessor;
+import org.adde0109.pcf.mixin.v17_1.forge.forwarding.ConnectionAccessor;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Adapted from <a
@@ -46,28 +45,19 @@ import java.util.concurrent.ThreadLocalRandom;
         mappings = Mappings.SEARGE,
         version = @Versions(min = MinecraftVersion.V20_2, max = MinecraftVersion.V20_4))
 @Mixin(ServerLoginPacketListenerImpl.class)
-public abstract class ServerLoginPacketListenerImplMixin {
+public abstract class ServerLoginPacketListenerImplMixin
+        implements ServerLoginPacketListenerBridge {
     // spotless:off
     @Shadow @Final static Logger LOGGER;
     @Shadow @Final Connection connection;
     @Shadow abstract void shadow$startClientVerification(GameProfile profile);
     @Shadow public abstract void shadow$disconnect(Component reason);
 
-    @Unique private int pcf$velocityLoginMessageId = -1;
-
     @Inject(method = "handleHello", cancellable = true, at = @At(value = "INVOKE", ordinal = 1,
             target = "Lnet/minecraft/server/network/ServerLoginPacketListenerImpl;startClientVerification(Lcom/mojang/authlib/GameProfile;)V"))
     // spotless:on
     private void onHandleHello(CallbackInfo ci) {
-        if (PCF.instance().forwarding().enabled()) {
-            this.pcf$velocityLoginMessageId = ThreadLocalRandom.current().nextInt();
-            this.connection.send(
-                    new ClientboundCustomQueryPacket(
-                                    this.pcf$velocityLoginMessageId, PLAYER_INFO_PAYLOAD)
-                            .toMC());
-            PCF.logger.debug("Sent Forward Request");
-            ci.cancel();
-        }
+        handleHello(this, ci);
     }
 
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
@@ -75,7 +65,9 @@ public abstract class ServerLoginPacketListenerImplMixin {
             net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket mcPacket,
             CallbackInfo ci) {
         if (PCF.instance().forwarding().enabled()
-                && mcPacket.transactionId() == this.pcf$velocityLoginMessageId) {
+                && PCF.instance().forwarding().mode().equals(Mode.MODERN)
+                && mcPacket.transactionId() == this.pcf$velocityLoginMessageId()) {
+            QUERY_IDS.remove(this.pcf$velocityLoginMessageId());
             final ServerboundCustomQueryAnswerPacket packet =
                     ServerboundCustomQueryAnswerPacket.fromMC(mcPacket);
 

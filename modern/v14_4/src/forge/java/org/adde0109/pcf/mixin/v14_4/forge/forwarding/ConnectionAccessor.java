@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v17_1.forge.forwarding.network;
+package org.adde0109.pcf.mixin.v14_4.forge.forwarding;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
@@ -12,7 +12,9 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.net.SocketAddress;
 
-@AConstraint(mappings = Mappings.SEARGE, version = @Versions(min = MinecraftVersion.V17))
+@AConstraint(
+        mappings = Mappings.LEGACY_SEARGE,
+        version = @Versions(min = MinecraftVersion.V14, max = MinecraftVersion.V16_5))
 @Mixin(Connection.class)
 public interface ConnectionAccessor {
     @Accessor("address")

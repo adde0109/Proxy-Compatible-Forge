@@ -10,7 +10,9 @@
   "server": [
     "v17_1.forge.crossstitch.CommandsPacketMixin",
     "v17_1.forge.forwarding.modern.ServerLoginPacketListenerImplMixin",
+    "v17_1.forge.forwarding.modern.ServerLoginPacketListenerMixin_Impl",
     "v17_1.forge.forwarding.modern.ServerLoginPacketListenerPlaceholderMixin",
-    "v17_1.forge.forwarding.network.ConnectionAccessor"
+    "v17_1.forge.forwarding.ConnectionAccessor",
+    "v17_1.forge.forwarding.modern.ConnectionMixin"
   ]
 }

@@ -3,8 +3,9 @@ package org.adde0109.pcf.mixin.v14_4.forge.forwarding.modern;
 import static org.adde0109.pcf.common.Component.literal;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.DIRECT_CONNECT_ERR;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.FAILED_TO_VERIFY;
+import static org.adde0109.pcf.forwarding.modern.ModernForwarding.QUERY_IDS;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.forward;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_PAYLOAD;
+import static org.adde0109.pcf.forwarding.modern.ModernForwarding.handleHello;
 
 import com.mojang.authlib.GameProfile;
 
@@ -24,21 +25,19 @@ import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.NameAndId;
+import org.adde0109.pcf.forwarding.Mode;
 import org.adde0109.pcf.forwarding.modern.ModernForwarding;
-import org.adde0109.pcf.forwarding.network.ClientboundCustomQueryPacket;
+import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
 import org.adde0109.pcf.forwarding.network.ServerboundCustomQueryAnswerPacket;
-import org.adde0109.pcf.mixin.v14_4.forge.network.ConnectionAccessor;
+import org.adde0109.pcf.mixin.v14_4.forge.forwarding.ConnectionAccessor;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * <a
@@ -49,7 +48,8 @@ import java.util.concurrent.ThreadLocalRandom;
         mappings = Mappings.LEGACY_SEARGE,
         version = @Versions(min = MinecraftVersion.V14, max = MinecraftVersion.V16_5))
 @Mixin(ServerLoginPacketListenerImpl.class)
-public abstract class ServerLoginPacketListenerImplMixin {
+public abstract class ServerLoginPacketListenerImplMixin
+        implements ServerLoginPacketListenerBridge {
     // spotless:off
     @Shadow private ServerLoginPacketListenerImpl.State state;
     @Shadow @Final private static Logger LOGGER;
@@ -57,26 +57,20 @@ public abstract class ServerLoginPacketListenerImplMixin {
     @Shadow private GameProfile gameProfile;
     @Shadow public abstract void shadow$disconnect(Component reason);
 
-    @Unique private int pcf$velocityLoginMessageId = -1;
-
     @Inject(method = "handleHello", cancellable = true, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, ordinal = 1,
             target = "Lnet/minecraft/server/network/ServerLoginPacketListenerImpl;state:Lnet/minecraft/server/network/ServerLoginPacketListenerImpl$State;"))
-    private void onHandleHello(CallbackInfo ci) {
-        if (PCF.instance().forwarding().enabled()) {
-            this.pcf$velocityLoginMessageId = ThreadLocalRandom.current().nextInt();
-            this.connection.send(new ClientboundCustomQueryPacket(
-                    this.pcf$velocityLoginMessageId, PLAYER_INFO_PAYLOAD).toMC());
-            PCF.logger.debug("Sent Forward Request");
-            ci.cancel();
-        }
-    }
     // spotless:on
+    private void onHandleHello(CallbackInfo ci) {
+        handleHello(this, ci);
+    }
 
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
     private void onHandleCustomQueryPacket(ServerboundCustomQueryPacket mcPacket, CallbackInfo ci) {
         if (PCF.instance().forwarding().enabled()
+                && PCF.instance().forwarding().mode().equals(Mode.MODERN)
                 && ((ServerboundCustomQueryPacketAccessor) mcPacket).pcf$getTransactionId()
-                        == this.pcf$velocityLoginMessageId) {
+                        == this.pcf$velocityLoginMessageId()) {
+            QUERY_IDS.remove(this.pcf$velocityLoginMessageId());
             final ServerboundCustomQueryAnswerPacket packet =
                     ServerboundCustomQueryAnswerPacket.fromMC(mcPacket);
 

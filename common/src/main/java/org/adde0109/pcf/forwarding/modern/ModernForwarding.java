@@ -5,6 +5,7 @@ import static org.adde0109.pcf.common.Component.translatable;
 import static org.adde0109.pcf.common.FByteBuf.readAddress;
 import static org.adde0109.pcf.common.FByteBuf.readVarInt;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_MAX_VERSION;
+import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_PAYLOAD;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.checkIntegrity;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.createProfile;
 
@@ -13,16 +14,35 @@ import com.mojang.authlib.GameProfile;
 import io.netty.buffer.ByteBuf;
 
 import org.adde0109.pcf.PCF;
+import org.adde0109.pcf.forwarding.Mode;
+import org.adde0109.pcf.forwarding.network.ClientboundCustomQueryPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.security.InvalidKeyException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
-/** Utility class for modern forwarding handling */
+/**
+ * Utility class for modern forwarding handling. <br>
+ * Adapted from: <br>
+ * <a
+ * href="https://github.com/PaperMC/Paper-archive/blob/ver/1.19.4/patches/server/0874-Add-Velocity-IP-Forwarding-Support.patch">Paper
+ * 1.19.1</a> <br>
+ * <a
+ * href="https://github.com/PaperMC/Paper-archive/blob/4074d4ee99a75ad005b05bfba8257e55beeb335f/patches/server/0884-Add-Velocity-IP-Forwarding-Support.patch">Paper
+ * 1.19.2</a> <br>
+ * <a
+ * href="https://github.com/PaperMC/Paper-archive/blob/ver/1.19.4/patches/server/0874-Add-Velocity-IP-Forwarding-Support.patch">Paper
+ * 1.19.4</a> <br>
+ * <a
+ * href="https://github.com/PaperMC/Paper/blob/main/paper-server/patches/sources/net/minecraft/server/network/ServerLoginPacketListenerImpl.java.patch">Paper
+ * 1.20.x</a>
+ */
 public final class ModernForwarding {
     public static final Set<Integer> QUERY_IDS = ConcurrentHashMap.newKeySet();
 
@@ -39,6 +59,22 @@ public final class ModernForwarding {
     @SuppressWarnings("unchecked")
     public static <T> @NotNull T FAILED_TO_VERIFY() {
         return (T) failed_to_verify;
+    }
+
+    public static void handleHello(ServerLoginPacketListenerBridge slpl, CallbackInfo ci) {
+        if (!PCF.instance().forwarding().enabled()
+                || !PCF.instance().forwarding().mode().equals(Mode.MODERN)) {
+            return;
+        }
+        slpl.pcf$setVelocityLoginMessageId(ThreadLocalRandom.current().nextInt());
+        QUERY_IDS.add(slpl.pcf$velocityLoginMessageId());
+        slpl.pcf$connection()
+                .pcf$send(
+                        new ClientboundCustomQueryPacket(
+                                        slpl.pcf$velocityLoginMessageId(), PLAYER_INFO_PAYLOAD)
+                                .toMC());
+        PCF.logger.debug("Sent Forward Request");
+        ci.cancel();
     }
 
     public static @NotNull Data forward(
