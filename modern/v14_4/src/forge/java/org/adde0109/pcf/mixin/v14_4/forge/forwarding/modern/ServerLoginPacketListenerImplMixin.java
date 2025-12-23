@@ -26,10 +26,10 @@ import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.NameAndId;
 import org.adde0109.pcf.forwarding.Mode;
+import org.adde0109.pcf.forwarding.modern.ConnectionBridge;
 import org.adde0109.pcf.forwarding.modern.ModernForwarding;
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
 import org.adde0109.pcf.forwarding.network.ServerboundCustomQueryAnswerPacket;
-import org.adde0109.pcf.mixin.v14_4.forge.forwarding.ConnectionAccessor;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
@@ -81,13 +81,13 @@ public abstract class ServerLoginPacketListenerImplMixin
             final ByteBuf buf = packet.payload().data();
 
             final ModernForwarding.Data data =
-                    forward(buf, ((ConnectionAccessor) this.connection).pcf$getAddress());
+                    forward(buf, ((ConnectionBridge) this.connection).pcf$address());
             if (data.disconnectMsg() != null) {
                 this.shadow$disconnect(literal(data.disconnectMsg()));
                 ci.cancel();
                 return;
             }
-            ((ConnectionAccessor) this.connection).pcf$setAddress(data.address());
+            ((ConnectionBridge) this.connection).pcf$address(data.address());
 
             final NameAndId nameAndId = new NameAndId(data.profile());
 
