@@ -9,12 +9,11 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import io.netty.buffer.Unpooled;
 
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.common.FByteBuf;
+import org.adde0109.pcf.common.FriendlyByteBuf;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Optional;
@@ -28,7 +27,7 @@ public final class CrossStitchUtil19 {
 
     public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>>
             void writeNode$wrapInVelocityModArgument19(
-                    FByteBuf buf,
+                    FriendlyByteBuf buf,
                     ArgumentTypeInfo<A, T> serializer,
                     ArgumentTypeInfo.Template<A> properties,
                     CallbackInfo ci) {
@@ -66,13 +65,14 @@ public final class CrossStitchUtil19 {
     @SuppressWarnings("unchecked")
     private static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>>
             void serializeWrappedArgumentType19(
-                    FByteBuf buf,
+                    FriendlyByteBuf buf,
                     ArgumentTypeInfo<A, T> serializer,
                     ArgumentTypeInfo.Template<A> properties) {
         buf.writeVarInt(MOD_ARGUMENT_INDICATOR);
         buf.writeVarInt(commandArgumentTypeId(serializer));
 
-        FriendlyByteBuf extraData = new FriendlyByteBuf(Unpooled.buffer());
+        net.minecraft.network.FriendlyByteBuf extraData =
+                new net.minecraft.network.FriendlyByteBuf(Unpooled.buffer());
         serializer.serializeToNetwork((T) properties, extraData);
 
         buf.writeVarInt(extraData.readableBytes());

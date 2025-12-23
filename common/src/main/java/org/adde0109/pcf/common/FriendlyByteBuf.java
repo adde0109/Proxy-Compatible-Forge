@@ -46,22 +46,22 @@ import java.util.UUID;
  * for compatibility's sake when dealing with multi-version code.
  */
 @SuppressWarnings("UnusedReturnValue")
-public final class FByteBuf extends ByteBuf {
+public final class FriendlyByteBuf extends ByteBuf {
     public static final short MAX_STRING_LENGTH = Short.MAX_VALUE;
     public static final int MAX_PAYLOAD_SIZE = 1048576; // 20 bits
 
     private final @NotNull ByteBuf source;
 
-    private FByteBuf(final @NotNull ByteBuf buf) {
+    private FriendlyByteBuf(final @NotNull ByteBuf buf) {
         this.source = buf;
     }
 
-    public FByteBuf() {
+    public FriendlyByteBuf() {
         this.source = Unpooled.buffer();
     }
 
-    public static FByteBuf wrap(final @NotNull ByteBuf buf) {
-        return new FByteBuf(buf);
+    public static FriendlyByteBuf wrap(final @NotNull ByteBuf buf) {
+        return new FriendlyByteBuf(buf);
     }
 
     // ---------------- FByteBuf methods -----------------
@@ -109,7 +109,7 @@ public final class FByteBuf extends ByteBuf {
     }
 
     public static @Nullable ByteBuf readNullablePayload(final @NotNull ByteBuf buf) {
-        return readNullable(buf, FByteBuf::readPayload);
+        return readNullable(buf, FriendlyByteBuf::readPayload);
     }
 
     public static void writePayload(

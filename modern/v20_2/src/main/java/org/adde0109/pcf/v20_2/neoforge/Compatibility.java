@@ -1,7 +1,7 @@
 package org.adde0109.pcf.v20_2.neoforge;
 
-import static org.adde0109.pcf.common.FByteBuf.readResourceLocation;
-import static org.adde0109.pcf.common.FByteBuf.readVarInt;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readResourceLocation;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readVarInt;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_CHANNEL;
 
 import dev.neuralnexus.taterapi.meta.Constraint;

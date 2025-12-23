@@ -2,8 +2,8 @@ package org.adde0109.pcf.forwarding.modern;
 
 import static org.adde0109.pcf.common.Component.literal;
 import static org.adde0109.pcf.common.Component.translatable;
-import static org.adde0109.pcf.common.FByteBuf.readAddress;
-import static org.adde0109.pcf.common.FByteBuf.readVarInt;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readAddress;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readVarInt;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_MAX_VERSION;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_PAYLOAD;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.checkIntegrity;
