@@ -20,6 +20,7 @@ unimined.minecraft(forge) {
     minecraftForge {
         loader(forgeVersion)
         mixinConfig("$modId.mixins.v17_1.forge.json")
+        accessTransformer(aw2at(rootProject.file("common/src/main/resources/accessWidener.aw")))
     }
     defaultRemapJar = true
 }

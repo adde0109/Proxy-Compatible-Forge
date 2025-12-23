@@ -17,6 +17,7 @@ import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 
 import io.netty.buffer.ByteBuf;
 
+import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
@@ -27,7 +28,6 @@ import org.adde0109.pcf.forwarding.modern.ModernForwarding;
 import org.adde0109.pcf.forwarding.network.ClientboundCustomQueryPacket;
 import org.adde0109.pcf.forwarding.network.ServerboundCustomQueryAnswerPacket;
 import org.adde0109.pcf.mixin.v14_4.forge.network.ConnectionAccessor;
-import org.adde0109.pcf.v14_4.forge.reflection.StateUtil;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
@@ -51,8 +51,9 @@ import java.util.concurrent.ThreadLocalRandom;
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ServerLoginPacketListenerImplMixin {
     // spotless:off
+    @Shadow private ServerLoginPacketListenerImpl.State state;
     @Shadow @Final private static Logger LOGGER;
-    @Shadow @Final public net.minecraft.network.Connection connection;
+    @Shadow @Final public Connection connection;
     @Shadow private GameProfile gameProfile;
     @Shadow public abstract void shadow$disconnect(Component reason);
 
@@ -106,7 +107,7 @@ public abstract class ServerLoginPacketListenerImplMixin {
                 }
                 this.gameProfile = data.profile();
                 LOGGER.info("UUID of player {} is {}", nameAndId.name(), nameAndId.id());
-                StateUtil.setState(this, 3);
+                this.state = ServerLoginPacketListenerImpl.State.NEGOTIATING;
             } catch (Exception e) {
                 this.shadow$disconnect(FAILED_TO_VERIFY());
                 LOGGER.error("Exception while forwarding user {}", nameAndId.name());

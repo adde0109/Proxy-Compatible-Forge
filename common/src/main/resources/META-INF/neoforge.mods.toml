@@ -15,6 +15,9 @@ authors = "${authors}"
 displayTest = "IGNORE_SERVER_VERSION"
 description = '''${description}'''
 
+[[accessTransformers]]
+file = "META-INF/accesstransformer.cfg"
+
 [[mixins]]
 config = "${mod_id}.mixins.json"
 
