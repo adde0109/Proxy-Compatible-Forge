@@ -1,9 +1,9 @@
 package org.adde0109.pcf.forwarding.modern;
 
-import static org.adde0109.pcf.common.FByteBuf.readNullable;
-import static org.adde0109.pcf.common.FByteBuf.readUUID;
-import static org.adde0109.pcf.common.FByteBuf.readUtf;
-import static org.adde0109.pcf.common.FByteBuf.readVarInt;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readNullable;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readUUID;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readUtf;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readVarInt;
 import static org.adde0109.pcf.common.Identifier.identifier;
 
 import com.google.common.collect.ImmutableMultimap;
@@ -21,7 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.common.FByteBuf;
+import org.adde0109.pcf.common.FriendlyByteBuf;
 import org.adde0109.pcf.forwarding.network.CustomQueryPayload;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -163,7 +163,7 @@ public final class VelocityProxy {
         for (int i = 0; i < count; i++) {
             final String name = readUtf(buf);
             final String value = readUtf(buf);
-            final @Nullable String signature = readNullable(buf, FByteBuf::readUtf);
+            final @Nullable String signature = readNullable(buf, FriendlyByteBuf::readUtf);
             propertiesBuilder.put(name, new Property(name, value, signature));
         }
         return propertiesBuilder.build();
@@ -182,7 +182,7 @@ public final class VelocityProxy {
         for (int i = 0; i < count; i++) {
             final String name = readUtf(buf);
             final String value = readUtf(buf);
-            final @Nullable String signature = readNullable(buf, FByteBuf::readUtf);
+            final @Nullable String signature = readNullable(buf, FriendlyByteBuf::readUtf);
             properties.add(new SimpleImmutableEntry<>(name, new Property(name, value, signature)));
         }
         return properties;

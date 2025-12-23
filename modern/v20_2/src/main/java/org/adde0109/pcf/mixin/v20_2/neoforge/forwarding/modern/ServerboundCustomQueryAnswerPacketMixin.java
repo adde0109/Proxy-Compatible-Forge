@@ -1,6 +1,6 @@
 package org.adde0109.pcf.mixin.v20_2.neoforge.forwarding.modern;
 
-import static org.adde0109.pcf.common.FByteBuf.readNullablePayload;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readNullablePayload;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.QUERY_IDS;
 
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;

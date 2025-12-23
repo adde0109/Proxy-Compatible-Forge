@@ -1,10 +1,10 @@
 package org.adde0109.pcf.forwarding.network;
 
-import static org.adde0109.pcf.common.FByteBuf.readNullable;
-import static org.adde0109.pcf.common.FByteBuf.readPayload;
-import static org.adde0109.pcf.common.FByteBuf.readVarInt;
-import static org.adde0109.pcf.common.FByteBuf.writeNullable;
-import static org.adde0109.pcf.common.FByteBuf.writeVarInt;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readNullable;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readPayload;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readVarInt;
+import static org.adde0109.pcf.common.FriendlyByteBuf.writeNullable;
+import static org.adde0109.pcf.common.FriendlyByteBuf.writeVarInt;
 
 import io.netty.buffer.ByteBuf;
 

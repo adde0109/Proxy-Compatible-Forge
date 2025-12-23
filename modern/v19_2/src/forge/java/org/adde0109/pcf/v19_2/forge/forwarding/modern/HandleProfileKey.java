@@ -1,10 +1,10 @@
 package org.adde0109.pcf.v19_2.forge.forwarding.modern;
 
-import static org.adde0109.pcf.common.FByteBuf.Crypt.MAX_KEY_SIGNATURE_SIZE;
-import static org.adde0109.pcf.common.FByteBuf.readByteArray;
-import static org.adde0109.pcf.common.FByteBuf.readInstant;
-import static org.adde0109.pcf.common.FByteBuf.readPublicKey;
-import static org.adde0109.pcf.common.FByteBuf.readUUID;
+import static org.adde0109.pcf.common.FriendlyByteBuf.Crypt.MAX_KEY_SIGNATURE_SIZE;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readByteArray;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readInstant;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readPublicKey;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readUUID;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_DEFAULT;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_FORWARDING_WITH_KEY;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_FORWARDING_WITH_KEY_V2;
@@ -21,7 +21,7 @@ import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import net.minecraft.world.entity.player.ProfilePublicKey;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.common.FByteBuf.CryptException;
+import org.adde0109.pcf.common.FriendlyByteBuf.CryptException;
 import org.adde0109.pcf.mixin.v19_2.forge.forwarding.modern.ServerLoginPacketListenerImplAccessor_V1;
 import org.adde0109.pcf.mixin.v19_2.forge.forwarding.modern.ServerLoginPacketListenerImplAccessor_V2;
 import org.jetbrains.annotations.NotNull;

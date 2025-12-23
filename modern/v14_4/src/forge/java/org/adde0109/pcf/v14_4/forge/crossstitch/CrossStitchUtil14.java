@@ -7,11 +7,10 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import io.netty.buffer.Unpooled;
 
 import net.minecraft.commands.synchronization.ArgumentSerializer;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.common.FByteBuf;
+import org.adde0109.pcf.common.FriendlyByteBuf;
 
 /**
  * Adapted from <a
@@ -25,7 +24,7 @@ public final class CrossStitchUtil14 {
 
     @SuppressWarnings("unchecked")
     public static void writeNode$wrapInVelocityModArgument14(
-            FByteBuf buf, ArgumentType<?> argumentType) {
+            FriendlyByteBuf buf, ArgumentType<?> argumentType) {
         if (!PCF.instance().crossStitch().enabled()) {
             return;
         }
@@ -44,7 +43,8 @@ public final class CrossStitchUtil14 {
         if (!shouldWrapArgument(identifier)) {
             buf.writeResourceLocation(identifier);
             ((ArgumentSerializer<ArgumentType<?>>) ArgumentTypesUtil.getSerializer(entry))
-                    .serializeToNetwork(argumentType, (FriendlyByteBuf) buf.unwrap());
+                    .serializeToNetwork(
+                            argumentType, (net.minecraft.network.FriendlyByteBuf) buf.unwrap());
             if (PCF.instance().debug().enabled()) {
                 PCF.logger.debug("Not wrapping argument with identifier: " + identifier);
             }
@@ -61,11 +61,12 @@ public final class CrossStitchUtil14 {
 
     @SuppressWarnings("unchecked")
     private static void serializeWrappedArgumentType(
-            FByteBuf buf, ArgumentType<?> argumentType, Object entry) {
+            FriendlyByteBuf buf, ArgumentType<?> argumentType, Object entry) {
         buf.writeResourceLocation(MOD_ARGUMENT_INDICATOR);
         buf.writeResourceLocation(ArgumentTypesUtil.getName(entry));
 
-        FriendlyByteBuf extraData = new FriendlyByteBuf(Unpooled.buffer());
+        net.minecraft.network.FriendlyByteBuf extraData =
+                new net.minecraft.network.FriendlyByteBuf(Unpooled.buffer());
         ((ArgumentSerializer<ArgumentType<?>>) ArgumentTypesUtil.getSerializer(entry))
                 .serializeToNetwork(argumentType, extraData);
 
