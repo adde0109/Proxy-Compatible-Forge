@@ -24,10 +24,10 @@ import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.NameAndId;
 import org.adde0109.pcf.forwarding.Mode;
+import org.adde0109.pcf.forwarding.modern.ConnectionBridge;
 import org.adde0109.pcf.forwarding.modern.ModernForwarding;
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
 import org.adde0109.pcf.forwarding.network.ServerboundCustomQueryAnswerPacket;
-import org.adde0109.pcf.mixin.v20_2.neoforge.forwarding.ConnectionAccessor;
 import org.adde0109.pcf.v20_2.neoforge.Compatibility;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
@@ -80,13 +80,13 @@ public abstract class ServerLoginPacketListenerImplMixin
             Compatibility.applyFFAPIFix(this, this.pcf$velocityLoginMessageId());
 
             final ModernForwarding.Data data =
-                    forward(buf, ((ConnectionAccessor) this.connection).pcf$getAddress());
+                    forward(buf, ((ConnectionBridge) this.connection).pcf$address());
             if (data.disconnectMsg() != null) {
                 this.shadow$disconnect(literal(data.disconnectMsg()));
                 ci.cancel();
                 return;
             }
-            ((ConnectionAccessor) this.connection).pcf$setAddress(data.address());
+            ((ConnectionBridge) this.connection).pcf$address(data.address());
 
             final NameAndId nameAndId = new NameAndId(data.profile());
 

@@ -22,9 +22,9 @@ import net.minecraft.server.network.NetHandlerLoginServer.LoginState;
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.NameAndId;
 import org.adde0109.pcf.forwarding.Mode;
+import org.adde0109.pcf.forwarding.modern.ConnectionBridge;
 import org.adde0109.pcf.forwarding.modern.ModernForwarding;
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
-import org.adde0109.pcf.mixin.v12_2.forge.forwarding.ConnectionAccessor;
 import org.adde0109.pcf.v12_2.forge.forwarding.modern.NetHandlerLoginServerBridge;
 import org.adde0109.pcf.v7_10.forge.forwarding.network.C2SCustomQueryPacket;
 import org.adde0109.pcf.v7_10.forge.forwarding.network.ServerLoginQueryListener;
@@ -73,12 +73,13 @@ public abstract class NetHandlerLoginServerMixin
             }
             final ByteBuf buf = packet.payload().data();
 
-            final ModernForwarding.Data data = forward(buf, this.networkManager.getRemoteAddress());
+            final ModernForwarding.Data data =
+                    forward(buf, ((ConnectionBridge) this.networkManager).pcf$address());
             if (data.disconnectMsg() != null) {
                 this.bridge$onDisconnect(literal(data.disconnectMsg()));
                 return;
             }
-            ((ConnectionAccessor) this.networkManager).pcf$setAddress(data.address());
+            ((ConnectionBridge) this.networkManager).pcf$address(data.address());
 
             final NameAndId nameAndId = new NameAndId(data.profile());
 

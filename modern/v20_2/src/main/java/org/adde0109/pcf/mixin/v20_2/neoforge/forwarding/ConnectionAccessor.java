@@ -14,8 +14,8 @@ import java.net.SocketAddress;
 @Mixin(Connection.class)
 public interface ConnectionAccessor {
     @Accessor("address")
-    SocketAddress pcf$getAddress();
+    SocketAddress pcf$address();
 
     @Accessor("address")
-    void pcf$setAddress(SocketAddress address);
+    void pcf$address(SocketAddress address);
 }
