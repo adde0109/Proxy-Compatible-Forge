@@ -2,8 +2,9 @@ package org.adde0109.pcf.mixin.v7_10.forge.forwarding.modern;
 
 import static org.adde0109.pcf.common.Component.literal;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.DIRECT_CONNECT_ERR;
+import static org.adde0109.pcf.forwarding.modern.ModernForwarding.QUERY_IDS;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.forward;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_PAYLOAD;
+import static org.adde0109.pcf.forwarding.modern.ModernForwarding.handleHello;
 
 import com.mojang.authlib.GameProfile;
 
@@ -20,12 +21,12 @@ import net.minecraft.server.network.NetHandlerLoginServer.LoginState;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.NameAndId;
+import org.adde0109.pcf.forwarding.Mode;
 import org.adde0109.pcf.forwarding.modern.ModernForwarding;
-import org.adde0109.pcf.forwarding.network.ClientboundCustomQueryPacket;
-import org.adde0109.pcf.mixin.v12_2.forge.forwarding.NetworkManagerAccessor;
+import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
+import org.adde0109.pcf.mixin.v12_2.forge.forwarding.ConnectionAccessor;
 import org.adde0109.pcf.v12_2.forge.forwarding.modern.NetHandlerLoginServerBridge;
 import org.adde0109.pcf.v7_10.forge.forwarding.network.C2SCustomQueryPacket;
-import org.adde0109.pcf.v7_10.forge.forwarding.network.S2CCustomQueryPacket;
 import org.adde0109.pcf.v7_10.forge.forwarding.network.ServerLoginQueryListener;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
@@ -33,12 +34,9 @@ import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * <a
@@ -50,31 +48,25 @@ import java.util.concurrent.ThreadLocalRandom;
         version = @Versions(min = MinecraftVersion.V7, max = MinecraftVersion.V7_10))
 @Implements(@Interface(iface = ServerLoginQueryListener.class, prefix = "pcf$"))
 @Mixin(NetHandlerLoginServer.class)
-public abstract class NetHandlerLoginServerMixin implements NetHandlerLoginServerBridge {
+public abstract class NetHandlerLoginServerMixin
+        implements NetHandlerLoginServerBridge, ServerLoginPacketListenerBridge {
     // spotless:off
     @Shadow @Final public NetworkManager networkManager;
     @Shadow private GameProfile loginGameProfile;
     @Shadow private LoginState currentLoginState;
 
-    @Unique private int pcf$velocityLoginMessageId = -1;
-
     @Inject(method = "processLoginStart", cancellable = true, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, ordinal = 1,
             target = "Lnet/minecraft/server/network/NetHandlerLoginServer;currentLoginState:Lnet/minecraft/server/network/NetHandlerLoginServer$LoginState;"))
-    private void onHandleHello(CallbackInfo ci) {
-        if (PCF.instance().forwarding().enabled()) {
-            this.pcf$velocityLoginMessageId = ThreadLocalRandom.current().nextInt();
-            this.networkManager.scheduleOutboundPacket(
-                new S2CCustomQueryPacket(new ClientboundCustomQueryPacket(
-                    this.pcf$velocityLoginMessageId, PLAYER_INFO_PAYLOAD)));
-            PCF.logger.debug("Sent Forward Request");
-            ci.cancel();
-        }
-    }
     // spotless:on
+    private void onHandleHello(CallbackInfo ci) {
+        handleHello(this, ci);
+    }
 
     public void pcf$handleCustomQueryPacket(C2SCustomQueryPacket packet) {
         if (PCF.instance().forwarding().enabled()
-                && packet.transactionId() == this.pcf$velocityLoginMessageId) {
+                && PCF.instance().forwarding().mode().equals(Mode.MODERN)
+                && packet.transactionId() == this.pcf$velocityLoginMessageId()) {
+            QUERY_IDS.remove(this.pcf$velocityLoginMessageId());
             if (packet.payload() == null) {
                 this.bridge$onDisconnect(DIRECT_CONNECT_ERR());
                 return;
@@ -86,7 +78,7 @@ public abstract class NetHandlerLoginServerMixin implements NetHandlerLoginServe
                 this.bridge$onDisconnect(literal(data.disconnectMsg()));
                 return;
             }
-            ((NetworkManagerAccessor) this.networkManager).pcf$setAddress(data.address());
+            ((ConnectionAccessor) this.networkManager).pcf$setAddress(data.address());
 
             final NameAndId nameAndId = new NameAndId(data.profile());
 

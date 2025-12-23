@@ -8,9 +8,11 @@
   "plugin": "org.adde0109.pcf.mixin.plugin.PCFMixinPlugin",
   "package": "org.adde0109.pcf.mixin",
   "server": [
-    "v12_2.forge.forwarding.NetworkManagerAccessor",
+    "v12_2.forge.forwarding.ConnectionAccessor",
+    "v12_2.forge.forwarding.modern.ConnectionMixin",
     "v12_2.forge.forwarding.modern.EnumConnectionStateMixin",
     "v12_2.forge.forwarding.modern.NetHandlerLoginServerMixin",
-    "v12_2.forge.forwarding.modern.NetHandlerLoginServerMixin_Impl"
+    "v12_2.forge.forwarding.modern.NetHandlerLoginServerMixin_Impl",
+    "v12_2.forge.forwarding.modern.ServerLoginPacketListenerMixin_Impl"
   ]
 }
