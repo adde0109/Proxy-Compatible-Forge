@@ -46,11 +46,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * Adapted from: <br>
  * <a
- * href="https://github.com/PaperMC/Paper-archive/blob/ver/1.19.4/patches/server/0874-Add-Velocity-IP-Forwarding-Support.patch">Paper
- * 1.19.1</a> <br>
+ * href="https://github.com/PaperMC/Paper-archive/blob/bef2c9d005bdd039f188ee53094a928e76bd8e59/patches/server/0273-Add-Velocity-IP-Forwarding-Support.patch">Paper
+ * 1.19.2</a> <br>
  * <a
  * href="https://github.com/PaperMC/Paper-archive/blob/4074d4ee99a75ad005b05bfba8257e55beeb335f/patches/server/0884-Add-Velocity-IP-Forwarding-Support.patch">Paper
- * 1.19.2</a> <br>
+ * 1.19.3</a> <br>
  * <a
  * href="https://github.com/PaperMC/Paper-archive/blob/ver/1.19.4/patches/server/0874-Add-Velocity-IP-Forwarding-Support.patch">Paper
  * 1.19.4</a> <a
