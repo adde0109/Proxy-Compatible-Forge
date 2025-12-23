@@ -13,7 +13,10 @@ import net.minecraftforge.fml.network.FMLNetworkConstants;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.PCFInitializer;
+import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterRegistry;
 import org.adde0109.pcf.v14_4.forge.Config;
+import org.adde0109.pcf.v14_4.forge.forwarding.network.CCustomQueryPacketAdapter;
+import org.adde0109.pcf.v14_4.forge.forwarding.network.SCustomQueryAnswerPacketAdapter;
 import org.apache.commons.lang3.tuple.Pair;
 
 @AConstraint(
@@ -21,6 +24,11 @@ import org.apache.commons.lang3.tuple.Pair;
         platform = Platform.FORGE,
         version = @Versions(min = MinecraftVersion.V14, max = MinecraftVersion.V16_5))
 public final class Initializer implements PCFInitializer {
+    public Initializer() {
+        AdapterRegistry.register(
+                CCustomQueryPacketAdapter.INSTANCE, SCustomQueryAnswerPacketAdapter.INSTANCE);
+    }
+
     @Override
     public void onInit() {
         this.displayTest();

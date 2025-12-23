@@ -1,0 +1,26 @@
+package org.adde0109.pcf.v17_1.forge;
+
+import dev.neuralnexus.taterapi.meta.Mappings;
+import dev.neuralnexus.taterapi.meta.anno.AConstraint;
+import dev.neuralnexus.taterapi.meta.anno.Versions;
+import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
+import dev.neuralnexus.taterapi.meta.enums.Platform;
+
+import org.adde0109.pcf.PCFInitializer;
+import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterRegistry;
+import org.adde0109.pcf.v17_1.forge.forwarding.network.CCustomQueryPacketAdapter;
+import org.adde0109.pcf.v17_1.forge.forwarding.network.SCustomQueryAnswerPacketAdapter;
+
+@AConstraint(
+        mappings = Mappings.LEGACY_SEARGE,
+        platform = Platform.FORGE,
+        version = @Versions(min = MinecraftVersion.V17, max = MinecraftVersion.V20_1))
+public final class AdapterRegistryInit implements PCFInitializer {
+    public AdapterRegistryInit() {
+        AdapterRegistry.register(
+                CCustomQueryPacketAdapter.INSTANCE, SCustomQueryAnswerPacketAdapter.INSTANCE);
+    }
+
+    @Override
+    public void onInit() {}
+}

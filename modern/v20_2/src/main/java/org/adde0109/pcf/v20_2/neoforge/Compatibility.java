@@ -1,8 +1,10 @@
 package org.adde0109.pcf.v20_2.neoforge;
 
+import static org.adde0109.pcf.common.FByteBuf.readResourceLocation;
+import static org.adde0109.pcf.common.FByteBuf.readVarInt;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_CHANNEL;
 
-import dev.neuralnexus.taterapi.meta.MetaAPI;
+import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.meta.Platforms;
 
@@ -21,29 +23,21 @@ import java.lang.invoke.MethodHandles;
 import java.util.Map;
 
 public final class Compatibility {
-    public static final boolean isNeoForge1_20_2;
-    private static final boolean shouldApplyFFAPIFix;
-
-    static {
-        MetaAPI api = MetaAPI.instance();
-        isNeoForge1_20_2 =
-                api.isPlatformPresent(Platforms.NEOFORGE)
-                        && api.version().is(MinecraftVersions.V20_2);
-        shouldApplyFFAPIFix =
-                api.isPlatformPresent(Platforms.NEOFORGE)
-                        && api.version().isAtLeast(MinecraftVersions.V21_1)
-                        && api.isModLoaded(Platforms.NEOFORGE, "fabric_networking_api_v1");
-    }
+    private static final Constraint NEOFORGE_V20_2 =
+            Constraint.builder()
+                    .platform(Platforms.NEOFORGE)
+                    .version(MinecraftVersions.V20_2)
+                    .build();
 
     /**
      * Read the id and ResourceLocation so PCF can continue reading the packet as normal
      *
      * @param buf The ByteBuf from the packet
      */
-    public static void neoForgeReadSimpleQueryPayload(FriendlyByteBuf buf) {
-        if (isNeoForge1_20_2) {
-            buf.readVarInt();
-            buf.readResourceLocation();
+    public static void neoForgeReadSimpleQueryPayload(ByteBuf buf) {
+        if (NEOFORGE_V20_2.result()) {
+            readVarInt(buf);
+            readResourceLocation(buf);
         }
     }
 
@@ -56,7 +50,7 @@ public final class Compatibility {
      */
     public static void neoForgeReturnSimpleQueryPayload(
             ByteBuf buf, int queryId, CallbackInfoReturnable<Object> cir) {
-        if (isNeoForge1_20_2) {
+        if (NEOFORGE_V20_2.result()) {
             cir.setReturnValue(
                     buf == null
                             ? null
@@ -70,9 +64,14 @@ public final class Compatibility {
      *
      * @param serverLoginPacketListener an instance of ServerLoginPacketListenerImpl
      */
-    @SuppressWarnings({"UnstableApiUsage", "unchecked"})
+    @SuppressWarnings("unchecked")
     public static void applyFFAPIFix(Object serverLoginPacketListener, int queryId) {
-        if (!shouldApplyFFAPIFix) {
+        if (!Constraint.builder()
+                .platform(Platforms.NEOFORGE)
+                .version(MinecraftVersions.V21_1)
+                .deps("fabric_networking_api_v1")
+                .build()
+                .result()) {
             return;
         }
         // spotless:off

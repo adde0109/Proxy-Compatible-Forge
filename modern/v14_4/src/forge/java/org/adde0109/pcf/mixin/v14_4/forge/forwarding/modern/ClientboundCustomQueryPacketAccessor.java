@@ -18,10 +18,19 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(ClientboundCustomQueryPacket.class)
 public interface ClientboundCustomQueryPacketAccessor {
     @Accessor("transactionId")
+    int pcf$getTransactionId();
+
+    @Accessor("transactionId")
     void pcf$setTransactionId(int transactionId);
 
     @Accessor("identifier")
+    ResourceLocation pcf$getIdentifier();
+
+    @Accessor("identifier")
     void pcf$setIdentifier(ResourceLocation identifier);
+
+    @Accessor("data")
+    FriendlyByteBuf pcf$getData();
 
     @Accessor("data")
     void pcf$setData(FriendlyByteBuf data);
