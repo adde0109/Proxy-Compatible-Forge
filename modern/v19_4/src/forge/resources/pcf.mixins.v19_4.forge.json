@@ -9,6 +9,6 @@
   "package": "org.adde0109.pcf.mixin",
   "server": [
     "v19_4.forge.forwarding.modern.ServerLoginPacketListenerImplMixin",
-    "v19_4.forge.forwarding.modern.ServerLoginPacketListenerMixin_Impl"
+    "v19_4.forge.forwarding.modern.ServerLoginPacketListenerImplMixin_Bridge"
   ]
 }

@@ -5,39 +5,32 @@ import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 
-import net.minecraft.network.Connection;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
-import org.adde0109.pcf.forwarding.modern.ConnectionBridge;
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 
 @AConstraint(
         mappings = Mappings.LEGACY_SEARGE,
         version = @Versions(min = MinecraftVersion.V14, max = MinecraftVersion.V16_5))
 @Mixin(ServerLoginPacketListenerImpl.class)
-public abstract class ServerLoginPacketListenerMixin_Impl
+public abstract class ServerLoginPacketListenerMixin_Logger
         implements ServerLoginPacketListenerBridge {
     // spotless:off
-    @Shadow @Final public Connection connection;
-    @Unique private int pcf$velocityLoginMessageId = -1;
+    @Shadow @Final private static Logger LOGGER;
     // spotless:on
 
     @Override
-    public int pcf$velocityLoginMessageId() {
-        return this.pcf$velocityLoginMessageId;
+    public void bridge$logger_info(final @NotNull String text, final Object... params) {
+        LOGGER.info(text, params);
     }
 
     @Override
-    public void pcf$setVelocityLoginMessageId(int id) {
-        this.pcf$velocityLoginMessageId = id;
-    }
-
-    @Override
-    public ConnectionBridge pcf$connection() {
-        return (ConnectionBridge) this.connection;
+    public void bridge$logger_error(final @NotNull String text, final Object... params) {
+        LOGGER.info(text, params);
     }
 }

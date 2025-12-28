@@ -10,7 +10,7 @@
   "server": [
     "v7_10.forge.forwarding.modern.ConnectionMixin",
     "v7_10.forge.forwarding.modern.EnumConnectionStateMixin",
-    "v7_10.forge.forwarding.modern.NetHandlerLoginServerMixin",
-    "v7_10.forge.forwarding.modern.NetHandlerLoginServerMixin_Impl"
+    "v7_10.forge.forwarding.modern.ServerLoginPacketListenerImplMixin",
+    "v7_10.forge.forwarding.modern.ServerLoginPacketListenerImplMixin_7"
   ]
 }

@@ -22,7 +22,7 @@ public abstract class ConnectionMixin implements ConnectionBridge {
     // spotless:on
 
     @Override
-    public void pcf$send(Object packet) {
+    public void bridge$send(Object packet) {
         this.shadow$send((Packet<?>) packet);
     }
 }
