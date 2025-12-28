@@ -1,9 +1,21 @@
 package org.adde0109.pcf.forwarding.modern;
 
+import com.mojang.authlib.GameProfile;
+
+import org.jetbrains.annotations.NotNull;
+
 public interface ServerLoginPacketListenerBridge {
-    int pcf$velocityLoginMessageId();
+    int bridge$velocityLoginMessageId();
 
-    void pcf$setVelocityLoginMessageId(int id);
+    void bridge$setVelocityLoginMessageId(final int id);
 
-    ConnectionBridge pcf$connection();
+    @NotNull ConnectionBridge bridge$connection();
+
+    void bridge$disconnect(final @NotNull Object reason);
+
+    void bridge$startClientVerification(final @NotNull GameProfile profile);
+
+    void bridge$logger_info(final @NotNull String text, final Object... params);
+
+    void bridge$logger_error(final @NotNull String text, final Object... params);
 }

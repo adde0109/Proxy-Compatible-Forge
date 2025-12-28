@@ -11,8 +11,8 @@
     "v12_2.forge.forwarding.ConnectionAccessor",
     "v12_2.forge.forwarding.modern.ConnectionMixin",
     "v12_2.forge.forwarding.modern.EnumConnectionStateMixin",
-    "v12_2.forge.forwarding.modern.NetHandlerLoginServerMixin",
-    "v12_2.forge.forwarding.modern.NetHandlerLoginServerMixin_Impl",
-    "v12_2.forge.forwarding.modern.ServerLoginPacketListenerMixin_Impl"
+    "v12_2.forge.forwarding.modern.ServerLoginPacketListenerImplMixin",
+    "v12_2.forge.forwarding.modern.ServerLoginPacketListenerImplMixin_12",
+    "v12_2.forge.forwarding.modern.ServerLoginPacketListenerImplMixin_Bridge"
   ]
 }

@@ -1,5 +1,6 @@
 package org.adde0109.pcf.v19_2.forge.forwarding.modern;
 
+import static org.adde0109.pcf.common.Component.translatable;
 import static org.adde0109.pcf.common.FriendlyByteBuf.Crypt.MAX_KEY_SIGNATURE_SIZE;
 import static org.adde0109.pcf.common.FriendlyByteBuf.readByteArray;
 import static org.adde0109.pcf.common.FriendlyByteBuf.readInstant;
@@ -15,13 +16,12 @@ import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
 import io.netty.buffer.ByteBuf;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import net.minecraft.world.entity.player.ProfilePublicKey;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.FriendlyByteBuf.CryptException;
+import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
 import org.adde0109.pcf.mixin.v19_2.forge.forwarding.modern.ServerLoginPacketListenerImplAccessor_V1;
 import org.adde0109.pcf.mixin.v19_2.forge.forwarding.modern.ServerLoginPacketListenerImplAccessor_V2;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +29,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.security.PublicKey;
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -47,13 +49,13 @@ public final class HandleProfileKey {
     private static final Logger LOGGER = LoggerFactory.getLogger("ServerLoginPacketListenerImpl");
     private static final Constraint IS_19_1_2 =
             Constraint.builder().min(MinecraftVersions.V19_1).max(MinecraftVersions.V19_2).build();
-    private static final Component MISSING_PROFILE_PUBLIC_KEY =
-            Component.translatable("multiplayer.disconnect.missing_public_key");
-    private static final Component INVALID_SIGNATURE =
-            Component.translatable("multiplayer.disconnect.invalid_public_key_signature");
+    private static final Object MISSING_PROFILE_PUBLIC_KEY =
+            translatable("multiplayer.disconnect.missing_public_key");
+    private static final Object INVALID_SIGNATURE =
+            translatable("multiplayer.disconnect.invalid_public_key_signature");
 
-    public static @Nullable Component handle(
-            @NotNull ServerLoginPacketListenerImpl self,
+    public static @Nullable Object handle(
+            @NotNull ServerLoginPacketListenerBridge self,
             @NotNull ByteBuf buf,
             int version,
             @NotNull UUID profileId) {
@@ -140,4 +142,6 @@ public final class HandleProfileKey {
         return new ProfilePublicKey.Data(
                 readInstant(buf), readPublicKey(buf), readByteArray(buf, MAX_KEY_SIGNATURE_SIZE));
     }
+
+    public record Data(Instant expiresAt, PublicKey key, byte[] keySignature) {}
 }
