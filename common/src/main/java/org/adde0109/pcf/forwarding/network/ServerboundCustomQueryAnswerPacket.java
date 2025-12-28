@@ -8,9 +8,9 @@ import static org.adde0109.pcf.common.FriendlyByteBuf.writeVarInt;
 
 import io.netty.buffer.ByteBuf;
 
+import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.forwarding.network.codec.StreamCodec;
 import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterCodec;
-import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +23,7 @@ public record ServerboundCustomQueryAnswerPacket(
                     ServerboundCustomQueryAnswerPacket::read);
     public static final AdapterCodec<?, ServerboundCustomQueryAnswerPacket> ADAPTER_CODEC =
             (AdapterCodec<?, ServerboundCustomQueryAnswerPacket>)
-                    AdapterRegistry.toMC(ServerboundCustomQueryAnswerPacket.class);
+                    PCF.instance().adapters().toMC(ServerboundCustomQueryAnswerPacket.class);
 
     public ServerboundCustomQueryAnswerPacket(final int transactionId) {
         this(transactionId, null);

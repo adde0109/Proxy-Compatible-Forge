@@ -66,15 +66,19 @@ public final class ModernForwarding {
                 || !PCF.instance().forwarding().mode().equals(Mode.MODERN)) {
             return;
         }
-        slpl.pcf$setVelocityLoginMessageId(ThreadLocalRandom.current().nextInt());
-        QUERY_IDS.add(slpl.pcf$velocityLoginMessageId());
-        slpl.pcf$connection()
-                .pcf$send(
-                        new ClientboundCustomQueryPacket(
-                                        slpl.pcf$velocityLoginMessageId(), PLAYER_INFO_PAYLOAD)
-                                .toMC());
-        PCF.logger.debug("Sent Forward Request");
-        ci.cancel();
+        try {
+            slpl.pcf$setVelocityLoginMessageId(ThreadLocalRandom.current().nextInt());
+            QUERY_IDS.add(slpl.pcf$velocityLoginMessageId());
+            slpl.pcf$connection()
+                    .pcf$send(
+                            new ClientboundCustomQueryPacket(
+                                            slpl.pcf$velocityLoginMessageId(), PLAYER_INFO_PAYLOAD)
+                                    .toMC());
+            PCF.logger.debug("Sent Forward Request");
+            ci.cancel();
+        } catch (Exception e) {
+            PCF.logger.error("An error occurred while sending the forwarding request: ", e);
+        }
     }
 
     public static @NotNull Data forward(

@@ -1,38 +1,36 @@
-package org.adde0109.pcf.v12_2.forge.forwarding.network;
+package org.adde0109.pcf.v7_10.forge.forwarding.network;
 
+import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.login.INetHandlerLoginServer;
 
 import org.adde0109.pcf.forwarding.network.CustomQueryAnswerPayload;
 import org.adde0109.pcf.forwarding.network.ServerboundCustomQueryAnswerPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-
-@SuppressWarnings({"RedundantThrows", "unused"})
-public final class C2SCustomQueryPacket implements Packet<INetHandlerLoginServer> {
+@SuppressWarnings("unused")
+public final class C2SCustomQueryAnswerPacket extends Packet {
     private ServerboundCustomQueryAnswerPacket packet;
 
-    public C2SCustomQueryPacket() {}
+    public C2SCustomQueryAnswerPacket() {}
 
-    public C2SCustomQueryPacket(final @NotNull ServerboundCustomQueryAnswerPacket packet) {
+    public C2SCustomQueryAnswerPacket(final @NotNull ServerboundCustomQueryAnswerPacket packet) {
         this.packet = packet;
     }
 
     @Override
-    public void readPacketData(final @NotNull PacketBuffer buf) throws IOException {
+    public void readPacketData(final @NotNull PacketBuffer buf) {
         this.packet = ServerboundCustomQueryAnswerPacket.STREAM_CODEC.decode(buf);
     }
 
     @Override
-    public void writePacketData(final @NotNull PacketBuffer buf) throws IOException {
+    public void writePacketData(final @NotNull PacketBuffer buf) {
         ServerboundCustomQueryAnswerPacket.STREAM_CODEC.encode(buf, this.packet);
     }
 
     @Override
-    public void processPacket(final @NotNull INetHandlerLoginServer handler) {
+    public void processPacket(final @NotNull INetHandler handler) {
         ((ServerLoginQueryListener) handler).handleCustomQueryPacket(this);
     }
 

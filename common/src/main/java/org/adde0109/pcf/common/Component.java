@@ -1,6 +1,7 @@
 package org.adde0109.pcf.common;
 
 import dev.neuralnexus.taterapi.meta.Constraint;
+import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
 import org.adde0109.pcf.PCF;
@@ -35,33 +36,41 @@ public final class Component {
 
     // spotless:off
     static {
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
         try { // Component.literal(String)
             if (Constraint.builder().max(MinecraftVersions.V8_9).build().result()) {
                 Class<?> clazz = Class.forName("net.minecraft.util.ChatComponentText");
-                newLiteral = MethodHandles.lookup().findConstructor(clazz, MethodType.methodType(void.class, String.class));
+                newLiteral = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class));
             } else if (Constraint.builder()
                     .min(MinecraftVersions.V9)
                     .max(MinecraftVersions.V13_2).build().result()) {
                 Class<?> clazz = Class.forName("net.minecraft.util.text.TextComponentString");
-                newLiteral = MethodHandles.lookup().findConstructor(clazz, MethodType.methodType(void.class, String.class));
+                newLiteral = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class));
             } else if (Constraint.builder()
                     .min(MinecraftVersions.V14)
                     .max(MinecraftVersions.V16_5).build().result()) {
                 Class<?> clazz = Class.forName("net.minecraft.util.text.StringTextComponent");
-                newLiteral = MethodHandles.lookup().findConstructor(clazz, MethodType.methodType(void.class, String.class));
+                newLiteral = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class));
             } else if (Constraint.builder()
                     .min(MinecraftVersions.V17)
                     .max(MinecraftVersions.V18_2).build().result()) {
                 Class<?> clazz = Class.forName("net.minecraft.network.chat.TextComponent");
-                newLiteral = MethodHandles.lookup().findConstructor(clazz, MethodType.methodType(void.class, String.class));
+                newLiteral = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class));
             } else if (Constraint.builder()
+                    .mappings(Mappings.SEARGE)
                     .min(MinecraftVersions.V19)
                     .max(MinecraftVersions.V20_4).build().result()) {
                 Class<?> clazz = Class.forName("net.minecraft.network.chat.Component");
-                newLiteral = MethodHandles.lookup().findStatic(clazz, "m_237113_", MethodType.methodType(clazz, String.class));
-            } else if (Constraint.builder().min(MinecraftVersions.V20_5).build().result()) {
+                Class<?> rType = Class.forName("net.minecraft.network.chat.MutableComponent");
+                newLiteral = lookup.findStatic(clazz, "m_237113_", MethodType.methodType(rType, String.class));
+            } else if (Constraint.builder()
+                    .mappings(Mappings.MOJANG)
+                    .min(MinecraftVersions.V19).build().result()) {
                 Class<?> clazz = Class.forName("net.minecraft.network.chat.Component");
-                newLiteral = MethodHandles.lookup().findStatic(clazz, "literal", MethodType.methodType(clazz, String.class));
+                Class<?> rType = Class.forName("net.minecraft.network.chat.MutableComponent");
+                newLiteral = lookup.findStatic(clazz, "literal", MethodType.methodType(rType, String.class));
+            } else {
+                throw new ClassNotFoundException("No matching version for Component.literal");
             }
         } catch (ClassNotFoundException | IllegalAccessException | NoSuchMethodException e) {
             PCF.logger.error("Failed to initialize Component.literal function", e);
@@ -70,33 +79,40 @@ public final class Component {
         try { // Component.translatable(String)
             if (Constraint.builder().max(MinecraftVersions.V8_9).build().result()) {
                 Class<?> clazz = Class.forName("net.minecraft.util.ChatComponentTranslation");
-                newTranslatable = MethodHandles.lookup().findConstructor(clazz, MethodType.methodType(void.class, String.class, Object[].class));
+                newTranslatable = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class, Object[].class));
             } else if (Constraint.builder()
                     .min(MinecraftVersions.V9)
                     .max(MinecraftVersions.V13_2).build().result()) {
                 Class<?> clazz = Class.forName("net.minecraft.util.text.TextComponentTranslation");
-                newTranslatable = MethodHandles.lookup().findConstructor(clazz, MethodType.methodType(void.class, String.class, Object[].class));
+                newTranslatable = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class, Object[].class));
             } else if (Constraint.builder()
                     .min(MinecraftVersions.V14)
                     .max(MinecraftVersions.V16_5).build().result()) {
                 Class<?> clazz = Class.forName("net.minecraft.util.text.TranslationTextComponent");
-                newTranslatable = MethodHandles.lookup().findConstructor(clazz, MethodType.methodType(void.class, String.class));
+                newTranslatable = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class, Object[].class));
             } else if (Constraint.builder()
                     .min(MinecraftVersions.V17)
                     .max(MinecraftVersions.V18_2).build().result()) {
                 Class<?> clazz = Class.forName("net.minecraft.network.chat.TranslatableComponent");
-                newLiteral = MethodHandles.lookup().findConstructor(clazz, MethodType.methodType(void.class, String.class));
+                newTranslatable = lookup.findConstructor(clazz, MethodType.methodType(void.class, String.class));
             } else if (Constraint.builder()
+                    .mappings(Mappings.SEARGE)
                     .min(MinecraftVersions.V19)
                     .max(MinecraftVersions.V20_4).build().result()) {
                 Class<?> clazz = Class.forName("net.minecraft.network.chat.Component");
-                newLiteral = MethodHandles.lookup().findStatic(clazz, "m_237110_", MethodType.methodType(clazz, String.class));
-            } else if (Constraint.builder().min(MinecraftVersions.V20_5).build().result()) {
+                Class<?> rType = Class.forName("net.minecraft.network.chat.MutableComponent");
+                newTranslatable = lookup.findStatic(clazz, "m_237115_", MethodType.methodType(rType, String.class));
+            } else if (Constraint.builder()
+                    .mappings(Mappings.MOJANG)
+                    .min(MinecraftVersions.V19).build().result()) {
                 Class<?> clazz = Class.forName("net.minecraft.network.chat.Component");
-                newLiteral = MethodHandles.lookup().findStatic(clazz, "translatable", MethodType.methodType(clazz, String.class));
+                Class<?> rType = Class.forName("net.minecraft.network.chat.MutableComponent");
+                newTranslatable = lookup.findStatic(clazz, "translatable", MethodType.methodType(rType, String.class));
+            } else {
+                throw new ClassNotFoundException("No matching version for Component.translatable");
             }
         } catch (ClassNotFoundException | IllegalAccessException | NoSuchMethodException e) {
-            PCF.logger.error("Failed to initialize Component.literal function", e);
+            PCF.logger.error("Failed to initialize Component.translatable function", e);
         }
     }
     // spotless:on

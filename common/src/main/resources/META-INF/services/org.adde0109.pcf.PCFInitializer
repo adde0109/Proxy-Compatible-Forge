@@ -1,3 +1,6 @@
+org.adde0109.pcf.v7_10.forge.AdapterRegistryInit
+org.adde0109.pcf.v12_2.forge.AdapterRegistryInit
+
 org.adde0109.pcf.v14_4.forge.ReloadConfigInit
 
 org.adde0109.pcf.v16_5.forge.Initializer

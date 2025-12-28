@@ -4,13 +4,15 @@ import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
+import dev.neuralnexus.taterapi.meta.platforms.TaterMetadata;
 
 import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.Packet;
 import net.minecraft.network.login.client.C01PacketEncryptionResponse;
 import net.minecraft.network.login.server.S02PacketLoginSuccess;
 
-import org.adde0109.pcf.v7_10.forge.forwarding.network.C2SCustomQueryPacket;
+import org.adde0109.pcf.v7_10.forge.AdapterRegistryInit;
+import org.adde0109.pcf.v7_10.forge.forwarding.network.C2SCustomQueryAnswerPacket;
 import org.adde0109.pcf.v7_10.forge.forwarding.network.S2CCustomQueryPacket;
 import org.adde0109.pcf.v7_10.forge.forwarding.network.S2CDummyPacket;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,7 +33,9 @@ public abstract class EnumConnectionStateMixin {
     @Inject(method = {"func_150751_a"}, at = @At(value = "RETURN"))
     private void onRegisterC2S(int id, Class<? extends Packet> packetClass, CallbackInfoReturnable<EnumConnectionState> cir) {
         if (packetClass == C01PacketEncryptionResponse.class) {
-            this.shadow$func_150751_a(0x2, C2SCustomQueryPacket.class);
+            this.shadow$func_150751_a(0x2, C2SCustomQueryAnswerPacket.class);
+            TaterMetadata.initForge(); // TODO: Remove this and figure out why it isn't being loaded
+            new AdapterRegistryInit();
         }
     }
 

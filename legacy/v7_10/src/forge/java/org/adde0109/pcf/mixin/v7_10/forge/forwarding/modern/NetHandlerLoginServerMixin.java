@@ -26,7 +26,7 @@ import org.adde0109.pcf.forwarding.modern.ConnectionBridge;
 import org.adde0109.pcf.forwarding.modern.ModernForwarding;
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
 import org.adde0109.pcf.v12_2.forge.forwarding.modern.NetHandlerLoginServerBridge;
-import org.adde0109.pcf.v7_10.forge.forwarding.network.C2SCustomQueryPacket;
+import org.adde0109.pcf.v7_10.forge.forwarding.network.C2SCustomQueryAnswerPacket;
 import org.adde0109.pcf.v7_10.forge.forwarding.network.ServerLoginQueryListener;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
@@ -62,7 +62,7 @@ public abstract class NetHandlerLoginServerMixin
         handleHello(this, ci);
     }
 
-    public void pcf$handleCustomQueryPacket(C2SCustomQueryPacket packet) {
+    public void pcf$handleCustomQueryPacket(C2SCustomQueryAnswerPacket packet) {
         if (PCF.instance().forwarding().enabled()
                 && PCF.instance().forwarding().mode().equals(Mode.MODERN)
                 && packet.transactionId() == this.pcf$velocityLoginMessageId()) {
