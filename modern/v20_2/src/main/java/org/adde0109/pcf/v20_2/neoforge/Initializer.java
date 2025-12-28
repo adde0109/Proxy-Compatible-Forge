@@ -9,6 +9,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.PCFInitializer;
+import org.adde0109.pcf.forwarding.modern.ModernForwarding;
 import org.adde0109.pcf.v20_2.neoforge.crossstitch.CSBootstrap;
 import org.adde0109.pcf.v20_2.neoforge.forwarding.network.CCustomQueryPacketAdapter;
 import org.adde0109.pcf.v20_2.neoforge.forwarding.network.SCustomQueryAnswerPacketAdapter;
@@ -23,6 +24,11 @@ public final class Initializer implements PCFInitializer {
                 .register(
                         CCustomQueryPacketAdapter.INSTANCE,
                         SCustomQueryAnswerPacketAdapter.INSTANCE);
+        if (Compatibility.NEOFORGE_V20_2.result()) {
+            ModernForwarding.preProcessor = Compatibility::neoForgeReadSimpleQueryPayload;
+        } else if (Compatibility.FFAPI_V21_1.result()) {
+            ModernForwarding.preProcessor = Compatibility::applyFFAPIFix;
+        }
     }
 
     @Override
