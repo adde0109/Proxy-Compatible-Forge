@@ -12,7 +12,9 @@ import static org.adde0109.pcf.forwarding.modern.VelocityProxy.createProfile;
 import com.mojang.authlib.GameProfile;
 
 import dev.neuralnexus.taterapi.event.Cancellable;
+import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
+import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.meta.Platforms;
 
 import io.netty.buffer.ByteBuf;
@@ -23,6 +25,7 @@ import org.adde0109.pcf.forwarding.Mode;
 import org.adde0109.pcf.forwarding.compat.ArclightBridge;
 import org.adde0109.pcf.forwarding.network.ClientboundCustomQueryPacket;
 import org.adde0109.pcf.forwarding.network.ServerboundCustomQueryAnswerPacket;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -32,6 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.BiConsumer;
 
 /**
  * Utility class for modern forwarding handling. <br>
@@ -51,6 +55,12 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public final class ModernForwarding {
     public static final Set<Integer> QUERY_IDS = ConcurrentHashMap.newKeySet();
+
+    @ApiStatus.Internal
+    public static BiConsumer<
+                @NotNull ServerLoginPacketListenerBridge,
+                @NotNull ByteBuf> preProcessor =
+            (slpl, buf) -> {};
 
     private static final @NotNull Object direct_conn_err =
             literal("This server requires you to connect with Velocity.");
@@ -96,48 +106,6 @@ public final class ModernForwarding {
         }
     }
 
-    public static Optional<GameProfile> forward(
-            final @NotNull ServerLoginPacketListenerBridge slpl,
-            final @NotNull ByteBuf buf,
-            final @NotNull Cancellable ci) {
-        try {
-            if (!checkIntegrity(buf)) {
-                slpl.bridge$disconnect(PLAYER_INFO_ERR());
-                ci.cancel();
-                return Optional.empty();
-            }
-        } catch (AssertionError e) {
-            if (e.getCause() instanceof InvalidKeyException
-                    && PCF.instance().forwarding().secret().isBlank()) {
-                PCF.logger.error(
-                        "Please configure the `forwarding.secret` setting in PCF's config file!");
-            } else {
-                PCF.logger.error("An error occurred while validating player details: ", e);
-            }
-            slpl.bridge$disconnect(PLAYER_INFO_ERR());
-            ci.cancel();
-            return Optional.empty();
-        }
-        PCF.logger.debug("Player-data validated!");
-
-        int version = readVarInt(buf);
-        if (version > MODERN_MAX_VERSION) {
-            throw new IllegalStateException(
-                    "Unsupported forwarding version "
-                            + version
-                            + ", wanted up to "
-                            + MODERN_MAX_VERSION);
-        }
-        PCF.logger.debug("Using modern forwarding version: " + version);
-
-        final int port = ((InetSocketAddress) slpl.bridge$connection().bridge$address()).getPort();
-        final InetSocketAddress address = new InetSocketAddress(readAddress(buf), port);
-        slpl.bridge$connection().bridge$address(address);
-
-        final GameProfile profile = createProfile(buf);
-        return Optional.of(profile);
-    }
-
     public static void handleCustomQueryPacket(
             final @NotNull ServerLoginPacketListenerBridge slpl,
             final int transactionId,
@@ -160,25 +128,54 @@ public final class ModernForwarding {
         }
         final ByteBuf buf = packet.payload().data();
 
-        // TODO: PreProcessing
-        // Compatibility.neoForgeReadSimpleQueryPayload(buf);
-        // Compatibility.applyFFAPIFix(slpl, slpl.bridge$velocityLoginMessageId());
+        preProcessor.accept(slpl, buf);
 
-        final Optional<GameProfile> profile = forward(slpl, buf, ci);
-        if (profile.isEmpty()) {
+        try {
+            if (!checkIntegrity(buf)) {
+                slpl.bridge$disconnect(PLAYER_INFO_ERR());
+                ci.cancel();
+                return;
+            }
+        } catch (AssertionError e) {
+            if (e.getCause() instanceof InvalidKeyException
+                    && PCF.instance().forwarding().secret().isBlank()) {
+                PCF.logger.error(
+                        "Please configure the `forwarding.secret` setting in PCF's config file!");
+            } else {
+                PCF.logger.error("An error occurred while validating player details: ", e);
+            }
+            slpl.bridge$disconnect(PLAYER_INFO_ERR());
+            ci.cancel();
             return;
         }
+        PCF.logger.debug("Player-data validated!");
+
+        int version = readVarInt(buf);
+        if (version > MODERN_MAX_VERSION) {
+            throw new IllegalStateException(
+                    "Unsupported forwarding version "
+                            + version
+                            + ", wanted up to "
+                            + MODERN_MAX_VERSION);
+        }
+        PCF.logger.debug("Using modern forwarding version: " + version);
+
+        final int port = ((InetSocketAddress) slpl.bridge$connection().bridge$address()).getPort();
+        final InetSocketAddress address = new InetSocketAddress(readAddress(buf), port);
+        slpl.bridge$connection().bridge$address(address);
+
+        final GameProfile profile = createProfile(buf);
 
         // TODO: PostProcessing
         // Handle profile key
-        //        final Object disconnectReason = handle(this, buf, data.version(), nameAndId.id());
-        //        if (disconnectReason != null) {
-        //            this.bridge$disconnect(disconnectReason);
-        //            ci.cancel();
-        //            return;
-        //        }
+        // final Object disconnectReason = handle(this, buf, data.version(), nameAndId.id());
+        // if (disconnectReason != null) {
+        //     this.bridge$disconnect(disconnectReason);
+        //     ci.cancel();
+        //     return;
+        // }
 
-        final NameAndId nameAndId = new NameAndId(profile.get());
+        final NameAndId nameAndId = new NameAndId(profile);
 
         // Proceed with login
         try {
@@ -189,7 +186,7 @@ public final class ModernForwarding {
                 return;
             }
             slpl.bridge$logger_info("UUID of player {} is {}", nameAndId.name(), nameAndId.id());
-            slpl.bridge$startClientVerification(profile.get());
+            slpl.bridge$startClientVerification(profile);
         } catch (Exception e) {
             slpl.bridge$disconnect(FAILED_TO_VERIFY());
             slpl.bridge$logger_error("Exception while forwarding user {}", nameAndId.name());
