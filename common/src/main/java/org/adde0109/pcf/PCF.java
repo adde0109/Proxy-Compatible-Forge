@@ -12,6 +12,7 @@ import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 
 import org.adde0109.pcf.forwarding.Mode;
+import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterRegistry;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,6 +24,7 @@ public final class PCF {
     private PCF() {}
 
     public static final String MOD_ID = "pcf";
+    public static final String MOD_NAME = "Proxy Compatible Forge";
     public static final String CONFIG_FILE_NAME = "proxy-compatible-forge.toml";
 
     private static final PCF INSTANCE = new PCF();
@@ -96,6 +98,13 @@ public final class PCF {
                 | NoSuchMethodException e) {
             logger.error("Failed to load Config class", e);
         }
+    }
+
+    private static final AdapterRegistry ADAPTER_REGISTRY = new AdapterRegistry();
+
+    @ApiStatus.Internal
+    public AdapterRegistry adapters() {
+        return ADAPTER_REGISTRY;
     }
 
     private Forwarding forwarding;

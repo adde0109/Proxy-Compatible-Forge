@@ -6,8 +6,8 @@ import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.enums.Platform;
 
+import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.PCFInitializer;
-import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterRegistry;
 import org.adde0109.pcf.v20_4.forge.forwarding.network.CCustomQueryPacketAdapter;
 import org.adde0109.pcf.v20_4.forge.forwarding.network.SCustomQueryAnswerPacketAdapter;
 
@@ -17,8 +17,11 @@ import org.adde0109.pcf.v20_4.forge.forwarding.network.SCustomQueryAnswerPacketA
         version = @Versions(min = MinecraftVersion.V20_2, max = MinecraftVersion.V20_4))
 public final class AdapterRegistryInit implements PCFInitializer {
     public AdapterRegistryInit() {
-        AdapterRegistry.register(
-                CCustomQueryPacketAdapter.INSTANCE, SCustomQueryAnswerPacketAdapter.INSTANCE);
+        PCF.instance()
+                .adapters()
+                .register(
+                        CCustomQueryPacketAdapter.INSTANCE,
+                        SCustomQueryAnswerPacketAdapter.INSTANCE);
     }
 
     @Override

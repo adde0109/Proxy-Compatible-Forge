@@ -6,12 +6,14 @@ import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
+import dev.neuralnexus.taterapi.meta.platforms.TaterMetadata;
 
 import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.EnumPacketDirection;
 import net.minecraft.network.Packet;
 
-import org.adde0109.pcf.v12_2.forge.forwarding.network.C2SCustomQueryPacket;
+import org.adde0109.pcf.v12_2.forge.AdapterRegistryInit;
+import org.adde0109.pcf.v12_2.forge.forwarding.network.C2SCustomQueryAnswerPacket;
 import org.adde0109.pcf.v12_2.forge.forwarding.network.S2CCustomQueryPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -71,7 +73,10 @@ public abstract class EnumConnectionStateMixin {
         if (packetClass == this.pcf$SCheckClass) {
             this.shadow$registerPacket(EnumPacketDirection.CLIENTBOUND, S2CCustomQueryPacket.class);
         } else if (packetClass == this.pcf$CCheckClass) {
-            this.shadow$registerPacket(EnumPacketDirection.SERVERBOUND, C2SCustomQueryPacket.class);
+            this.shadow$registerPacket(
+                    EnumPacketDirection.SERVERBOUND, C2SCustomQueryAnswerPacket.class);
+            TaterMetadata.initForge(); // TODO: Remove this and figure out why it isn't being loaded
+            new AdapterRegistryInit();
         }
     }
 }
