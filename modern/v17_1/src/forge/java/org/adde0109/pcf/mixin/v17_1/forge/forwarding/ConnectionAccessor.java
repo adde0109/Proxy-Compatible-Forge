@@ -16,8 +16,8 @@ import java.net.SocketAddress;
 @Mixin(Connection.class)
 public interface ConnectionAccessor {
     @Accessor("address")
-    SocketAddress pcf$address();
+    SocketAddress bridge$address();
 
     @Accessor("address")
-    void pcf$address(SocketAddress address);
+    void bridge$address(SocketAddress address);
 }

@@ -15,7 +15,12 @@ import org.adde0109.pcf.PCFInitializer;
         platform = Platform.FORGE,
         version = @Versions(min = MinecraftVersion.V18_2),
         notVersion =
-                @Versions({MinecraftVersion.V19, MinecraftVersion.V19_3, MinecraftVersion.V20_2}))
+                @Versions({
+                    MinecraftVersion.V19,
+                    MinecraftVersion.V19_1,
+                    MinecraftVersion.V19_3,
+                    MinecraftVersion.V20_2
+                }))
 public final class DisplayTestReg implements PCFInitializer {
     @Override
     public void onInit() {

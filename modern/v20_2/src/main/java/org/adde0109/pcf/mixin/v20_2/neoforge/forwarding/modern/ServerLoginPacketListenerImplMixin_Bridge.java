@@ -8,7 +8,6 @@ import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 
 import net.minecraft.network.Connection;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.forwarding.modern.ConnectionBridge;
@@ -25,7 +24,6 @@ public abstract class ServerLoginPacketListenerImplMixin_Bridge
         implements ServerLoginPacketListenerBridge {
     // spotless:off
     @Shadow @Final Connection connection;
-    @Shadow public abstract void shadow$onDisconnect(Component reason);
     @Shadow abstract void shadow$startClientVerification(GameProfile profile);
     @Unique private int pcf$velocityLoginMessageId = -1;
     // spotless:on
@@ -43,11 +41,6 @@ public abstract class ServerLoginPacketListenerImplMixin_Bridge
     @Override
     public @NotNull ConnectionBridge bridge$connection() {
         return (ConnectionBridge) this.connection;
-    }
-
-    @Override
-    public void bridge$disconnect(final @NotNull Object reason) {
-        this.shadow$onDisconnect((Component) reason);
     }
 
     @Override

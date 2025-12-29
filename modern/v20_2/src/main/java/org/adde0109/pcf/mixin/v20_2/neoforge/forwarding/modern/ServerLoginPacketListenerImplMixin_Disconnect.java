@@ -5,30 +5,26 @@ import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@AConstraint(mappings = Mappings.MOJANG, version = @Versions(min = MinecraftVersion.V20_2))
+@AConstraint(
+        mappings = Mappings.MOJANG,
+        version = @Versions(min = MinecraftVersion.V20_2, max = MinecraftVersion.V20_6))
 @Mixin(ServerLoginPacketListenerImpl.class)
-public abstract class ServerLoginPacketListenerImplMixin_Logger
+public abstract class ServerLoginPacketListenerImplMixin_Disconnect
         implements ServerLoginPacketListenerBridge {
     // spotless:off
-    @Shadow @Final static Logger LOGGER;
+    @Shadow public abstract void shadow$onDisconnect(Component reason);
     // spotless:on
 
     @Override
-    public void bridge$logger_info(final @NotNull String text, final Object... params) {
-        LOGGER.info(text, params);
-    }
-
-    @Override
-    public void bridge$logger_error(final @NotNull String text, final Object... params) {
-        LOGGER.error(text, params);
+    public void bridge$disconnect(final @NotNull Object reason) {
+        this.shadow$onDisconnect((Component) reason);
     }
 }

@@ -18,8 +18,8 @@ import java.net.SocketAddress;
 @Mixin(NetworkManager.class)
 public interface ConnectionAccessor {
     @Accessor("socketAddress")
-    SocketAddress pcf$address();
+    SocketAddress bridge$address();
 
     @Accessor("socketAddress")
-    void pcf$address(SocketAddress address);
+    void bridge$address(SocketAddress address);
 }

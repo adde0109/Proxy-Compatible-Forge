@@ -18,6 +18,7 @@ import org.adde0109.pcf.PCFInitializer;
                 @Versions(
                         value = {
                             MinecraftVersion.V19,
+                            MinecraftVersion.V19_1,
                             MinecraftVersion.V19_3,
                             MinecraftVersion.V20_2
                         },
