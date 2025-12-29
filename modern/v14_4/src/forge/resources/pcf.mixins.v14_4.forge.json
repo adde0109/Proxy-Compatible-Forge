@@ -16,6 +16,6 @@
     "v14_4.forge.forwarding.modern.ServerLoginPacketListenerHybridPlaceholderMixin",
     "v14_4.forge.forwarding.modern.ServerLoginPacketListenerImplMixin",
     "v14_4.forge.forwarding.modern.ServerLoginPacketListenerImplMixin_Bridge",
-    "v14_4.forge.forwarding.modern.ServerLoginPacketListenerMixin_Logger"
+    "v14_4.forge.forwarding.modern.ServerLoginPacketListenerImplMixin_Logger"
   ]
 }

@@ -14,6 +14,6 @@
     "v20_2.neoforge.forwarding.modern.ServerboundCustomQueryAnswerPacketMixin",
     "v20_2.neoforge.forwarding.modern.ServerLoginPacketListenerImplMixin",
     "v20_2.neoforge.forwarding.modern.ServerLoginPacketListenerImplMixin_Bridge",
-    "v20_2.neoforge.forwarding.modern.ServerLoginPacketListenerMixin_Logger"
+    "v20_2.neoforge.forwarding.modern.ServerLoginPacketListenerImplMixin_Logger"
   ]
 }

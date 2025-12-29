@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v19_2.forge.forwarding.modern;
+package org.adde0109.pcf.mixin.v20_2.neoforge.forwarding.modern;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
@@ -14,11 +14,9 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@AConstraint(
-        mappings = Mappings.SEARGE,
-        version = @Versions(min = MinecraftVersion.V18_2, max = MinecraftVersion.V20_4))
+@AConstraint(mappings = Mappings.MOJANG, version = @Versions(min = MinecraftVersion.V20_2))
 @Mixin(ServerLoginPacketListenerImpl.class)
-public abstract class ServerLoginPacketListenerMixin_Logger
+public abstract class ServerLoginPacketListenerImplMixin_Logger
         implements ServerLoginPacketListenerBridge {
     // spotless:off
     @Shadow @Final static Logger LOGGER;
