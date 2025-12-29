@@ -19,11 +19,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * <a
- * href="https://github.com/PaperMC/Paper-archive/blob/ver/1.19.4/patches/server/0874-Add-Velocity-IP-Forwarding-Support.patch">Adapted
- * from Paper</a>
- */
 @AConstraint(
         mappings = Mappings.LEGACY_SEARGE,
         version = @Versions(min = MinecraftVersion.V14, max = MinecraftVersion.V16_5))

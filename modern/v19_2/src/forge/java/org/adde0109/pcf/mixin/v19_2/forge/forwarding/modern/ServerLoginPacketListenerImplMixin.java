@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v17_1.forge.forwarding.modern;
+package org.adde0109.pcf.mixin.v19_2.forge.forwarding.modern;
 
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.handleHello;
 
@@ -18,12 +18,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @AConstraint(
         mappings = Mappings.SEARGE,
-        version = @Versions(min = MinecraftVersion.V17, max = MinecraftVersion.V18_2))
+        version = @Versions(min = MinecraftVersion.V19, max = MinecraftVersion.V20_1))
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ServerLoginPacketListenerImplMixin
         implements ServerLoginPacketListenerBridge {
     // spotless:off
-    @Inject(method = "handleHello", cancellable = true, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, ordinal = 1,
+    @Inject(method = "handleHello", cancellable = true, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, ordinal = 2,
             target = "Lnet/minecraft/server/network/ServerLoginPacketListenerImpl;state:Lnet/minecraft/server/network/ServerLoginPacketListenerImpl$State;"))
     // spotless:on
     private void onHandleHello(CallbackInfo ci) {

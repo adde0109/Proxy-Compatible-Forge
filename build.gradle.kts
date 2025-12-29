@@ -91,7 +91,6 @@ val projs = listOf(
     ":modern:v17_1",
     ":modern:v18_2",
     ":modern:v19_2",
-    ":modern:v19_4",
     ":modern:v20_2",
     ":modern:v20_4",
     ":modern:v21_10"
