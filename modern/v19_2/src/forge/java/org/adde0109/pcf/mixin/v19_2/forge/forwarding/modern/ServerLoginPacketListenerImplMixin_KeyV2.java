@@ -11,7 +11,7 @@ import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import net.minecraft.util.SignatureValidator;
 import net.minecraft.world.entity.player.ProfilePublicKey;
 
-import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerKeyBridge_V2;
+import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListener_KeyV2;
 import org.adde0109.pcf.forwarding.modern.VelocityProxy.ProfilePublicKeyData;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,8 +23,8 @@ import java.util.UUID;
         mappings = Mappings.SEARGE,
         version = @Versions(min = MinecraftVersion.V19_1, max = MinecraftVersion.V19_2))
 @Mixin(ServerLoginPacketListenerImpl.class)
-public abstract class ServerLoginPacketListenerImplKey_V2
-        implements ServerLoginPacketListenerKeyBridge_V2 {
+public abstract class ServerLoginPacketListenerImplMixin_KeyV2
+        implements ServerLoginPacketListener_KeyV2 {
     // spotless:off
     @Shadow private ProfilePublicKey.Data profilePublicKeyData;
 

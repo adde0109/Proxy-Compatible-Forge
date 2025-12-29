@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.Unique;
 
 @AConstraint(
         mappings = Mappings.SEARGE,
-        version = @Versions(min = MinecraftVersion.V17, max = MinecraftVersion.V18_2))
+        version = @Versions(min = MinecraftVersion.V17, max = MinecraftVersion.V19_4))
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ServerLoginPacketListenerImplMixin_Bridge
         implements ServerLoginPacketListenerBridge {

@@ -8,22 +8,28 @@ import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import net.minecraft.world.entity.player.ProfilePublicKey;
 
-import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerKeyBridge_V1;
+import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListener_KeyV1;
 import org.adde0109.pcf.forwarding.modern.VelocityProxy;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
 @AConstraint(mappings = Mappings.SEARGE, version = @Versions(MinecraftVersion.V19))
 @Mixin(ServerLoginPacketListenerImpl.class)
-public class ServerLoginPacketListenerImplKey_V1 implements ServerLoginPacketListenerKeyBridge_V1 {
+public class ServerLoginPacketListenerImplMixin_KeyV1 implements ServerLoginPacketListener_KeyV1 {
+    // spotless:off
+    @SuppressWarnings("MixinAnnotationTarget")
+    @Shadow(remap = false)
+    private ProfilePublicKey f_215255_; // playerProfilePublicKey
+    // spotless:on
+
     @Override
     public void bridge$setPlayerProfilePublicKey(
             final @Nullable VelocityProxy.ProfilePublicKeyData publicKeyData) {
         if (publicKeyData == null) {
-            ((ServerLoginPacketListenerImplAccessor_V1) this).pcf$setPlayerProfilePublicKey(null);
+            this.f_215255_ = null;
             return;
         }
-        ((ServerLoginPacketListenerImplAccessor_V1) this)
-                .pcf$setPlayerProfilePublicKey(new ProfilePublicKey(publicKeyData.toMC()));
+        this.f_215255_ = new ProfilePublicKey(publicKeyData.toMC());
     }
 }

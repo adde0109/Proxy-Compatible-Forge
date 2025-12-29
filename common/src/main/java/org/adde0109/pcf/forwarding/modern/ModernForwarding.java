@@ -225,7 +225,7 @@ public final class ModernForwarding {
         // Handle profile key
         // Clear key on 1.19.1 - 1.19.2 if using MODERN_DEFAULT
         if (version == MODERN_DEFAULT && IS_19_1_2.result()) {
-            ((ServerLoginPacketListenerKeyBridge_V2) slpl).bridge$profilePublicKeyData(null);
+            ((ServerLoginPacketListener_KeyV2) slpl).bridge$profilePublicKeyData(null);
         }
 
         boolean enforceSecureProfile = enforceSecureProfile();
@@ -239,7 +239,7 @@ public final class ModernForwarding {
                     ci.cancel();
                     return;
                 }
-                ((ServerLoginPacketListenerKeyBridge_V1) slpl)
+                ((ServerLoginPacketListener_KeyV1) slpl)
                         .bridge$setPlayerProfilePublicKey(publicKeyData);
             } catch (DecoderException e) {
                 PCF.logger.error("Public key read failed.", e);
@@ -255,12 +255,12 @@ public final class ModernForwarding {
         if (version == MODERN_FORWARDING_WITH_KEY_V2) {
             final VelocityProxy.ProfilePublicKeyData forwardedKeyData = readForwardedKey(buf);
             final UUID signer = readSignerUuidOrElse(buf, nameAndId.id());
-            if (((ServerLoginPacketListenerKeyBridge_V2) slpl).bridge$profilePublicKeyData()
+            if (((ServerLoginPacketListener_KeyV2) slpl).bridge$profilePublicKeyData()
                     == null) {
                 try {
-                    ((ServerLoginPacketListenerKeyBridge_V2) slpl)
+                    ((ServerLoginPacketListener_KeyV2) slpl)
                             .bridge$validatePublicKey(forwardedKeyData, signer);
-                    ((ServerLoginPacketListenerKeyBridge_V2) slpl)
+                    ((ServerLoginPacketListener_KeyV2) slpl)
                             .bridge$profilePublicKeyData(forwardedKeyData);
                 } catch (Exception e) {
                     slpl.bridge$logger_error("Failed to validate profile key: {}", e.getMessage());
