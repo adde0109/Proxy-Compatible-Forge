@@ -1,6 +1,10 @@
 package org.adde0109.pcf.forwarding.modern;
 
+import static org.adde0109.pcf.common.FriendlyByteBuf.Crypt.MAX_KEY_SIGNATURE_SIZE;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readByteArray;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readInstant;
 import static org.adde0109.pcf.common.FriendlyByteBuf.readNullable;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readPublicKey;
 import static org.adde0109.pcf.common.FriendlyByteBuf.readUUID;
 import static org.adde0109.pcf.common.FriendlyByteBuf.readUtf;
 import static org.adde0109.pcf.common.FriendlyByteBuf.readVarInt;
@@ -19,10 +23,12 @@ import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.DecoderException;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.FriendlyByteBuf;
 import org.adde0109.pcf.forwarding.network.CustomQueryPayload;
+import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterCodec;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,10 +38,13 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.time.Instant;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -186,5 +195,67 @@ public final class VelocityProxy {
             properties.add(new SimpleImmutableEntry<>(name, new Property(name, value, signature)));
         }
         return properties;
+    }
+
+    /**
+     * Modern Forwarding v3 - 1.19.1 - 1.19.2 <br>
+     *
+     * @param buf The ByteBuf to read from
+     * @param orElse The UUID to return if no UUID is present
+     * @return The UUID read from the ByteBuf, or the given UUID if none is present
+     */
+    public static @NotNull UUID readSignerUuidOrElse(
+            final @NotNull ByteBuf buf, final @NotNull UUID orElse) {
+        return buf.readBoolean() ? readUUID(buf) : orElse;
+    }
+
+    /**
+     * Modern Forwarding v2 - 1.19 - when using ProfilePublicKey::new <br>
+     * Modern Forwarding v3 - 1.19.1 - 1.19.2 <br>
+     *
+     * @param buf The ByteBuf to read from
+     * @return The ProfilePublicKey.Data read from the ByteBuf
+     * @throws DecoderException If there was an error reading the key
+     */
+    public static @NotNull ProfilePublicKeyData readForwardedKey(final @NotNull ByteBuf buf)
+            throws DecoderException {
+        return new ProfilePublicKeyData(
+                readInstant(buf), readPublicKey(buf), readByteArray(buf, MAX_KEY_SIGNATURE_SIZE));
+    }
+
+    /**
+     * Wrapper for MC's ProfilePublicKey.Data
+     *
+     * @param expiresAt the expiration time
+     * @param key the public key
+     * @param keySignature the key signature
+     */
+    @SuppressWarnings("unchecked")
+    public record ProfilePublicKeyData(Instant expiresAt, PublicKey key, byte[] keySignature) {
+        public static final AdapterCodec<?, ProfilePublicKeyData> ADAPTER_CODEC;
+
+        static {
+            if (Constraint.builder()
+                    .min(MinecraftVersions.V19)
+                    .max(MinecraftVersions.V19_2)
+                    .build()
+                    .result()) {
+                ADAPTER_CODEC =
+                        (AdapterCodec<?, ProfilePublicKeyData>)
+                                PCF.instance().adapters().toMC(ProfilePublicKeyData.class);
+            } else {
+                PCF.logger.debug(
+                        "Not loading ProfilePublicKeyData adapter, version not between 1.19 and 1.19.2");
+                ADAPTER_CODEC = null;
+            }
+        }
+
+        public static <T> @NotNull ProfilePublicKeyData fromMC(final @NotNull T obj) {
+            return ((AdapterCodec<T, ProfilePublicKeyData>) ADAPTER_CODEC).fromMC(obj);
+        }
+
+        public <T> @NotNull T toMC() {
+            return ((AdapterCodec<T, ProfilePublicKeyData>) ADAPTER_CODEC).toMC(this);
+        }
     }
 }
