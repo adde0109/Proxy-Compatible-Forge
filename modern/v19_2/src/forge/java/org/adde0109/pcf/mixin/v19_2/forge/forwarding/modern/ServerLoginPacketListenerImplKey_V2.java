@@ -27,13 +27,15 @@ public abstract class ServerLoginPacketListenerImplKey_V2
         implements ServerLoginPacketListenerKeyBridge_V2 {
     // spotless:off
     @Shadow private ProfilePublicKey.Data profilePublicKeyData;
+
+    // ProfilePublicKey.ValidationException Doesn't exist on 1.19.1
     @SuppressWarnings("RedundantThrows")
     @Shadow private static ProfilePublicKey validatePublicKey(
             ProfilePublicKey.Data keyData,
             UUID signer,
             SignatureValidator validator,
             boolean enforceSecureProfile)
-            throws ProfilePublicKey.ValidationException {
+            throws Exception {
         throw new UnsupportedOperationException();
     }
     // spotless:on
@@ -57,16 +59,13 @@ public abstract class ServerLoginPacketListenerImplKey_V2
 
     @Override
     public void bridge$validatePublicKey(
-            final @Nullable ProfilePublicKeyData keyData, final @Nullable UUID signer) throws Exception {
+            final @Nullable ProfilePublicKeyData keyData, final @Nullable UUID signer)
+            throws Exception {
         MinecraftServer server = (MinecraftServer) MetaAPI.instance().server();
-        try {
-            validatePublicKey(
-                    keyData != null ? keyData.toMC() : null,
-                    signer != null ? signer : UUID.randomUUID(),
-                    server.getServiceSignatureValidator(),
-                    server.enforceSecureProfile());
-        } catch (ProfilePublicKey.ValidationException e) {
-            throw new Exception(e);
-        }
+        validatePublicKey(
+                keyData != null ? keyData.toMC() : null,
+                signer != null ? signer : UUID.randomUUID(),
+                server.getServiceSignatureValidator(),
+                server.enforceSecureProfile());
     }
 }

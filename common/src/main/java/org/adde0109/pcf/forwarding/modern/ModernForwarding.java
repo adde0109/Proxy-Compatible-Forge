@@ -115,9 +115,14 @@ public final class ModernForwarding {
     private static final Constraint IS_19_1_2 =
             Constraint.builder().min(MinecraftVersions.V19_1).max(MinecraftVersions.V19_2).build();
 
-    private static boolean enforceSecureProfile(final @NotNull MinecraftServer server) {
+    private static boolean enforceSecureProfile() {
+        if (ENFORCE_SECURE_PROFILE == null) {
+            return false;
+        }
         try {
-            return (boolean) ENFORCE_SECURE_PROFILE.invokeExact(server);
+            return (boolean)
+                    ENFORCE_SECURE_PROFILE.invokeExact(
+                            (MinecraftServer) MetaAPI.instance().server());
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -223,8 +228,7 @@ public final class ModernForwarding {
             ((ServerLoginPacketListenerKeyBridge_V2) slpl).bridge$profilePublicKeyData(null);
         }
 
-        boolean enforceSecureProfile =
-                enforceSecureProfile((MinecraftServer) MetaAPI.instance().server());
+        boolean enforceSecureProfile = enforceSecureProfile();
 
         // 1.19 forwarding with key v1
         if (version == MODERN_FORWARDING_WITH_KEY) {

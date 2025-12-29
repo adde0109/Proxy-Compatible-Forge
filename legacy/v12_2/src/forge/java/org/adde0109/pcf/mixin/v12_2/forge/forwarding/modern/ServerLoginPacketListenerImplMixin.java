@@ -3,7 +3,6 @@ package org.adde0109.pcf.mixin.v12_2.forge.forwarding.modern;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.handleCustomQueryPacket;
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.handleHello;
 
-import dev.neuralnexus.taterapi.event.Cancellable;
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
@@ -11,6 +10,7 @@ import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 
 import net.minecraft.server.network.NetHandlerLoginServer;
 
+import org.adde0109.pcf.forwarding.modern.DummyCancellable;
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
 import org.adde0109.pcf.v12_2.forge.forwarding.network.C2SCustomQueryAnswerPacket;
 import org.adde0109.pcf.v12_2.forge.forwarding.network.ServerLoginQueryListener;
@@ -44,18 +44,6 @@ public abstract class ServerLoginPacketListenerImplMixin
     }
 
     public void pcf$handleCustomQueryPacket(C2SCustomQueryAnswerPacket packet) {
-        handleCustomQueryPacket(
-                this,
-                packet.transactionId(),
-                packet,
-                new Cancellable() {
-                    @Override
-                    public boolean cancelled() {
-                        return false;
-                    }
-
-                    @Override
-                    public void setCancelled(boolean cancelled) {}
-                });
+        handleCustomQueryPacket(this, packet.transactionId(), packet, DummyCancellable.INSTANCE);
     }
 }

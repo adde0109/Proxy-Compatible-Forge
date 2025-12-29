@@ -31,6 +31,6 @@ public abstract class ServerLoginPacketListenerImplMixin_Logger
 
     @Override
     public void bridge$logger_error(final @NotNull String text, final Object... params) {
-        LOGGER.info(text, params);
+        LOGGER.error(text, params);
     }
 }

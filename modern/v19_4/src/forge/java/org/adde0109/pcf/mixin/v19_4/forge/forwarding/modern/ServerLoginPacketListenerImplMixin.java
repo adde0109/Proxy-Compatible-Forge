@@ -35,7 +35,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @AConstraint(
         mappings = Mappings.SEARGE,
-        version = @Versions(min = MinecraftVersion.V19_3, max = MinecraftVersion.V20_1))
+        version = @Versions(min = MinecraftVersion.V19, max = MinecraftVersion.V20_1))
+//        notVersion = @Versions(MinecraftVersion.V19_2))
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ServerLoginPacketListenerImplMixin
         implements ServerLoginPacketListenerBridge {
