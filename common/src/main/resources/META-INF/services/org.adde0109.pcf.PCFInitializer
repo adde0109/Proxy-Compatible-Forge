@@ -15,6 +15,7 @@ org.adde0109.pcf.v17_1.forge.ReloadConfigInit
 org.adde0109.pcf.v18_2.forge.DisplayTestInit
 org.adde0109.pcf.v18_2.forge.DisplayTestReg
 
+org.adde0109.pcf.v19_2.forge.AdapterRegistryInit
 org.adde0109.pcf.v19_2.forge.ArgRegistryInit
 org.adde0109.pcf.v19_2.forge.CrossStitchInit
 

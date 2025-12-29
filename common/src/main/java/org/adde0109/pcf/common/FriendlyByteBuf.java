@@ -316,7 +316,8 @@ public final class FriendlyByteBuf extends ByteBuf {
         return Instant.ofEpochMilli(buf.readLong());
     }
 
-    public static @NotNull PublicKey readPublicKey(final @NotNull ByteBuf buf) {
+    public static @NotNull PublicKey readPublicKey(final @NotNull ByteBuf buf)
+            throws DecoderException {
         try {
             return Crypt.byteToPublicKey(readByteArray(buf, Crypt.MAX_PUBLIC_KEY_LENGTH));
         } catch (CryptException e) {

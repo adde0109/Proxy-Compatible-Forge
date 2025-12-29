@@ -33,17 +33,18 @@ public final class Compatibility {
 
     public static final Constraint FFAPI_V21_1 =
             Constraint.builder()
-                .platform(Platforms.NEOFORGE)
-                .version(MinecraftVersions.V21_1)
-                .deps("fabric_networking_api_v1")
-                .build();
+                    .platform(Platforms.NEOFORGE)
+                    .version(MinecraftVersions.V21_1)
+                    .deps("fabric_networking_api_v1")
+                    .build();
 
     /**
      * Read the id and ResourceLocation so PCF can continue reading the packet as normal
      *
      * @param buf The ByteBuf from the packet
      */
-    public static void neoForgeReadSimpleQueryPayload(final @NotNull ServerLoginPacketListenerBridge ignored, final @NotNull ByteBuf buf) {
+    public static void neoForgeReadSimpleQueryPayload(
+            final @NotNull ServerLoginPacketListenerBridge ignored, final @NotNull ByteBuf buf) {
         if (NEOFORGE_V20_2.result()) {
             readVarInt(buf);
             readResourceLocation(buf);
@@ -59,17 +60,19 @@ public final class Compatibility {
      * @param cir The mixin's callback returnable
      */
     public static void neoForgeReturnSimpleQueryPayload(
-            final @NotNull ByteBuf buf, final int transactionId, final @NotNull CallbackInfoReturnable<Object> cir) {
+            final @NotNull ByteBuf buf,
+            final int transactionId,
+            final @NotNull CallbackInfoReturnable<Object> cir) {
         if (NEOFORGE_V20_2.result()) {
             cir.setReturnValue(
                     buf == null
                             ? null
                             : SimpleQueryPayload.outbound(
-                                    new FriendlyByteBuf(buf), transactionId, PLAYER_INFO_CHANNEL()));
+                                    new FriendlyByteBuf(buf),
+                                    transactionId,
+                                    PLAYER_INFO_CHANNEL()));
         }
     }
-
-
 
     private static MethodHandle channelsMH;
 
@@ -79,7 +82,8 @@ public final class Compatibility {
      * @param slpl an instance of ServerLoginPacketListenerImpl
      */
     @SuppressWarnings("unchecked")
-    public static void applyFFAPIFix(final @NotNull ServerLoginPacketListenerBridge slpl, final @NotNull ByteBuf ignored) {
+    public static void applyFFAPIFix(
+            final @NotNull ServerLoginPacketListenerBridge slpl, final @NotNull ByteBuf ignored) {
         if (!FFAPI_V21_1.result()) {
             return;
         }

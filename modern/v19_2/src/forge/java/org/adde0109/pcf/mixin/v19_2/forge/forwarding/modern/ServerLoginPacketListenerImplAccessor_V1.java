@@ -15,7 +15,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @AConstraint(mappings = Mappings.SEARGE, version = @Versions(MinecraftVersion.V19))
 @Mixin(ServerLoginPacketListenerImpl.class)
 public interface ServerLoginPacketListenerImplAccessor_V1 {
+    // TODO: See if this can be converted to a Shadow field
     @SuppressWarnings("MixinAnnotationTarget")
     @Accessor("f_215255_") // playerProfilePublicKey
-    void pcf$setPlayerProfilePublicKey(@Nullable ProfilePublicKey publicKey);
+    void pcf$setPlayerProfilePublicKey(final @Nullable ProfilePublicKey publicKey);
 }
