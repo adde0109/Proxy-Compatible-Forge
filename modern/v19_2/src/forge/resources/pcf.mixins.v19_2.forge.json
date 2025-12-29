@@ -14,7 +14,7 @@
     "v19_2.forge.forwarding.modern.ServerLoginPacketListenerImplAccessor_V2",
     "v19_2.forge.forwarding.modern.ServerLoginPacketListenerImplMixin",
     "v19_2.forge.forwarding.modern.ServerLoginPacketListenerImplMixin_Bridge",
-    "v19_2.forge.forwarding.modern.ServerLoginPacketListenerMixin_Logger",
+    "v19_2.forge.forwarding.modern.ServerLoginPacketListenerImplMixin_Logger",
     "v19_2.forge.forwarding.modern.SignedMessageChainMixin"
   ]
 }
