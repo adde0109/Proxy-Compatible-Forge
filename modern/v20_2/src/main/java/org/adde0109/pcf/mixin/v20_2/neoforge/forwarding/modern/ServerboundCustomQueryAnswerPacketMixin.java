@@ -10,8 +10,8 @@ import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import io.netty.buffer.ByteBuf;
 
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
-
 import net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload;
+
 import org.adde0109.pcf.v20_2.neoforge.Compatibility;
 import org.adde0109.pcf.v20_2.neoforge.forwarding.network.MCQueryAnswerPayload;
 import org.jetbrains.annotations.NotNull;

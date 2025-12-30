@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v20_2.neoforge.forwarding.modern;
+package org.adde0109.pcf.mixin.v21_10.neoforge.forwarding.modern;
 
 import com.mojang.authlib.GameProfile;
 
@@ -28,8 +28,8 @@ public abstract class ServerLoginPacketListenerImplMixin
     @Shadow @Final Connection connection;
     @Shadow @Final static Logger LOGGER;
 
-    @AConstraint(version = @Versions(min = MinecraftVersion.V20_2, max = MinecraftVersion.V20_6))
-    @Shadow public abstract void shadow$onDisconnect(Component reason);
+    @AConstraint(version = @Versions(min = MinecraftVersion.V21))
+    @Shadow public abstract void shadow$onDisconnect(net.minecraft.network.DisconnectionDetails details);
 
     @Shadow abstract void shadow$startClientVerification(GameProfile profile);
     @Unique private int pcf$velocityLoginMessageId = -1;
@@ -50,10 +50,11 @@ public abstract class ServerLoginPacketListenerImplMixin
         return (ConnectionBridge) this.connection;
     }
 
-    @AConstraint(version = @Versions(min = MinecraftVersion.V20_2, max = MinecraftVersion.V20_6))
+    @AConstraint(version = @Versions(min = MinecraftVersion.V21))
     @Override
     public void bridge$disconnect(final @NotNull Object reason) {
-        this.shadow$onDisconnect((Component) reason);
+        this.shadow$onDisconnect(
+                new net.minecraft.network.DisconnectionDetails((Component) reason));
     }
 
     @Override
