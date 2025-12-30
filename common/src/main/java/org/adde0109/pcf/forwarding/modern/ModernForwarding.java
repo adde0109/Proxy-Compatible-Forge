@@ -21,6 +21,7 @@ import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.meta.Platforms;
+import dev.neuralnexus.taterapi.mixin.CancellableMixin;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.DecoderException;
@@ -156,6 +157,36 @@ public final class ModernForwarding {
      * @param slpl The ServerLoginPacketListenerImpl
      * @param transactionId The transaction ID
      * @param mcPacket The Minecraft packet
+     */
+    public static void handleCustomQueryPacket(
+            final @NotNull ServerLoginPacketListenerBridge slpl,
+            final int transactionId,
+            final @NotNull Object mcPacket) {
+        handleCustomQueryPacket(slpl, transactionId, mcPacket, Cancellable.DUMMY);
+    }
+
+    /**
+     * Abstract implementation of the custom query packet handler
+     *
+     * @param slpl The ServerLoginPacketListenerImpl
+     * @param transactionId The transaction ID
+     * @param mcPacket The Minecraft packet
+     * @param ci The callback info
+     */
+    public static void handleCustomQueryPacket(
+            final @NotNull ServerLoginPacketListenerBridge slpl,
+            final int transactionId,
+            final @NotNull Object mcPacket,
+            final @NotNull CallbackInfo ci) {
+        handleCustomQueryPacket(slpl, transactionId, mcPacket, new CancellableMixin(ci));
+    }
+
+    /**
+     * Abstract implementation of the custom query packet handler
+     *
+     * @param slpl The ServerLoginPacketListenerImpl
+     * @param transactionId The transaction ID
+     * @param mcPacket The Minecraft packet
      * @param ci The callback info wrapper
      */
     public static void handleCustomQueryPacket(
@@ -255,8 +286,7 @@ public final class ModernForwarding {
         if (version == MODERN_FORWARDING_WITH_KEY_V2) {
             final VelocityProxy.ProfilePublicKeyData forwardedKeyData = readForwardedKey(buf);
             final UUID signer = readSignerUuidOrElse(buf, nameAndId.id());
-            if (((ServerLoginPacketListener_KeyV2) slpl).bridge$profilePublicKeyData()
-                    == null) {
+            if (((ServerLoginPacketListener_KeyV2) slpl).bridge$profilePublicKeyData() == null) {
                 try {
                     ((ServerLoginPacketListener_KeyV2) slpl)
                             .bridge$validatePublicKey(forwardedKeyData, signer);

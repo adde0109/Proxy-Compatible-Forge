@@ -10,7 +10,6 @@ import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 
 import net.minecraft.server.network.NetHandlerLoginServer;
 
-import org.adde0109.pcf.forwarding.modern.DummyCancellable;
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
 import org.adde0109.pcf.v7_10.forge.forwarding.network.C2SCustomQueryAnswerPacket;
 import org.adde0109.pcf.v7_10.forge.forwarding.network.ServerLoginQueryListener;
@@ -43,6 +42,6 @@ public abstract class ServerLoginPacketListenerImplMixin
     }
 
     public void pcf$handleCustomQueryPacket(C2SCustomQueryAnswerPacket packet) {
-        handleCustomQueryPacket(this, packet.transactionId(), packet, DummyCancellable.INSTANCE);
+        handleCustomQueryPacket(this, packet.transactionId(), packet);
     }
 }
