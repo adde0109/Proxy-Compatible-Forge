@@ -12,6 +12,7 @@ import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -31,13 +32,13 @@ public abstract class ServerLoginPacketListenerImplMixin
     @Inject(method = "handleHello", cancellable = true, at = @At(value = "INVOKE", ordinal = 1,
             target = "Lnet/minecraft/server/network/ServerLoginPacketListenerImpl;startClientVerification(Lcom/mojang/authlib/GameProfile;)V"))
     // spotless:on
-    private void onHandleHello(CallbackInfo ci) {
+    private void onHandleHello(final @NotNull CallbackInfo ci) {
         handleHello(this, ci);
     }
 
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
     private void onHandleCustomQueryPacket(
-            ServerboundCustomQueryAnswerPacket packet, CallbackInfo ci) {
+            ServerboundCustomQueryAnswerPacket packet, final @NotNull CallbackInfo ci) {
         handleCustomQueryPacket(this, packet.transactionId(), packet, ci);
     }
 }

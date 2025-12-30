@@ -12,6 +12,7 @@ import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
+import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,12 +29,13 @@ public abstract class ServerLoginPacketListenerImplMixin
     @Inject(method = "handleHello", cancellable = true, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, ordinal = 1,
             target = "Lnet/minecraft/server/network/ServerLoginPacketListenerImpl;state:Lnet/minecraft/server/network/ServerLoginPacketListenerImpl$State;"))
     // spotless:on
-    private void onHandleHello(CallbackInfo ci) {
+    private void onHandleHello(final @NotNull CallbackInfo ci) {
         handleHello(this, ci);
     }
 
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
-    private void onHandleCustomQueryPacket(ServerboundCustomQueryPacket packet, CallbackInfo ci) {
+    private void onHandleCustomQueryPacket(
+            final @NotNull ServerboundCustomQueryPacket packet, final @NotNull CallbackInfo ci) {
         handleCustomQueryPacket(
                 this,
                 ((ServerboundCustomQueryPacketAccessor) packet).pcf$getTransactionId(),

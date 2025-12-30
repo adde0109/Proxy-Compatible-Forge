@@ -13,6 +13,7 @@ import net.minecraft.server.network.NetHandlerLoginServer;
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
 import org.adde0109.pcf.v7_10.forge.forwarding.network.C2SCustomQueryAnswerPacket;
 import org.adde0109.pcf.v7_10.forge.forwarding.network.ServerLoginQueryListener;
+import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
@@ -37,11 +38,11 @@ public abstract class ServerLoginPacketListenerImplMixin
     @Inject(method = "processLoginStart", cancellable = true, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, ordinal = 1,
             target = "Lnet/minecraft/server/network/NetHandlerLoginServer;currentLoginState:Lnet/minecraft/server/network/NetHandlerLoginServer$LoginState;"))
     // spotless:on
-    private void onHandleHello(CallbackInfo ci) {
+    private void onHandleHello(final @NotNull CallbackInfo ci) {
         handleHello(this, ci);
     }
 
-    public void pcf$handleCustomQueryPacket(C2SCustomQueryAnswerPacket packet) {
+    public void pcf$handleCustomQueryPacket(final @NotNull C2SCustomQueryAnswerPacket packet) {
         handleCustomQueryPacket(this, packet.transactionId(), packet);
     }
 }
