@@ -13,11 +13,13 @@ import io.netty.buffer.ByteBuf;
 import net.fabricmc.fabric.impl.networking.NetworkHandlerExtensions;
 import net.fabricmc.fabric.impl.networking.server.ServerLoginNetworkAddon;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload;
 import net.neoforged.neoforge.network.custom.payload.SimpleQueryPayload;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.lang.invoke.MethodHandle;
@@ -60,9 +62,9 @@ public final class Compatibility {
      * @param cir The mixin's callback returnable
      */
     public static void neoForgeReturnSimpleQueryPayload(
-            final @NotNull ByteBuf buf,
+            final @Nullable ByteBuf buf,
             final int transactionId,
-            final @NotNull CallbackInfoReturnable<Object> cir) {
+            final @NotNull CallbackInfoReturnable<CustomQueryAnswerPayload> cir) {
         if (NEOFORGE_V20_2.result()) {
             cir.setReturnValue(
                     buf == null

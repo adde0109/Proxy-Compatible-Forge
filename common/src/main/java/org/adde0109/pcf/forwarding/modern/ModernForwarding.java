@@ -66,7 +66,7 @@ import java.util.function.BiConsumer;
  * 1.20.x</a>
  */
 public final class ModernForwarding {
-    public static final Set<Integer> QUERY_IDS = ConcurrentHashMap.newKeySet();
+    public static final Set<Integer> TRANSACTION_IDS = ConcurrentHashMap.newKeySet();
 
     /**
      * Abstract implementation of the hello packet handler
@@ -82,7 +82,7 @@ public final class ModernForwarding {
         }
         try {
             slpl.bridge$setVelocityLoginMessageId(ThreadLocalRandom.current().nextInt());
-            QUERY_IDS.add(slpl.bridge$velocityLoginMessageId());
+            TRANSACTION_IDS.add(slpl.bridge$velocityLoginMessageId());
             slpl.bridge$connection()
                     .bridge$send(
                             new ClientboundCustomQueryPacket(
@@ -202,8 +202,6 @@ public final class ModernForwarding {
         final ServerboundCustomQueryAnswerPacket packet =
                 ServerboundCustomQueryAnswerPacket.fromMC(mcPacket);
 
-        QUERY_IDS.remove(slpl.bridge$velocityLoginMessageId());
-
         if (packet.payload() == null) {
             slpl.bridge$disconnect(DIRECT_CONNECT_ERR);
             ci.cancel();
@@ -213,6 +211,8 @@ public final class ModernForwarding {
 
         // Apply fixes
         preProcessor.accept(slpl, buf);
+
+        TRANSACTION_IDS.remove(slpl.bridge$velocityLoginMessageId());
 
         // Validate data
         try {
