@@ -9,7 +9,6 @@
   "package": "org.adde0109.pcf.mixin",
   "server": [
     "v20_2.neoforge.crossstitch.ArgumentNodeStubMixin",
-    "v20_2.neoforge.forwarding.modern.ConnectionAccessor",
     "v20_2.neoforge.forwarding.modern.ConnectionMixin",
     "v20_2.neoforge.forwarding.modern.ServerboundCustomQueryAnswerPacketMixin",
     "v20_2.neoforge.forwarding.modern.ServerLoginPacketListenerImplMixin",
