@@ -1,7 +1,7 @@
 package org.adde0109.pcf.mixin.v20_2.neoforge.forwarding.modern;
 
 import static org.adde0109.pcf.common.FriendlyByteBuf.readNullablePayload;
-import static org.adde0109.pcf.forwarding.modern.ModernForwarding.QUERY_IDS;
+import static org.adde0109.pcf.forwarding.modern.ModernForwarding.TRANSACTION_IDS;
 
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
@@ -11,8 +11,11 @@ import io.netty.buffer.ByteBuf;
 
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 
+import net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload;
 import org.adde0109.pcf.v20_2.neoforge.Compatibility;
 import org.adde0109.pcf.v20_2.neoforge.forwarding.network.MCQueryAnswerPayload;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Coerce;
@@ -34,12 +37,13 @@ public class ServerboundCustomQueryAnswerPacketMixin {
             at = @At("HEAD"),
             cancellable = true)
     private static void onReadPayload(
-            int queryId, @Coerce ByteBuf buf, CallbackInfoReturnable<Object> cir) {
-        if (QUERY_IDS.contains(queryId)) {
-            QUERY_IDS.remove(queryId);
-            ByteBuf buffer = readNullablePayload(buf);
+            final int transactionId,
+            final @Coerce @NotNull ByteBuf buf,
+            final @NotNull CallbackInfoReturnable<CustomQueryAnswerPayload> cir) {
+        if (TRANSACTION_IDS.contains(transactionId)) {
+            final @Nullable ByteBuf buffer = readNullablePayload(buf);
             cir.setReturnValue(buffer == null ? null : new MCQueryAnswerPayload(buffer));
-            Compatibility.neoForgeReturnSimpleQueryPayload(buffer, queryId, cir);
+            Compatibility.neoForgeReturnSimpleQueryPayload(buffer, transactionId, cir);
             cir.cancel();
         }
     }
