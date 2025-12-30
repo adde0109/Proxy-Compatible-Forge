@@ -11,6 +11,6 @@
     "v7_10.forge.forwarding.modern.ConnectionMixin",
     "v7_10.forge.forwarding.modern.EnumConnectionStateMixin",
     "v7_10.forge.forwarding.modern.ServerLoginPacketListenerImplMixin",
-    "v7_10.forge.forwarding.modern.ServerLoginPacketListenerImplMixin_7"
+    "v7_10.forge.forwarding.modern.ServerLoginPacketListenerImplQueryMixin"
   ]
 }

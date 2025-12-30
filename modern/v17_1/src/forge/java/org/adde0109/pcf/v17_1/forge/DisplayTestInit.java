@@ -13,7 +13,16 @@ import org.adde0109.pcf.PCFInitializer;
 
 @AConstraint(
         platform = Platform.FORGE,
-        version = @Versions(min = MinecraftVersion.V17, max = MinecraftVersion.V18_1))
+        version =
+                @Versions(
+                        value = {
+                            MinecraftVersion.V19,
+                            MinecraftVersion.V19_1,
+                            MinecraftVersion.V19_3,
+                            MinecraftVersion.V20_2
+                        },
+                        min = MinecraftVersion.V17,
+                        max = MinecraftVersion.V18_1))
 public final class DisplayTestInit implements PCFInitializer {
     public DisplayTestInit() {
         IGNORE_SERVER_ONLY = () -> FMLNetworkConstants.IGNORESERVERONLY;

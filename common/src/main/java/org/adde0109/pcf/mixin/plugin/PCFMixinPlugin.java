@@ -14,7 +14,15 @@ import java.util.Set;
 @SuppressWarnings("unused")
 public class PCFMixinPlugin implements IMixinConfigPlugin {
     @Override
-    public void onLoad(String mixinPackage) {}
+    public void onLoad(String mixinPackage) {
+        try {
+            PCF.forceLoadConfig();
+            Muxins.bootstrap(mixinPackage, PCF.instance().debug().enabled());
+        } catch (Exception e) {
+            PCF.logger.error("Error during Muxins bootstrap:");
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public String getRefMapperConfig() {

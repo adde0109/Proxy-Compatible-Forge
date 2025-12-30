@@ -1,49 +1,82 @@
 package org.adde0109.pcf.mixin.v12_2.forge.forwarding.modern;
 
-import static org.adde0109.pcf.forwarding.modern.ModernForwarding.handleCustomQueryPacket;
-import static org.adde0109.pcf.forwarding.modern.ModernForwarding.handleHello;
+import com.mojang.authlib.GameProfile;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 
+import net.minecraft.network.NetworkManager;
 import net.minecraft.server.network.NetHandlerLoginServer;
+import net.minecraft.util.text.ITextComponent;
 
+import org.adde0109.pcf.forwarding.modern.ConnectionBridge;
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
-import org.adde0109.pcf.v12_2.forge.forwarding.network.C2SCustomQueryAnswerPacket;
-import org.adde0109.pcf.v12_2.forge.forwarding.network.ServerLoginQueryListener;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.objectweb.asm.Opcodes;
-import org.spongepowered.asm.mixin.Implements;
-import org.spongepowered.asm.mixin.Interface;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 
-/**
- * <a
- * href="https://github.com/PaperMC/Paper-archive/blob/ver/1.19.4/patches/server/0874-Add-Velocity-IP-Forwarding-Support.patch">Adapted
- * from Paper</a>
- */
 @AConstraint(
         mappings = Mappings.LEGACY_SEARGE,
-        version = @Versions(min = MinecraftVersion.V8, max = MinecraftVersion.V12_2))
-@Implements(@Interface(iface = ServerLoginQueryListener.class, prefix = "pcf$"))
+        version = @Versions(min = MinecraftVersion.V7, max = MinecraftVersion.V12_2))
 @Mixin(NetHandlerLoginServer.class)
 public abstract class ServerLoginPacketListenerImplMixin
         implements ServerLoginPacketListenerBridge {
     // spotless:off
-    @Inject(method = "processLoginStart*", // * b/c signature differs in 1.8.x
-            cancellable = true, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, ordinal = 1,
-            target = "Lnet/minecraft/server/network/NetHandlerLoginServer;currentLoginState:Lnet/minecraft/server/network/NetHandlerLoginServer$LoginState;"))
+    @Shadow @Final public NetworkManager networkManager;
+    @Shadow private GameProfile loginGameProfile;
+    @Shadow private NetHandlerLoginServer.LoginState currentLoginState;
+    @Unique private int pcf$velocityLoginMessageId = -1;
     // spotless:on
-    private void onHandleHello(final @NotNull CallbackInfo ci) {
-        handleHello(this, ci);
+
+    @Override
+    public int bridge$velocityLoginMessageId() {
+        return this.pcf$velocityLoginMessageId;
     }
 
-    public void pcf$handleCustomQueryPacket(final @NotNull C2SCustomQueryAnswerPacket packet) {
-        handleCustomQueryPacket(this, packet.transactionId(), packet);
+    @Override
+    public void bridge$setVelocityLoginMessageId(final int id) {
+        this.pcf$velocityLoginMessageId = id;
+    }
+
+    @Override
+    public @NotNull ConnectionBridge bridge$connection() {
+        return (ConnectionBridge) this.networkManager;
+    }
+
+    @Override
+    public void bridge$startClientVerification(final @NotNull GameProfile profile) {
+        this.loginGameProfile = profile;
+        this.currentLoginState = NetHandlerLoginServer.LoginState.READY_TO_ACCEPT;
+    }
+
+    @AConstraint(
+            mappings = Mappings.LEGACY_SEARGE,
+            version = @Versions(min = MinecraftVersion.V9, max = MinecraftVersion.V12_2))
+    @Mixin(NetHandlerLoginServer.class)
+    public abstract static class SLPLIMixin_12 implements ServerLoginPacketListenerBridge {
+        // spotless:off
+        @Shadow @Final private static Logger LOGGER;
+        @Shadow public abstract void shadow$onDisconnect(ITextComponent reason);
+        // spotless:on
+
+        @Override
+        public void bridge$disconnect(final @NotNull Object reason) {
+            this.shadow$onDisconnect((ITextComponent) reason);
+        }
+
+        @Override
+        public void bridge$logger_info(final @NotNull String text, final Object... params) {
+            LOGGER.info(text, params);
+        }
+
+        @Override
+        public void bridge$logger_error(final @NotNull String text, final Object... params) {
+            LOGGER.error(text, params);
+        }
     }
 }
