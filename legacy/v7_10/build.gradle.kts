@@ -26,7 +26,6 @@ unimined.minecraft(forge) {
 
 dependencies {
     forgeCompileOnly(libs.mixin)
-    forgeCompileOnly(srcSetAsDep(":legacy:v12_2", "forge"))
     forgeCompileOnly(project(":common"))
 }
 

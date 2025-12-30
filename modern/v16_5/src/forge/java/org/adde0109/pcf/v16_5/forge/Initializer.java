@@ -14,14 +14,14 @@ import net.minecraftforge.fml.network.FMLNetworkConstants;
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.PCFInitializer;
 import org.adde0109.pcf.v14_4.forge.Config;
-import org.adde0109.pcf.v14_4.forge.forwarding.network.CCustomQueryPacketAdapter;
-import org.adde0109.pcf.v14_4.forge.forwarding.network.SCustomQueryAnswerPacketAdapter;
+import org.adde0109.pcf.v16_5.forge.forwarding.network.CCustomQueryPacketAdapter;
+import org.adde0109.pcf.v16_5.forge.forwarding.network.SCustomQueryAnswerPacketAdapter;
 import org.apache.commons.lang3.tuple.Pair;
 
 @AConstraint(
         mappings = Mappings.LEGACY_SEARGE,
         platform = Platform.FORGE,
-        version = @Versions(min = MinecraftVersion.V14, max = MinecraftVersion.V16_5))
+        version = @Versions(min = MinecraftVersion.V14))
 public final class Initializer implements PCFInitializer {
     public Initializer() {
         PCF.instance()

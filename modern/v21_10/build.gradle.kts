@@ -41,6 +41,7 @@ dependencies {
     mainCompileOnly(libs.taterlib.lite.metadata)
     mainCompileOnly(libs.taterlib.lite.muxins)
     forgeCompileOnly(srcSetAsDep(":modern:v14_4", "forge"))
+    forgeCompileOnly(srcSetAsDep(":modern:v17_1", "forge"))
     forgeCompileOnly(project(":modern:v20_2"))
     forgeCompileOnly(project(":common"))
     neoforgeCompileOnly(project(":modern:v20_2"))

@@ -12,15 +12,31 @@ import org.adde0109.pcf.forwarding.modern.ConnectionBridge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+import java.net.SocketAddress;
+
 @AConstraint(
         mappings = Mappings.LEGACY_SEARGE,
-        version = @Versions(min = MinecraftVersion.V8, max = MinecraftVersion.V12_2))
+        version = @Versions(min = MinecraftVersion.V7, max = MinecraftVersion.V12_2))
 @Mixin(NetworkManager.class)
 public abstract class ConnectionMixin implements ConnectionBridge {
     // spotless:off
+    @Shadow private SocketAddress socketAddress;
+
+    @AConstraint(version = @Versions(min = MinecraftVersion.V8, max = MinecraftVersion.V12_2))
     @Shadow public abstract void shadow$sendPacket(Packet<?> packet);
     // spotless:on
 
+    @Override
+    public SocketAddress bridge$address() {
+        return this.socketAddress;
+    }
+
+    @Override
+    public void bridge$address(SocketAddress address) {
+        this.socketAddress = address;
+    }
+
+    @AConstraint(version = @Versions(min = MinecraftVersion.V8, max = MinecraftVersion.V12_2))
     @Override
     public void bridge$send(Object packet) {
         this.shadow$sendPacket((Packet<?>) packet);

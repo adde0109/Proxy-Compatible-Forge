@@ -10,10 +10,10 @@
   "server": [
     "v19_2.forge.forwarding.modern.LastSeenMessagesValidatorMixin",
     "v19_2.forge.forwarding.modern.PlayerChatMessageMixin",
+    "v19_2.forge.forwarding.modern.ServerLoginPacketListenerImplKeyV1Mixin",
+    "v19_2.forge.forwarding.modern.ServerLoginPacketListenerImplKeyV2Mixin",
     "v19_2.forge.forwarding.modern.ServerLoginPacketListenerImplMixin",
-    "v19_2.forge.forwarding.modern.ServerLoginPacketListenerImplMixin_KeyV1",
-    "v19_2.forge.forwarding.modern.ServerLoginPacketListenerImplMixin_KeyV2",
-    "v19_2.forge.forwarding.modern.ServerLoginPacketListenerImplMixin_Logger",
+    "v19_2.forge.forwarding.modern.ServerLoginPacketListenerImplQueryMixin",
     "v19_2.forge.forwarding.modern.SignedMessageChainMixin"
   ]
 }

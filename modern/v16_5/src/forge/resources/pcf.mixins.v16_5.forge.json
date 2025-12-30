@@ -7,8 +7,11 @@
   "required": true,
   "plugin": "org.adde0109.pcf.mixin.plugin.PCFMixinPlugin",
   "package": "org.adde0109.pcf.mixin",
-  "server": [],
-  "mixins": [
-    "v16_5.forge.crossstitch.CommandsPacketMixin"
+  "server": [
+    "v16_5.forge.crossstitch.CommandsPacketMixin",
+    "v16_5.forge.forwarding.modern.ClientboundCustomQueryPacketAccessor",
+    "v16_5.forge.forwarding.modern.ConnectionMixin",
+    "v16_5.forge.forwarding.modern.ServerboundCustomQueryPacketAccessor",
+    "v16_5.forge.forwarding.modern.ServerLoginPacketListenerImplMixin"
   ]
 }
