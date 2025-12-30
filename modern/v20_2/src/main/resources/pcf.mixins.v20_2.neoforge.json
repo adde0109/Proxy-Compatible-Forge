@@ -10,6 +10,6 @@
   "server": [
     "v20_2.neoforge.crossstitch.ArgumentNodeStubMixin",
     "v20_2.neoforge.forwarding.modern.ServerboundCustomQueryAnswerPacketMixin",
-    "v20_2.neoforge.forwarding.modern.ServerLoginPacketListenerImplMixin"
+    "v20_2.neoforge.forwarding.modern.ServerLoginPacketListenerImplDisconnectMixin"
   ]
 }

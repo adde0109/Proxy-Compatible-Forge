@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v20_4.forge.forwarding.modern;
+package org.adde0109.pcf.mixin.v21_10.neoforge.forwarding.modern;
 
 import static org.adde0109.pcf.forwarding.modern.ModernForwarding.handleHello;
 

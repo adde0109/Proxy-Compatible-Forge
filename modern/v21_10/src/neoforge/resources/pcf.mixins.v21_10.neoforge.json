@@ -9,7 +9,8 @@
   "package": "org.adde0109.pcf.mixin",
   "server": [
     "v21_10.neoforge.forwarding.modern.ConnectionMixin",
-    "v21_10.neoforge.forwarding.modern.ServerLoginPacketListenerImplDisconnectMixin",
+    "v21_10.neoforge.forwarding.modern.ServerLoginPacketListenerImplHelloMixin",
+    "v21_10.neoforge.forwarding.modern.ServerLoginPacketListenerImplMixin",
     "v21_10.neoforge.forwarding.modern.ServerLoginPacketListenerImplQueryMixin"
   ]
 }
