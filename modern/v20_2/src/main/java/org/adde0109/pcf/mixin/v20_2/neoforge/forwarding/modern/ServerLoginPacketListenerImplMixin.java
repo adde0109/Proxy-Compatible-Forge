@@ -7,7 +7,6 @@ import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
-import dev.neuralnexus.taterapi.mixin.MixinCancellableCallbackWrapper;
 
 import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
@@ -37,7 +36,6 @@ public abstract class ServerLoginPacketListenerImplMixin
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
     private void onHandleCustomQueryPacket(
             ServerboundCustomQueryAnswerPacket packet, CallbackInfo ci) {
-        handleCustomQueryPacket(
-                this, packet.transactionId(), packet, new MixinCancellableCallbackWrapper(ci));
+        handleCustomQueryPacket(this, packet.transactionId(), packet, ci);
     }
 }

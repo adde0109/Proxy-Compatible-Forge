@@ -6,7 +6,6 @@ import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
-import dev.neuralnexus.taterapi.mixin.MixinCancellableCallbackWrapper;
 
 import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
@@ -25,7 +24,6 @@ public abstract class ServerLoginPacketListenerImplMixin_Query
         implements ServerLoginPacketListenerBridge {
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
     private void onHandleCustomQueryPacket(ServerboundCustomQueryPacket packet, CallbackInfo ci) {
-        handleCustomQueryPacket(
-                this, packet.getTransactionId(), packet, new MixinCancellableCallbackWrapper(ci));
+        handleCustomQueryPacket(this, packet.getTransactionId(), packet, ci);
     }
 }

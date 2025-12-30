@@ -7,7 +7,6 @@ import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
-import dev.neuralnexus.taterapi.mixin.MixinCancellableCallbackWrapper;
 
 import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
@@ -39,6 +38,6 @@ public abstract class ServerLoginPacketListenerImplMixin
                 this,
                 ((ServerboundCustomQueryPacketAccessor) packet).pcf$getTransactionId(),
                 packet,
-                new MixinCancellableCallbackWrapper(ci));
+                ci);
     }
 }
