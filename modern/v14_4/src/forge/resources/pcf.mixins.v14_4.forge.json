@@ -10,7 +10,6 @@
   "server": [
     "v14_4.forge.crossstitch.CommandsPacketMixin",
     "v14_4.forge.forwarding.modern.ClientboundCustomQueryPacketAccessor",
-    "v14_4.forge.forwarding.modern.ConnectionAccessor",
     "v14_4.forge.forwarding.modern.ConnectionMixin",
     "v14_4.forge.forwarding.modern.ServerboundCustomQueryPacketAccessor",
     "v14_4.forge.forwarding.modern.ServerLoginPacketListenerHybridPlaceholderMixin",

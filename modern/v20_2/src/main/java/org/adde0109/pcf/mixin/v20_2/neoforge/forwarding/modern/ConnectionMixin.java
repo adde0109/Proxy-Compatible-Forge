@@ -10,12 +10,25 @@ import org.adde0109.pcf.forwarding.modern.ConnectionBridge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+import java.net.SocketAddress;
+
 @AConstraint(mappings = Mappings.MOJANG)
 @Mixin(Connection.class)
 public abstract class ConnectionMixin implements ConnectionBridge {
     // spotless:off
+    @Shadow private SocketAddress address;
     @Shadow public abstract void shadow$send(Packet<?> packet);
     // spotless:on
+
+    @Override
+    public SocketAddress bridge$address() {
+        return this.address;
+    }
+
+    @Override
+    public void bridge$address(SocketAddress address) {
+        this.address = address;
+    }
 
     @Override
     public void bridge$send(Object packet) {
