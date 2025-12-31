@@ -21,7 +21,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.DecoderException;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.common.NameAndId;
 import org.adde0109.pcf.forwarding.Mode;
 import org.adde0109.pcf.forwarding.compat.ArclightBridge;
 import org.adde0109.pcf.forwarding.network.protocol.login.ClientboundCustomQueryPacket;

@@ -47,7 +47,7 @@ public final class VarLong {
 
     public static ByteBuf write(final @NotNull ByteBuf buf, long varLong) {
         while ((varLong & -CONTINUATION_BIT_MASK) != 0L) {
-            buf.writeByte((int)(varLong & DATA_BITS_MASK) | CONTINUATION_BIT_MASK);
+            buf.writeByte((int) (varLong & DATA_BITS_MASK) | CONTINUATION_BIT_MASK);
             varLong >>>= DATA_BITS_PER_BYTE;
         }
         buf.writeByte((int) varLong);

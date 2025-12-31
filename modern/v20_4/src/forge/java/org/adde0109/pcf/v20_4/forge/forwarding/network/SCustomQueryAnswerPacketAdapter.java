@@ -7,9 +7,9 @@ import io.netty.buffer.Unpooled;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryAnswerPayloadImpl;
-import org.adde0109.pcf.forwarding.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterCodec;
+import org.adde0109.pcf.forwarding.network.protocol.login.ServerboundCustomQueryAnswerPacket;
+import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryAnswerPayloadImpl;
 import org.adde0109.pcf.v20_2.neoforge.forwarding.network.MCQueryAnswerPayload;
 import org.jetbrains.annotations.NotNull;
 
