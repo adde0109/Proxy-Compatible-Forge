@@ -2,19 +2,13 @@ package org.adde0109.pcf.forwarding.modern;
 
 import static org.adde0109.pcf.common.Component.literal;
 import static org.adde0109.pcf.common.Component.translatable;
-import static org.adde0109.pcf.common.FriendlyByteBuf.readAddress;
-import static org.adde0109.pcf.common.FriendlyByteBuf.readVarInt;
+import static org.adde0109.pcf.forwarding.modern.ReflectionUtils.enforceSecureProfile;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_DEFAULT;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_FORWARDING_WITH_KEY;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_FORWARDING_WITH_KEY_V2;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_MAX_VERSION;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_PAYLOAD;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.checkIntegrity;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.createProfile;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.readForwardedKey;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.readSignerUuidOrElse;
-
-import com.mojang.authlib.GameProfile;
 
 import dev.neuralnexus.taterapi.event.Cancellable;
 import dev.neuralnexus.taterapi.meta.Constraint;
@@ -26,8 +20,6 @@ import dev.neuralnexus.taterapi.mixin.CancellableMixin;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.DecoderException;
 
-import net.minecraft.server.MinecraftServer;
-
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.NameAndId;
 import org.adde0109.pcf.forwarding.Mode;
@@ -38,9 +30,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.net.InetSocketAddress;
 import java.security.InvalidKeyException;
 import java.util.Set;
@@ -102,6 +91,8 @@ public final class ModernForwarding {
 
     private static final @NotNull Object DIRECT_CONNECT_ERR =
             literal("This server requires you to connect with Velocity.");
+    private static final @NotNull Object EMPTY_PAYLOAD_ERR =
+            literal("Received empty player info payload from the proxy.");
     private static final @NotNull Object PLAYER_INFO_ERR =
             literal("Unable to verify player details.");
     private static final @NotNull Object FAILED_TO_VERIFY =
@@ -111,45 +102,8 @@ public final class ModernForwarding {
     private static final @NotNull Object INVALID_SIGNATURE =
             translatable("multiplayer.disconnect.invalid_public_key_signature");
 
-    private static final Constraint IS_19_X_19_2 =
-            Constraint.builder().min(MinecraftVersions.V19).max(MinecraftVersions.V19_2).build();
     private static final Constraint IS_19_1_2 =
             Constraint.builder().min(MinecraftVersions.V19_1).max(MinecraftVersions.V19_2).build();
-
-    private static boolean enforceSecureProfile() {
-        if (ENFORCE_SECURE_PROFILE == null) {
-            return false;
-        }
-        try {
-            return (boolean)
-                    ENFORCE_SECURE_PROFILE.invokeExact(
-                            (MinecraftServer) MetaAPI.instance().server());
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static final MethodHandle ENFORCE_SECURE_PROFILE;
-
-    static {
-        MethodHandle enforceSecureProfileHandle = null;
-        if (IS_19_X_19_2.result()) {
-            try {
-                Class<MinecraftServer> minecraftServerClass = MinecraftServer.class;
-                //noinspection JavaLangInvokeHandleSignature
-                enforceSecureProfileHandle =
-                        MethodHandles.lookup()
-                                .findVirtual(
-                                        minecraftServerClass,
-                                        "m_214005_", // enforceSecureProfile
-                                        MethodType.methodType(boolean.class));
-            } catch (NoSuchMethodException | IllegalAccessException e) {
-                PCF.logger.error(
-                        "Failed to get MethodHandle for MinecraftServer.enforceSecureProfile", e);
-            }
-        }
-        ENFORCE_SECURE_PROFILE = enforceSecureProfileHandle;
-    }
 
     /**
      * Abstract implementation of the custom query packet handler
@@ -206,6 +160,12 @@ public final class ModernForwarding {
             slpl.bridge$disconnect(DIRECT_CONNECT_ERR);
             ci.cancel();
             return;
+        } else if (packet.payload().data().readableBytes() == 0) {
+            PCF.logger.error(
+                    "Received empty forwarding payload. Has Velocity been configured to use modern forwarding?");
+            slpl.bridge$disconnect(EMPTY_PAYLOAD_ERR);
+            ci.cancel();
+            return;
         }
         final ByteBuf buf = packet.payload().data();
 
@@ -235,7 +195,10 @@ public final class ModernForwarding {
         }
         PCF.logger.debug("Player-data validated!");
 
-        int version = readVarInt(buf);
+        final PlayerInfoQueryAnswerPayload payload =
+                packet.payload().as(PlayerInfoQueryAnswerPayload.STREAM_CODEC);
+
+        int version = payload.version();
         if (version > MODERN_MAX_VERSION) {
             throw new IllegalStateException(
                     "Unsupported forwarding version "
@@ -247,11 +210,8 @@ public final class ModernForwarding {
 
         // Apply IP forwarding
         final int port = ((InetSocketAddress) slpl.bridge$connection().bridge$address()).getPort();
-        final InetSocketAddress address = new InetSocketAddress(readAddress(buf), port);
+        final InetSocketAddress address = new InetSocketAddress(payload.address(), port);
         slpl.bridge$connection().bridge$address(address);
-
-        final GameProfile profile = createProfile(buf);
-        final NameAndId nameAndId = new NameAndId(profile);
 
         // Handle profile key
         // Clear key on 1.19.1 - 1.19.2 if using MODERN_DEFAULT
@@ -259,12 +219,11 @@ public final class ModernForwarding {
             ((ServerLoginPacketListener_KeyV2) slpl).bridge$profilePublicKeyData(null);
         }
 
-        boolean enforceSecureProfile = enforceSecureProfile();
-
         // 1.19 forwarding with key v1
         if (version == MODERN_FORWARDING_WITH_KEY) {
+            boolean enforceSecureProfile = enforceSecureProfile();
             try {
-                VelocityProxy.ProfilePublicKeyData publicKeyData = readForwardedKey(buf);
+                VelocityProxy.ProfilePublicKeyData publicKeyData = payload.key();
                 if (enforceSecureProfile && publicKeyData == null) {
                     slpl.bridge$disconnect(MISSING_PROFILE_PUBLIC_KEY);
                     ci.cancel();
@@ -284,8 +243,8 @@ public final class ModernForwarding {
 
         // 1.19.1 - 1.19.2 forwarding with key v2
         if (version == MODERN_FORWARDING_WITH_KEY_V2) {
-            final VelocityProxy.ProfilePublicKeyData forwardedKeyData = readForwardedKey(buf);
-            final UUID signer = readSignerUuidOrElse(buf, nameAndId.id());
+            final VelocityProxy.ProfilePublicKeyData forwardedKeyData = payload.key();
+            final UUID signer = payload.signer();
             if (((ServerLoginPacketListener_KeyV2) slpl).bridge$profilePublicKeyData() == null) {
                 try {
                     ((ServerLoginPacketListener_KeyV2) slpl)
@@ -302,15 +261,16 @@ public final class ModernForwarding {
         }
 
         // Proceed with login
+        final NameAndId nameAndId = new NameAndId(payload.profile());
         try {
-            // TODO: Pull this into a common compat class
+            // TODO: Pull this into a common compat class when other hybrids are supported
             if (MetaAPI.instance().isPlatformPresent(Platforms.ARCLIGHT)) {
                 ((ArclightBridge) slpl).arclight$preLogin();
                 ci.cancel();
                 return;
             }
             slpl.bridge$logger_info("UUID of player {} is {}", nameAndId.name(), nameAndId.id());
-            slpl.bridge$startClientVerification(profile);
+            slpl.bridge$startClientVerification(payload.profile());
         } catch (Exception e) {
             slpl.bridge$disconnect(FAILED_TO_VERIFY);
             slpl.bridge$logger_error("Exception while forwarding user {}", nameAndId.name());

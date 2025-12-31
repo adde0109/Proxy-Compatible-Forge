@@ -18,6 +18,11 @@ public interface CustomQueryAnswerPayload {
         return DEFAULT_CODEC;
     }
 
+    default <T extends @NotNull CustomQueryAnswerPayload> T as(
+            final @NotNull StreamDecoder<@NotNull ByteBuf, T> codec) {
+        return codec.decode(this.data());
+    }
+
     static <B extends @NotNull ByteBuf, T extends @NotNull CustomQueryAnswerPayload>
             StreamCodec<B, T> codec(
                     final @NotNull StreamMemberEncoder<B, T> encoder,
