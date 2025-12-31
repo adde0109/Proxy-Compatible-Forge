@@ -34,7 +34,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Utils copied (in part, as needed) from Minecraft's FriendlyByteBuf and Crypt implementations. <br>
+ * Utils copied (in part, as needed) from Minecraft's FriendlyByteBuf and Crypt implementations.
+ * <br>
  * Given that, any who use this class must comply with Minecraft's EULA. This class exists purely
  * for compatibility's sake when dealing with multi-version code.
  */

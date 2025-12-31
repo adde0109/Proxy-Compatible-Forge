@@ -15,8 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.UUID;
 
 public final class ReflectionUtils {
     private ReflectionUtils() {}
@@ -24,17 +23,35 @@ public final class ReflectionUtils {
     // com.mojang:authlib:7.0.0 or newer
     static final Constraint V21_9 = Constraint.builder().min(MinecraftVersions.V21_9).build();
 
-    private static final Method propertiesMethod;
+    private static final MethodHandle nameHandle;
+    private static final MethodHandle idHandle;
+    private static final MethodHandle profilePropertiesHandle;
 
     static {
         if (V21_9.result()) {
-            propertiesMethod = null;
+            nameHandle = null;
+            idHandle = null;
+            profilePropertiesHandle = null;
         } else {
             try {
-                //noinspection JavaReflectionMemberAccess
-                propertiesMethod = GameProfile.class.getMethod("getProperties");
-            } catch (final NoSuchMethodException e) {
-                throw new IllegalStateException("Failed to find getProperties method", e);
+                MethodHandles.Lookup lookup = MethodHandles.lookup();
+                //noinspection JavaLangInvokeHandleSignature
+                nameHandle =
+                        lookup.findVirtual(
+                                GameProfile.class, "getName", MethodType.methodType(String.class));
+                //noinspection JavaLangInvokeHandleSignature
+                idHandle =
+                        lookup.findVirtual(
+                                GameProfile.class, "getId", MethodType.methodType(UUID.class));
+                //noinspection JavaLangInvokeHandleSignature
+                profilePropertiesHandle =
+                        lookup.findVirtual(
+                                GameProfile.class,
+                                "getProperties",
+                                MethodType.methodType(PropertyMap.class));
+            } catch (final NoSuchMethodException | IllegalAccessException e) {
+                throw new IllegalStateException(
+                        "Failed to initialize GameProfile method handles", e);
             }
         }
     }
@@ -47,9 +64,45 @@ public final class ReflectionUtils {
      */
     static @NotNull PropertyMap getProperties(final @NotNull GameProfile profile) {
         try {
-            return (PropertyMap) propertiesMethod.invoke(profile);
-        } catch (final IllegalAccessException | InvocationTargetException e) {
+            return (PropertyMap) profilePropertiesHandle.invokeExact(profile);
+        } catch (final Throwable e) {
             throw new IllegalStateException("Failed to get properties from GameProfile", e);
+        }
+    }
+
+    /**
+     * Gets the name from the given GameProfile
+     *
+     * @param profile the profile
+     * @return the name
+     */
+    static @NotNull String getName(final @NotNull GameProfile profile) {
+        if (V21_9.result()) {
+            return profile.name();
+        } else {
+            try {
+                return (String) nameHandle.invokeExact(profile);
+            } catch (final Throwable e) {
+                throw new IllegalStateException("Failed to get name from GameProfile", e);
+            }
+        }
+    }
+
+    /**
+     * Gets the id from the given GameProfile
+     *
+     * @param profile the profile
+     * @return the id
+     */
+    static @NotNull UUID getId(final @NotNull GameProfile profile) {
+        if (V21_9.result()) {
+            return profile.id();
+        } else {
+            try {
+                return (UUID) idHandle.invokeExact(profile);
+            } catch (final Throwable e) {
+                throw new IllegalStateException("Failed to get id from GameProfile", e);
+            }
         }
     }
 

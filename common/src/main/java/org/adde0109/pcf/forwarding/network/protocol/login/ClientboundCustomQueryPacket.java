@@ -6,10 +6,10 @@ import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.writeVarInt;
 import io.netty.buffer.ByteBuf;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryPayload;
 import org.adde0109.pcf.forwarding.network.codec.StreamCodec;
 import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterCodec;
 import org.adde0109.pcf.forwarding.network.protocol.Packet;
+import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryPayload;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unchecked")

@@ -3,9 +3,9 @@ package org.adde0109.pcf.v16_5.forge.forwarding.network;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
 
-import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryAnswerPayloadImpl;
-import org.adde0109.pcf.forwarding.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterCodec;
+import org.adde0109.pcf.forwarding.network.protocol.login.ServerboundCustomQueryAnswerPacket;
+import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryAnswerPayloadImpl;
 import org.adde0109.pcf.mixin.v16_5.forge.forwarding.modern.ServerboundCustomQueryPacketAccessor;
 import org.jetbrains.annotations.NotNull;
 
