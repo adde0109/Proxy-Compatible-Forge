@@ -18,7 +18,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 
-import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
@@ -30,7 +29,6 @@ import io.netty.handler.codec.DecoderException;
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.common.FriendlyByteBuf;
 import org.adde0109.pcf.forwarding.network.CustomQueryPayload;
-import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterCodec;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,8 +36,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.time.Instant;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
 import java.util.List;
@@ -222,42 +218,5 @@ public final class VelocityProxy {
             throws DecoderException {
         return new ProfilePublicKeyData(
                 readInstant(buf), readPublicKey(buf), readByteArray(buf, MAX_KEY_SIGNATURE_SIZE));
-    }
-
-    private static final Constraint V19_X_19_2 =
-            Constraint.builder().min(MinecraftVersions.V19).max(MinecraftVersions.V19_2).build();
-
-    /**
-     * Wrapper for MC's ProfilePublicKey.Data
-     *
-     * @param expiresAt the expiration time
-     * @param key the public key
-     * @param keySignature the key signature
-     */
-    @SuppressWarnings("unchecked")
-    public record ProfilePublicKeyData(Instant expiresAt, PublicKey key, byte[] keySignature) {
-        public static final AdapterCodec<?, ProfilePublicKeyData> ADAPTER_CODEC;
-
-        static {
-            if (V19_X_19_2.result()) {
-                ADAPTER_CODEC =
-                        (AdapterCodec<?, ProfilePublicKeyData>)
-                                PCF.instance().adapters().toMC(ProfilePublicKeyData.class);
-            } else {
-                PCF.logger.debug(
-                        "Not loading ProfilePublicKeyData adapter, version not between 1.19 and 1.19.2");
-                ADAPTER_CODEC = null;
-            }
-        }
-
-        public static <T> @NotNull ProfilePublicKeyData fromMC(final @NotNull T obj) {
-            assert ADAPTER_CODEC != null;
-            return ((AdapterCodec<T, ProfilePublicKeyData>) ADAPTER_CODEC).fromMC(obj);
-        }
-
-        public <T> @NotNull T toMC() {
-            assert ADAPTER_CODEC != null;
-            return ((AdapterCodec<T, ProfilePublicKeyData>) ADAPTER_CODEC).toMC(this);
-        }
     }
 }

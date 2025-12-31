@@ -11,8 +11,8 @@ import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import net.minecraft.util.SignatureValidator;
 import net.minecraft.world.entity.player.ProfilePublicKey;
 
-import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListener_KeyV2;
-import org.adde0109.pcf.forwarding.modern.VelocityProxy.ProfilePublicKeyData;
+import org.adde0109.pcf.forwarding.modern.ProfilePublicKeyData;
+import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,7 +24,7 @@ import java.util.UUID;
         version = @Versions(min = MinecraftVersion.V19_1, max = MinecraftVersion.V19_2))
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ServerLoginPacketListenerImplKeyV2Mixin
-        implements ServerLoginPacketListener_KeyV2 {
+        implements ServerLoginPacketListenerBridge.KeyV2 {
     // spotless:off
     @Shadow private ProfilePublicKey.Data profilePublicKeyData;
 
@@ -49,7 +49,7 @@ public abstract class ServerLoginPacketListenerImplKeyV2Mixin
     }
 
     @Override
-    public void bridge$profilePublicKeyData(final @Nullable ProfilePublicKeyData publicKeyData) {
+    public void bridge$setProfilePublicKeyData(final @Nullable ProfilePublicKeyData publicKeyData) {
         if (publicKeyData == null) {
             this.profilePublicKeyData = null;
         } else {
