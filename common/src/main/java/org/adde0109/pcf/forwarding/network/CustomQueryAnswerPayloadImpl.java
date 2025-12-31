@@ -1,21 +1,30 @@
 package org.adde0109.pcf.forwarding.network;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readPayload;
 
+import io.netty.buffer.ByteBuf;
+
+import org.adde0109.pcf.forwarding.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 
 public record CustomQueryAnswerPayloadImpl(@NotNull ByteBuf data)
         implements CustomQueryAnswerPayload {
-    @Override
-    public @NotNull ByteBuf data() {
-        ByteBuf buf = Unpooled.buffer();
-        buf.writeBytes(this.data);
-        return buf;
+    public static final StreamCodec<@NotNull ByteBuf, @NotNull CustomQueryAnswerPayloadImpl>
+            STREAM_CODEC =
+                    CustomQueryAnswerPayload.codec(
+                            CustomQueryAnswerPayloadImpl::write,
+                            CustomQueryAnswerPayloadImpl::read);
+
+    private static @NotNull CustomQueryAnswerPayloadImpl read(final @NotNull ByteBuf buf) {
+        return new CustomQueryAnswerPayloadImpl(readPayload(buf));
+    }
+
+    private void write(final @NotNull ByteBuf buf) {
+        buf.writeBytes(this.data.slice());
     }
 
     @Override
-    public void write(final @NotNull ByteBuf buf) {
-        buf.writeBytes(this.data);
+    public @NotNull StreamCodec<@NotNull ByteBuf, @NotNull CustomQueryAnswerPayloadImpl> codec() {
+        return STREAM_CODEC;
     }
 }

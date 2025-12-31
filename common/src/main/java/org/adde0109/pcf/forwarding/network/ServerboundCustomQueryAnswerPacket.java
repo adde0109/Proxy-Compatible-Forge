@@ -1,7 +1,6 @@
 package org.adde0109.pcf.forwarding.network;
 
 import static org.adde0109.pcf.common.FriendlyByteBuf.readNullable;
-import static org.adde0109.pcf.common.FriendlyByteBuf.readPayload;
 import static org.adde0109.pcf.common.FriendlyByteBuf.readVarInt;
 import static org.adde0109.pcf.common.FriendlyByteBuf.writeNullable;
 import static org.adde0109.pcf.common.FriendlyByteBuf.writeVarInt;
@@ -30,14 +29,19 @@ public record ServerboundCustomQueryAnswerPacket(
     }
 
     private static ServerboundCustomQueryAnswerPacket read(final @NotNull ByteBuf buf) {
-        return new ServerboundCustomQueryAnswerPacket(
-                readVarInt(buf),
-                readNullable(buf, b -> new CustomQueryAnswerPayloadImpl(readPayload(b))));
+        final int transactionId = readVarInt(buf);
+        final CustomQueryAnswerPayload p =
+                readNullable(buf, CustomQueryAnswerPayload.DEFAULT_CODEC);
+        return new ServerboundCustomQueryAnswerPacket(transactionId, p);
     }
 
+    @SuppressWarnings("DataFlowIssue")
     private void write(final @NotNull ByteBuf buf) {
         writeVarInt(buf, this.transactionId);
-        writeNullable(buf, this.payload, (b, p) -> p.write(b));
+        writeNullable(
+                buf,
+                this.payload,
+                ((StreamCodec<ByteBuf, CustomQueryAnswerPayload>) this.payload.codec()));
     }
 
     public static <T> @NotNull ServerboundCustomQueryAnswerPacket fromMC(final @NotNull T obj) {

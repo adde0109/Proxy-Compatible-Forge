@@ -69,13 +69,7 @@ public final class VelocityProxy {
     public static final int MODERN_LAZY_SESSION = 4;
     public static final byte MODERN_MAX_VERSION;
     public static final @NotNull ByteBuf PLAYER_INFO_PACKET;
-
-    private static final @NotNull Object player_info_channel = identifier("velocity:player_info");
-
-    @SuppressWarnings("unchecked")
-    public static <T> @NotNull T PLAYER_INFO_CHANNEL() {
-        return (T) player_info_channel;
-    }
+    public static final @NotNull Object PLAYER_INFO_CHANNEL = identifier("velocity:player_info");
 
     static {
         final MinecraftVersion version = MetaAPI.instance().version();
@@ -102,8 +96,8 @@ public final class VelocityProxy {
         PCF.logger.debug("Velocity modern forwarding max version: " + MODERN_MAX_VERSION);
     }
 
-    public static final @NotNull CustomQueryPayload PLAYER_INFO_PAYLOAD =
-            new PlayerInfoChannelPayload("velocity:player_info", PLAYER_INFO_PACKET);
+    public static final CustomQueryPayload PLAYER_INFO_PAYLOAD =
+            new PlayerInfoQueryPayload(PLAYER_INFO_PACKET);
 
     private static final String ALGORITHM = "HmacSHA256";
 
