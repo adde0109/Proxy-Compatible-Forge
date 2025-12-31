@@ -10,7 +10,7 @@ import net.minecraft.commands.synchronization.ArgumentSerializer;
 import net.minecraft.resources.ResourceLocation;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.common.FriendlyByteBuf;
+import org.adde0109.pcf.forwarding.network.FriendlyByteBuf;
 import org.adde0109.pcf.v14_4.forge.crossstitch.ArgumentTypesUtil;
 
 /**

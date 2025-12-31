@@ -1,7 +1,7 @@
 package org.adde0109.pcf.forwarding.network;
 
-import static org.adde0109.pcf.common.FriendlyByteBuf.readVarInt;
-import static org.adde0109.pcf.common.FriendlyByteBuf.writeVarInt;
+import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readVarInt;
+import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.writeVarInt;
 
 import io.netty.buffer.ByteBuf;
 

@@ -1,6 +1,6 @@
 package org.adde0109.pcf.forwarding.network;
 
-import static org.adde0109.pcf.common.FriendlyByteBuf.readPayload;
+import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readPayload;
 
 import io.netty.buffer.ByteBuf;
 

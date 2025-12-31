@@ -1,16 +1,16 @@
 package org.adde0109.pcf.forwarding.modern;
 
-import static org.adde0109.pcf.common.FriendlyByteBuf.Crypt.MAX_KEY_SIGNATURE_SIZE;
-import static org.adde0109.pcf.common.FriendlyByteBuf.readByteArray;
-import static org.adde0109.pcf.common.FriendlyByteBuf.readInstant;
-import static org.adde0109.pcf.common.FriendlyByteBuf.readNullable;
-import static org.adde0109.pcf.common.FriendlyByteBuf.readOrElse;
-import static org.adde0109.pcf.common.FriendlyByteBuf.readPublicKey;
-import static org.adde0109.pcf.common.FriendlyByteBuf.readUtf;
-import static org.adde0109.pcf.common.FriendlyByteBuf.readVarInt;
 import static org.adde0109.pcf.common.Identifier.identifier;
 import static org.adde0109.pcf.forwarding.modern.ReflectionUtils.V21_9;
 import static org.adde0109.pcf.forwarding.modern.ReflectionUtils.getProperties;
+import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.Crypt.MAX_KEY_SIGNATURE_SIZE;
+import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readByteArray;
+import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readInstant;
+import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readNullable;
+import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readOrElse;
+import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readPublicKey;
+import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readUtf;
+import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readVarInt;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
@@ -27,8 +27,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.DecoderException;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.common.FriendlyByteBuf;
 import org.adde0109.pcf.forwarding.network.CustomQueryPayload;
+import org.adde0109.pcf.forwarding.network.FriendlyByteBuf;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

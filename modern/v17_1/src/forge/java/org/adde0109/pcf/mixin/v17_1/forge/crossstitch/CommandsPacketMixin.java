@@ -10,7 +10,7 @@ import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.common.FriendlyByteBuf;
+import org.adde0109.pcf.forwarding.network.FriendlyByteBuf;
 import org.adde0109.pcf.v17_1.forge.crossstitch.CrossStitchUtil17;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
