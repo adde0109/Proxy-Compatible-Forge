@@ -7,8 +7,8 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.login.INetHandlerLoginClient;
 import net.minecraft.util.ResourceLocation;
 
-import org.adde0109.pcf.forwarding.network.ClientboundCustomQueryPacket;
-import org.adde0109.pcf.forwarding.network.CustomQueryPayload;
+import org.adde0109.pcf.forwarding.network.protocol.login.ClientboundCustomQueryPacket;
+import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryPayload;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

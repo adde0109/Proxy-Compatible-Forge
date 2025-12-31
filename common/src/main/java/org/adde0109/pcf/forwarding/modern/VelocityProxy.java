@@ -27,7 +27,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.DecoderException;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.forwarding.network.CustomQueryPayload;
+import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryPayload;
 import org.adde0109.pcf.forwarding.network.FriendlyByteBuf;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

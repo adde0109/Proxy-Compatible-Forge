@@ -14,7 +14,7 @@ import com.mojang.authlib.GameProfile;
 
 import io.netty.buffer.ByteBuf;
 
-import org.adde0109.pcf.forwarding.network.CustomQueryAnswerPayload;
+import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryAnswerPayload;
 import org.adde0109.pcf.forwarding.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

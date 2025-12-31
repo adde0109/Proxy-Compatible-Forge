@@ -4,8 +4,8 @@ import static org.adde0109.pcf.common.Identifier.identifier;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import org.adde0109.pcf.forwarding.network.ClientboundCustomQueryPacket;
-import org.adde0109.pcf.forwarding.network.CustomQueryPayloadImpl;
+import org.adde0109.pcf.forwarding.network.protocol.login.ClientboundCustomQueryPacket;
+import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryPayloadImpl;
 import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterCodec;
 import org.adde0109.pcf.mixin.v16_5.forge.forwarding.modern.ClientboundCustomQueryPacketAccessor;
 import org.jetbrains.annotations.NotNull;

@@ -8,8 +8,8 @@ import dev.neuralnexus.taterapi.meta.enums.Platform;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.PCFInitializer;
-import org.adde0109.pcf.forwarding.network.ClientboundCustomQueryPacket;
-import org.adde0109.pcf.forwarding.network.ServerboundCustomQueryAnswerPacket;
+import org.adde0109.pcf.forwarding.network.protocol.login.ClientboundCustomQueryPacket;
+import org.adde0109.pcf.forwarding.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterCodec;
 import org.adde0109.pcf.v12_2.forge.forwarding.network.C2SCustomQueryAnswerPacket;
 import org.adde0109.pcf.v12_2.forge.forwarding.network.S2CCustomQueryPacket;
