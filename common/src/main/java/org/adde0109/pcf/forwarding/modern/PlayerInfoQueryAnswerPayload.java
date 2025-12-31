@@ -1,14 +1,14 @@
 package org.adde0109.pcf.forwarding.modern;
 
-import static org.adde0109.pcf.common.FriendlyByteBuf.readPayload;
-import static org.adde0109.pcf.common.FriendlyByteBuf.readUUID;
-import static org.adde0109.pcf.common.FriendlyByteBuf.readUtf;
-import static org.adde0109.pcf.common.FriendlyByteBuf.readVarInt;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_FORWARDING_WITH_KEY;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_FORWARDING_WITH_KEY_V2;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.createProfile;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.readForwardedKey;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.readSignerUuidOrElse;
+import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readPayload;
+import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readUUID;
+import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readUtf;
+import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readVarInt;
 
 import com.mojang.authlib.GameProfile;
 

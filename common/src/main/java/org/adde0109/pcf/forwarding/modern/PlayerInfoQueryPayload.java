@@ -1,9 +1,9 @@
 package org.adde0109.pcf.forwarding.modern;
 
-import static org.adde0109.pcf.common.FriendlyByteBuf.readPayload;
-import static org.adde0109.pcf.common.FriendlyByteBuf.readResourceLocation;
-import static org.adde0109.pcf.common.FriendlyByteBuf.writePayload;
-import static org.adde0109.pcf.common.FriendlyByteBuf.writeResourceLocation;
+import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readPayload;
+import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readResourceLocation;
+import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.writePayload;
+import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.writeResourceLocation;
 
 import io.netty.buffer.ByteBuf;
 
