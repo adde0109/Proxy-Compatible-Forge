@@ -318,6 +318,13 @@ public final class FriendlyByteBuf extends ByteBuf {
         }
     }
 
+    public static <T> T readOrElse(
+            final @NotNull ByteBuf buf,
+            final @NotNull StreamDecoder<? super ByteBuf, T> decoder,
+            final @NotNull T defaultValue) {
+        return buf.readBoolean() ? decoder.decode(buf) : defaultValue;
+    }
+
     public static @NotNull Instant readInstant(final @NotNull ByteBuf buf) {
         return Instant.ofEpochMilli(buf.readLong());
     }

@@ -4,11 +4,13 @@ import static org.adde0109.pcf.common.FriendlyByteBuf.Crypt.MAX_KEY_SIGNATURE_SI
 import static org.adde0109.pcf.common.FriendlyByteBuf.readByteArray;
 import static org.adde0109.pcf.common.FriendlyByteBuf.readInstant;
 import static org.adde0109.pcf.common.FriendlyByteBuf.readNullable;
+import static org.adde0109.pcf.common.FriendlyByteBuf.readOrElse;
 import static org.adde0109.pcf.common.FriendlyByteBuf.readPublicKey;
-import static org.adde0109.pcf.common.FriendlyByteBuf.readUUID;
 import static org.adde0109.pcf.common.FriendlyByteBuf.readUtf;
 import static org.adde0109.pcf.common.FriendlyByteBuf.readVarInt;
 import static org.adde0109.pcf.common.Identifier.identifier;
+import static org.adde0109.pcf.forwarding.modern.ReflectionUtils.V21_9;
+import static org.adde0109.pcf.forwarding.modern.ReflectionUtils.getProperties;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
@@ -32,8 +34,6 @@ import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterCodec;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -68,8 +68,8 @@ public final class VelocityProxy {
     public static final int MODERN_FORWARDING_WITH_KEY_V2 = 3;
     public static final int MODERN_LAZY_SESSION = 4;
     public static final byte MODERN_MAX_VERSION;
-    public static final @NotNull ByteBuf PLAYER_INFO_PACKET;
-    public static final @NotNull Object PLAYER_INFO_CHANNEL = identifier("velocity:player_info");
+    public static final ByteBuf PLAYER_INFO_PACKET;
+    public static final Object PLAYER_INFO_CHANNEL = identifier("velocity:player_info");
 
     static {
         final MinecraftVersion version = MetaAPI.instance().version();
@@ -101,10 +101,15 @@ public final class VelocityProxy {
 
     private static final String ALGORITHM = "HmacSHA256";
 
-    private static Method propertiesMethod;
-
     private VelocityProxy() {}
 
+    /**
+     * Checks the integrity of the player forwarding response
+     *
+     * @param buf the buffer
+     * @return true if the integrity is valid, false otherwise
+     * @throws AssertionError if the algorithm is not found or the key is invalid
+     */
     public static boolean checkIntegrity(final @NotNull ByteBuf buf) {
         final byte[] signature = new byte[32];
         buf.readBytes(signature);
@@ -129,36 +134,38 @@ public final class VelocityProxy {
         return true;
     }
 
-    @SuppressWarnings("JavaReflectionMemberAccess")
-    public static @NotNull GameProfile createProfile(final @NotNull ByteBuf buf) {
+    /**
+     * Creates a GameProfile from the given data
+     *
+     * @param playerId the player UUID
+     * @param playerName the player name
+     * @param buf the buffer
+     * @return the GameProfile
+     */
+    public static @NotNull GameProfile createProfile(
+            final @NotNull UUID playerId,
+            final @NotNull String playerName,
+            final @NotNull ByteBuf buf) {
         final GameProfile profile;
-        if (Constraint.builder()
-                .min(MinecraftVersions.V21_9)
-                .build()
-                .result()) { // com.mojang:authlib:7.0.0 or newer
-            profile =
-                    new GameProfile(
-                            readUUID(buf), readUtf(buf, 16), new PropertyMap(readProperties(buf)));
+        if (V21_9.result()) {
+            profile = new GameProfile(playerId, playerName, new PropertyMap(readProperties(buf)));
         } else {
-            profile = new GameProfile(readUUID(buf), readUtf(buf, 16));
-            try {
-                if (propertiesMethod == null) {
-                    propertiesMethod = GameProfile.class.getMethod("getProperties");
-                }
-                PropertyMap propertiesMap = (PropertyMap) propertiesMethod.invoke(profile);
-                final List<Map.Entry<String, Property>> properties = readProperties_7(buf);
-                for (final Map.Entry<String, Property> entry : properties) {
-                    propertiesMap.put(entry.getKey(), entry.getValue());
-                }
-            } catch (final IllegalAccessException
-                    | InvocationTargetException
-                    | NoSuchMethodException e) {
-                throw new IllegalStateException("Failed to set properties on GameProfile", e);
+            profile = new GameProfile(playerId, playerName);
+            PropertyMap propertiesMap = getProperties(profile);
+            final List<Map.Entry<String, Property>> properties = readProperties_7(buf);
+            for (final Map.Entry<String, Property> entry : properties) {
+                propertiesMap.put(entry.getKey(), entry.getValue());
             }
         }
         return profile;
     }
 
+    /**
+     * Reads profile properties from the given ByteBuf
+     *
+     * @param buf the buffer
+     * @return a multimap of properties
+     */
     private static @NotNull Multimap<String, Property> readProperties(final @NotNull ByteBuf buf) {
         final int count = readVarInt(buf);
         final ImmutableMultimap.Builder<String, Property> propertiesBuilder =
@@ -200,7 +207,7 @@ public final class VelocityProxy {
      */
     public static @NotNull UUID readSignerUuidOrElse(
             final @NotNull ByteBuf buf, final @NotNull UUID orElse) {
-        return buf.readBoolean() ? readUUID(buf) : orElse;
+        return readOrElse(buf, FriendlyByteBuf::readUUID, orElse);
     }
 
     /**
@@ -217,6 +224,9 @@ public final class VelocityProxy {
                 readInstant(buf), readPublicKey(buf), readByteArray(buf, MAX_KEY_SIGNATURE_SIZE));
     }
 
+    private static final Constraint V19_X_19_2 =
+            Constraint.builder().min(MinecraftVersions.V19).max(MinecraftVersions.V19_2).build();
+
     /**
      * Wrapper for MC's ProfilePublicKey.Data
      *
@@ -229,11 +239,7 @@ public final class VelocityProxy {
         public static final AdapterCodec<?, ProfilePublicKeyData> ADAPTER_CODEC;
 
         static {
-            if (Constraint.builder()
-                    .min(MinecraftVersions.V19)
-                    .max(MinecraftVersions.V19_2)
-                    .build()
-                    .result()) {
+            if (V19_X_19_2.result()) {
                 ADAPTER_CODEC =
                         (AdapterCodec<?, ProfilePublicKeyData>)
                                 PCF.instance().adapters().toMC(ProfilePublicKeyData.class);
@@ -245,10 +251,12 @@ public final class VelocityProxy {
         }
 
         public static <T> @NotNull ProfilePublicKeyData fromMC(final @NotNull T obj) {
+            assert ADAPTER_CODEC != null;
             return ((AdapterCodec<T, ProfilePublicKeyData>) ADAPTER_CODEC).fromMC(obj);
         }
 
         public <T> @NotNull T toMC() {
+            assert ADAPTER_CODEC != null;
             return ((AdapterCodec<T, ProfilePublicKeyData>) ADAPTER_CODEC).toMC(this);
         }
     }
