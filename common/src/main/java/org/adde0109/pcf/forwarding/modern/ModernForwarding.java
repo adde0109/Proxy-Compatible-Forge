@@ -33,7 +33,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.net.InetSocketAddress;
 import java.security.InvalidKeyException;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiConsumer;
@@ -69,41 +68,32 @@ public final class ModernForwarding {
                 || !PCF.instance().forwarding().mode().equals(Mode.MODERN)) {
             return;
         }
-        try {
-            slpl.bridge$setVelocityLoginMessageId(ThreadLocalRandom.current().nextInt());
-            TRANSACTION_IDS.add(slpl.bridge$velocityLoginMessageId());
-            slpl.bridge$connection()
-                    .bridge$send(
-                            new ClientboundCustomQueryPacket(
-                                            slpl.bridge$velocityLoginMessageId(),
-                                            PLAYER_INFO_PAYLOAD)
-                                    .toMC());
-            PCF.logger.debug("Sent Forward Request");
-            ci.cancel();
-        } catch (Exception e) {
-            PCF.logger.error("An error occurred while sending the forwarding request: ", e);
-        }
+        slpl.bridge$setVelocityLoginMessageId(ThreadLocalRandom.current().nextInt());
+        TRANSACTION_IDS.add(slpl.bridge$velocityLoginMessageId());
+        slpl.bridge$connection()
+                .bridge$send(
+                        new ClientboundCustomQueryPacket(
+                                        slpl.bridge$velocityLoginMessageId(), PLAYER_INFO_PAYLOAD)
+                                .toMC());
+        PCF.logger.debug("Sent Forward Request");
+        ci.cancel();
     }
 
     @ApiStatus.Internal
     public static BiConsumer<@NotNull ServerLoginPacketListenerBridge, @NotNull ByteBuf>
             preProcessor = (slpl, buf) -> {};
 
-    private static final @NotNull Object DIRECT_CONNECT_ERR =
+    private static final Object DIRECT_CONNECT_ERR =
             literal("This server requires you to connect with Velocity.");
-    private static final @NotNull Object EMPTY_PAYLOAD_ERR =
+    private static final Object EMPTY_PAYLOAD_ERR =
             literal("Received empty player info payload from the proxy.");
-    private static final @NotNull Object PLAYER_INFO_ERR =
-            literal("Unable to verify player details.");
-    private static final @NotNull Object FAILED_TO_VERIFY =
+    private static final Object PLAYER_INFO_ERR = literal("Unable to verify player details.");
+    private static final Object FAILED_TO_VERIFY =
             translatable("multiplayer.disconnect.unverified_username");
-    private static final @NotNull Object MISSING_PROFILE_PUBLIC_KEY =
+    private static final Object MISSING_PROFILE_PUBLIC_KEY =
             translatable("multiplayer.disconnect.missing_public_key");
-    private static final @NotNull Object INVALID_SIGNATURE =
+    private static final Object INVALID_SIGNATURE =
             translatable("multiplayer.disconnect.invalid_public_key_signature");
-
-    private static final Constraint IS_19_1_2 =
-            Constraint.builder().min(MinecraftVersions.V19_1).max(MinecraftVersions.V19_2).build();
 
     /**
      * Abstract implementation of the custom query packet handler
@@ -156,6 +146,7 @@ public final class ModernForwarding {
         final ServerboundCustomQueryAnswerPacket packet =
                 ServerboundCustomQueryAnswerPacket.fromMC(mcPacket);
 
+        // Validate payload presence
         if (packet.payload() == null) {
             slpl.bridge$disconnect(DIRECT_CONNECT_ERR);
             ci.cancel();
@@ -167,16 +158,16 @@ public final class ModernForwarding {
             ci.cancel();
             return;
         }
-        final ByteBuf buf = packet.payload().data();
 
         // Apply fixes
-        preProcessor.accept(slpl, buf);
+        preProcessor.accept(slpl, packet.payload().data());
 
+        // Remove transaction ID from pending set
         TRANSACTION_IDS.remove(slpl.bridge$velocityLoginMessageId());
 
         // Validate data
         try {
-            if (!checkIntegrity(buf)) {
+            if (!checkIntegrity(packet.payload().data())) {
                 slpl.bridge$disconnect(PLAYER_INFO_ERR);
                 ci.cancel();
                 return;
@@ -195,9 +186,11 @@ public final class ModernForwarding {
         }
         PCF.logger.debug("Player-data validated!");
 
+        // Decode payload
         final PlayerInfoQueryAnswerPayload payload =
                 packet.payload().as(PlayerInfoQueryAnswerPayload.STREAM_CODEC);
 
+        // Validate version
         int version = payload.version();
         if (version > MODERN_MAX_VERSION) {
             throw new IllegalStateException(
@@ -215,22 +208,26 @@ public final class ModernForwarding {
 
         // Handle profile key
         // Clear key on 1.19.1 - 1.19.2 if using MODERN_DEFAULT
-        if (version == MODERN_DEFAULT && IS_19_1_2.result()) {
-            ((ServerLoginPacketListener_KeyV2) slpl).bridge$profilePublicKeyData(null);
+        if (version == MODERN_DEFAULT
+                && Constraint.builder()
+                        .min(MinecraftVersions.V19_1)
+                        .max(MinecraftVersions.V19_2)
+                        .build()
+                        .result()) {
+            ((ServerLoginPacketListenerBridge.KeyV2) slpl).bridge$setProfilePublicKeyData(null);
         }
 
         // 1.19 forwarding with key v1
         if (version == MODERN_FORWARDING_WITH_KEY) {
             boolean enforceSecureProfile = enforceSecureProfile();
             try {
-                VelocityProxy.ProfilePublicKeyData publicKeyData = payload.key();
-                if (enforceSecureProfile && publicKeyData == null) {
+                if (enforceSecureProfile && payload.key() == null) {
                     slpl.bridge$disconnect(MISSING_PROFILE_PUBLIC_KEY);
                     ci.cancel();
                     return;
                 }
-                ((ServerLoginPacketListener_KeyV1) slpl)
-                        .bridge$setPlayerProfilePublicKey(publicKeyData);
+                ((ServerLoginPacketListenerBridge.KeyV1) slpl)
+                        .bridge$setPlayerProfilePublicKey(payload.key());
             } catch (DecoderException e) {
                 PCF.logger.error("Public key read failed.", e);
                 if (enforceSecureProfile) {
@@ -243,14 +240,13 @@ public final class ModernForwarding {
 
         // 1.19.1 - 1.19.2 forwarding with key v2
         if (version == MODERN_FORWARDING_WITH_KEY_V2) {
-            final VelocityProxy.ProfilePublicKeyData forwardedKeyData = payload.key();
-            final UUID signer = payload.signer();
-            if (((ServerLoginPacketListener_KeyV2) slpl).bridge$profilePublicKeyData() == null) {
+            if (((ServerLoginPacketListenerBridge.KeyV2) slpl).bridge$profilePublicKeyData()
+                    == null) {
                 try {
-                    ((ServerLoginPacketListener_KeyV2) slpl)
-                            .bridge$validatePublicKey(forwardedKeyData, signer);
-                    ((ServerLoginPacketListener_KeyV2) slpl)
-                            .bridge$profilePublicKeyData(forwardedKeyData);
+                    ((ServerLoginPacketListenerBridge.KeyV2) slpl)
+                            .bridge$validatePublicKey(payload.key(), payload.signer());
+                    ((ServerLoginPacketListenerBridge.KeyV2) slpl)
+                            .bridge$setProfilePublicKeyData(payload.key());
                 } catch (Exception e) {
                     slpl.bridge$logger_error("Failed to validate profile key: {}", e.getMessage());
                     slpl.bridge$disconnect(INVALID_SIGNATURE);

@@ -221,44 +221,26 @@ public final class FriendlyByteBuf extends ByteBuf {
         return Utf8String.read(buf, maxLength);
     }
 
-    public static int readVarInt(final @NotNull ByteBuf buf) {
-        return VarInt.read(buf);
-    }
-
-    public static @NotNull UUID readUUID(final @NotNull ByteBuf buf) {
-        return new UUID(buf.readLong(), buf.readLong());
-    }
-
     public static @NotNull ByteBuf writeUtf(
             final @NotNull ByteBuf buf, final @NotNull String string) {
-        return writeUtf(buf, string, MAX_STRING_LENGTH);
+        return Utf8String.write(buf, string, MAX_STRING_LENGTH);
     }
 
     public static @NotNull ByteBuf writeUtf(
             final @NotNull ByteBuf buf, final @NotNull String string, int maxLength) {
-        byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
-        if (bytes.length > maxLength) {
-            throw new EncoderException(
-                    "String too big (was "
-                            + bytes.length
-                            + " bytes encoded, max "
-                            + maxLength
-                            + ")");
-        } else {
-            writeVarInt(buf, bytes.length);
-            buf.writeBytes(bytes);
-            return buf;
-        }
+        return Utf8String.write(buf, string, maxLength);
     }
 
-    public static @NotNull ByteBuf writeVarInt(final @NotNull ByteBuf buf, int input) {
-        while ((input & -VarInt.CONTINUATION_BIT_MASK) != 0) {
-            buf.writeByte(input & VarInt.DATA_BITS_MASK | VarInt.CONTINUATION_BIT_MASK);
-            input >>>= VarInt.DATA_BITS_PER_BYTE;
-        }
+    public static int readVarInt(final @NotNull ByteBuf buf) {
+        return VarInt.read(buf);
+    }
 
-        buf.writeByte(input);
-        return buf;
+    public static @NotNull ByteBuf writeVarInt(final @NotNull ByteBuf buf, int varInt) {
+        return VarInt.write(buf, varInt);
+    }
+
+    public static @NotNull UUID readUUID(final @NotNull ByteBuf buf) {
+        return new UUID(buf.readLong(), buf.readLong());
     }
 
     public static byte[] readByteArray(final @NotNull ByteBuf buf, int maxLength) {
@@ -279,7 +261,7 @@ public final class FriendlyByteBuf extends ByteBuf {
 
     public static @NotNull ByteBuf writeResourceLocation(
             final @NotNull ByteBuf buf, final @NotNull Object resourceLocationIn) {
-        writeUtf(buf, resourceLocationIn.toString(), MAX_STRING_LENGTH);
+        writeUtf(buf, resourceLocationIn.toString());
         return buf;
     }
 
@@ -1316,6 +1298,23 @@ public final class FriendlyByteBuf extends ByteBuf {
                         return s;
                     }
                 }
+            }
+        }
+
+        public static @NotNull ByteBuf write(
+                final @NotNull ByteBuf buf, final @NotNull String string, int maxLength) {
+            byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
+            if (bytes.length > maxLength) {
+                throw new EncoderException(
+                        "String too big (was "
+                                + bytes.length
+                                + " bytes encoded, max "
+                                + maxLength
+                                + ")");
+            } else {
+                VarInt.write(buf, bytes.length);
+                buf.writeBytes(bytes);
+                return buf;
             }
         }
     }

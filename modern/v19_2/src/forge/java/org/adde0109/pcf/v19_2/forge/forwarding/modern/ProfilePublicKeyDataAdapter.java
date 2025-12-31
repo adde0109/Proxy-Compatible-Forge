@@ -2,7 +2,7 @@ package org.adde0109.pcf.v19_2.forge.forwarding.modern;
 
 import net.minecraft.world.entity.player.ProfilePublicKey;
 
-import org.adde0109.pcf.forwarding.modern.VelocityProxy.ProfilePublicKeyData;
+import org.adde0109.pcf.forwarding.modern.ProfilePublicKeyData;
 import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterCodec;
 import org.jetbrains.annotations.NotNull;
 

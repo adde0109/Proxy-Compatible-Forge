@@ -4,7 +4,6 @@ import static org.adde0109.pcf.common.FriendlyByteBuf.readPayload;
 import static org.adde0109.pcf.common.FriendlyByteBuf.readUUID;
 import static org.adde0109.pcf.common.FriendlyByteBuf.readUtf;
 import static org.adde0109.pcf.common.FriendlyByteBuf.readVarInt;
-import static org.adde0109.pcf.common.FriendlyByteBuf.writePayload;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_FORWARDING_WITH_KEY;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_FORWARDING_WITH_KEY_V2;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.createProfile;
@@ -23,16 +22,19 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 /**
- * Payload response for the player info query
+ * Payload response for the player info query.
  *
- * @param data the buffer
+ * @param version the forwarding version used
+ * @param address the forwarded client IP
+ * @param profile the forwarded game profile
+ * @param key the forwarded profile public key data
+ * @param signer the signer's UUID
  */
 public record PlayerInfoQueryAnswerPayload(
-        @NotNull ByteBuf data,
         int version,
         @NotNull String address,
         @NotNull GameProfile profile,
-        @Nullable VelocityProxy.ProfilePublicKeyData key,
+        @Nullable ProfilePublicKeyData key,
         @Nullable UUID signer)
         implements CustomQueryAnswerPayload {
     public static final StreamCodec<@NotNull ByteBuf, @NotNull PlayerInfoQueryAnswerPayload>
@@ -48,7 +50,7 @@ public record PlayerInfoQueryAnswerPayload(
         final UUID playerId = readUUID(data);
         final String playerName = readUtf(data, 16);
         final GameProfile profile = createProfile(playerId, playerName, data);
-        VelocityProxy.ProfilePublicKeyData key = null;
+        ProfilePublicKeyData key = null;
         if (version == MODERN_FORWARDING_WITH_KEY || version == MODERN_FORWARDING_WITH_KEY_V2) {
             key = readForwardedKey(data);
         }
@@ -56,11 +58,18 @@ public record PlayerInfoQueryAnswerPayload(
         if (version == MODERN_FORWARDING_WITH_KEY_V2) {
             signer = readSignerUuidOrElse(data, playerId);
         }
-        return new PlayerInfoQueryAnswerPayload(data, version, address, profile, key, signer);
+        return new PlayerInfoQueryAnswerPayload(version, address, profile, key, signer);
     }
 
     private void write(final @NotNull ByteBuf buf) {
-        writePayload(buf, this.data);
+        throw new UnsupportedOperationException(
+                this.getClass().getName() + " does not support serialization.");
+    }
+
+    @Override
+    public @NotNull ByteBuf data() {
+        throw new UnsupportedOperationException(
+                this.getClass().getName() + " does not retain raw data.");
     }
 
     @Override
