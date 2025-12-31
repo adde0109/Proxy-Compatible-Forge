@@ -49,6 +49,7 @@ import java.util.UUID;
 public final class FriendlyByteBuf extends ByteBuf {
     public static final short MAX_STRING_LENGTH = Short.MAX_VALUE;
     public static final int MAX_PAYLOAD_SIZE = 1048576; // 20 bits
+    // Serverbound custom payload packet max size is only 32767
 
     private final @NotNull ByteBuf source;
 
@@ -163,15 +164,15 @@ public final class FriendlyByteBuf extends ByteBuf {
         return writeUtf(this.source, string, maxLength);
     }
 
-    public @NotNull ByteBuf writeUtf(String string) {
+    public @NotNull ByteBuf writeUtf(final @NotNull String string) {
         return writeUtf(this.source, string, MAX_STRING_LENGTH);
     }
 
-    public @NotNull ByteBuf writeVarInt(int input) {
+    public @NotNull ByteBuf writeVarInt(final int input) {
         return writeVarInt(this.source, input);
     }
 
-    public byte[] readByteArray(int maxLength) {
+    public byte[] readByteArray(final int maxLength) {
         return readByteArray(this.source, maxLength);
     }
 
@@ -226,6 +227,11 @@ public final class FriendlyByteBuf extends ByteBuf {
 
     public static @NotNull UUID readUUID(final @NotNull ByteBuf buf) {
         return new UUID(buf.readLong(), buf.readLong());
+    }
+
+    public static @NotNull ByteBuf writeUtf(
+            final @NotNull ByteBuf buf, final @NotNull String string) {
+        return writeUtf(buf, string, MAX_STRING_LENGTH);
     }
 
     public static @NotNull ByteBuf writeUtf(

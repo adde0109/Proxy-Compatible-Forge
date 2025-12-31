@@ -1,9 +1,6 @@
 package org.adde0109.pcf.forwarding.network;
 
-import static org.adde0109.pcf.common.FriendlyByteBuf.readPayload;
-import static org.adde0109.pcf.common.FriendlyByteBuf.readUtf;
 import static org.adde0109.pcf.common.FriendlyByteBuf.readVarInt;
-import static org.adde0109.pcf.common.FriendlyByteBuf.writeResourceLocation;
 import static org.adde0109.pcf.common.FriendlyByteBuf.writeVarInt;
 
 import io.netty.buffer.ByteBuf;
@@ -18,19 +15,20 @@ public record ClientboundCustomQueryPacket(int transactionId, @NotNull CustomQue
         implements Packet {
     public static final StreamCodec<ByteBuf, ClientboundCustomQueryPacket> STREAM_CODEC =
             Packet.codec(ClientboundCustomQueryPacket::write, ClientboundCustomQueryPacket::read);
+
     public static final AdapterCodec<?, ClientboundCustomQueryPacket> ADAPTER_CODEC =
             (AdapterCodec<?, ClientboundCustomQueryPacket>)
                     PCF.instance().adapters().toMC(ClientboundCustomQueryPacket.class);
 
     private static ClientboundCustomQueryPacket read(final @NotNull ByteBuf buf) {
-        return new ClientboundCustomQueryPacket(
-                readVarInt(buf), new CustomQueryPayloadImpl(readUtf(buf), readPayload(buf)));
+        final int transactionId = readVarInt(buf);
+        final CustomQueryPayload p = CustomQueryPayload.DEFAULT_CODEC.decode(buf);
+        return new ClientboundCustomQueryPacket(transactionId, p);
     }
 
     private void write(final @NotNull ByteBuf buf) {
         writeVarInt(buf, this.transactionId);
-        writeResourceLocation(buf, this.payload.id());
-        this.payload.write(buf);
+        ((StreamCodec<ByteBuf, CustomQueryPayload>) this.payload.codec()).encode(buf, this.payload);
     }
 
     public static <T> @NotNull ClientboundCustomQueryPacket fromMC(final @NotNull T obj) {

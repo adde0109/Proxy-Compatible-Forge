@@ -14,6 +14,7 @@ import net.fabricmc.fabric.impl.networking.NetworkHandlerExtensions;
 import net.fabricmc.fabric.impl.networking.server.ServerLoginNetworkAddon;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.custom.payload.SimpleQueryPayload;
 
 import org.adde0109.pcf.PCF;
@@ -72,7 +73,7 @@ public final class Compatibility {
                             : SimpleQueryPayload.outbound(
                                     new FriendlyByteBuf(buf),
                                     transactionId,
-                                    PLAYER_INFO_CHANNEL()));
+                                    (ResourceLocation) PLAYER_INFO_CHANNEL));
         }
     }
 
