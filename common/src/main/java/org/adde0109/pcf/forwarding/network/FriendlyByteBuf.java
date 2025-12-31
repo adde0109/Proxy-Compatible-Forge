@@ -4,16 +4,11 @@ import static org.adde0109.pcf.common.Identifier.identifier;
 
 import com.google.common.net.InetAddresses;
 
-import dev.neuralnexus.taterapi.meta.MetaAPI;
-import dev.neuralnexus.taterapi.meta.MinecraftVersions;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.DecoderException;
-import io.netty.handler.codec.EncoderException;
 import io.netty.util.ByteProcessor;
-import io.netty.util.CharsetUtil;
 
 import org.adde0109.pcf.forwarding.network.codec.StreamDecoder;
 import org.adde0109.pcf.forwarding.network.codec.StreamEncoder;
@@ -30,7 +25,6 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.GatheringByteChannel;
 import java.nio.channels.ScatteringByteChannel;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.EncodedKeySpec;
@@ -40,16 +34,15 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Utils copied (in part, as needed) from Minecraft's FriendlyByteBuf, Crypt, Utf8String, and VarInt
- * implementations. <br>
+ * Utils copied (in part, as needed) from Minecraft's FriendlyByteBuf and Crypt implementations. <br>
  * Given that, any who use this class must comply with Minecraft's EULA. This class exists purely
  * for compatibility's sake when dealing with multi-version code.
  */
 @SuppressWarnings("UnusedReturnValue")
 public final class FriendlyByteBuf extends ByteBuf {
-    public static final short MAX_STRING_LENGTH = Short.MAX_VALUE;
+    public static final int MAX_STRING_LENGTH = 65535; // 16 bits
     public static final int MAX_PAYLOAD_SIZE = 1048576; // 20 bits
-    // Serverbound custom payload packet max size is only 32767
+    // Serverbound custom payload packet max size is only 32767 (Short.MAX_VALUE)
 
     private final @NotNull ByteBuf source;
 
@@ -1261,125 +1254,6 @@ public final class FriendlyByteBuf extends ByteBuf {
     public static final class CryptException extends Exception {
         public CryptException(final @NotNull Throwable cause) {
             super(cause);
-        }
-    }
-
-    private static final class Utf8String {
-        public static @NotNull String read(final @NotNull ByteBuf buf, int maxLength) {
-            int i = ByteBufUtil.utf8MaxBytes(maxLength);
-            int j = VarInt.read(buf);
-            if (j > i) {
-                throw new DecoderException(
-                        "The received encoded string buffer length is longer than maximum allowed ("
-                                + j
-                                + " > "
-                                + i
-                                + ")");
-            } else if (j < 0) {
-                throw new DecoderException(
-                        "The received encoded string buffer length is less than zero! Weird string!");
-            } else {
-                int k = buf.readableBytes();
-                if (j > k) {
-                    throw new DecoderException(
-                            "Not enough bytes in buffer, expected " + j + ", but got " + k);
-                } else {
-                    String s = buf.toString(buf.readerIndex(), j, StandardCharsets.UTF_8);
-                    buf.readerIndex(buf.readerIndex() + j);
-                    if (s.length() > maxLength) {
-                        int length = s.length();
-                        throw new DecoderException(
-                                "The received string length is longer than maximum allowed ("
-                                        + length
-                                        + " > "
-                                        + maxLength
-                                        + ")");
-                    } else {
-                        return s;
-                    }
-                }
-            }
-        }
-
-        public static @NotNull ByteBuf write(
-                final @NotNull ByteBuf buf, final @NotNull String string, int maxLength) {
-            byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
-            if (bytes.length > maxLength) {
-                throw new EncoderException(
-                        "String too big (was "
-                                + bytes.length
-                                + " bytes encoded, max "
-                                + maxLength
-                                + ")");
-            } else {
-                VarInt.write(buf, bytes.length);
-                buf.writeBytes(bytes);
-                return buf;
-            }
-        }
-    }
-
-    private static final class ByteBufUtil {
-        private static final int MAX_BYTES_PER_CHAR_UTF8;
-
-        static { // Netty 4.1 differences
-            if (MetaAPI.instance().version().isAtLeast(MinecraftVersions.V12)) {
-                MAX_BYTES_PER_CHAR_UTF8 =
-                        (int) CharsetUtil.encoder(CharsetUtil.UTF_8).maxBytesPerChar();
-            } else {
-                //noinspection deprecation
-                MAX_BYTES_PER_CHAR_UTF8 =
-                        (int) CharsetUtil.getEncoder(CharsetUtil.UTF_8).maxBytesPerChar();
-            }
-        }
-
-        public static int utf8MaxBytes(final int seqLength) {
-            return seqLength * MAX_BYTES_PER_CHAR_UTF8;
-        }
-    }
-
-    private static final class VarInt {
-        public static final int MAX_VARINT_SIZE = 5;
-        private static final int DATA_BITS_MASK = 127;
-        private static final int CONTINUATION_BIT_MASK = 128;
-        private static final int DATA_BITS_PER_BYTE = 7;
-
-        public static int getByteSize(int bytes) {
-            for (int i = 1; i < MAX_VARINT_SIZE; ++i) {
-                if ((bytes & -1 << i * DATA_BITS_PER_BYTE) == 0) {
-                    return i;
-                }
-            }
-            return MAX_VARINT_SIZE;
-        }
-
-        public static boolean hasContinuationBit(byte b) {
-            return (b & CONTINUATION_BIT_MASK) == CONTINUATION_BIT_MASK;
-        }
-
-        public static int read(final @NotNull ByteBuf buf) {
-            int i = 0;
-            int j = 0;
-
-            byte b0;
-            do {
-                b0 = buf.readByte();
-                i |= (b0 & DATA_BITS_MASK) << j++ * DATA_BITS_PER_BYTE;
-                if (j > MAX_VARINT_SIZE) {
-                    throw new RuntimeException("VarInt too big");
-                }
-            } while (hasContinuationBit(b0));
-
-            return i;
-        }
-
-        public static @NotNull ByteBuf write(final @NotNull ByteBuf buf, int varInt) {
-            while ((varInt & -CONTINUATION_BIT_MASK) != 0) {
-                buf.writeByte(varInt & DATA_BITS_MASK | CONTINUATION_BIT_MASK);
-                varInt >>>= DATA_BITS_PER_BYTE;
-            }
-            buf.writeByte(varInt);
-            return buf;
         }
     }
 }

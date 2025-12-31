@@ -1,4 +1,4 @@
-package org.adde0109.pcf.forwarding.network;
+package org.adde0109.pcf.forwarding.network.protocol.login.custom;
 
 import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readPayload;
 

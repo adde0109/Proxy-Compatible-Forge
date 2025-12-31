@@ -7,7 +7,7 @@ import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.writeResourceL
 
 import io.netty.buffer.ByteBuf;
 
-import org.adde0109.pcf.forwarding.network.CustomQueryPayload;
+import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryPayload;
 import org.adde0109.pcf.forwarding.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,4 +1,4 @@
-package org.adde0109.pcf.forwarding.network;
+package org.adde0109.pcf.forwarding.network.protocol;
 
 import io.netty.buffer.ByteBuf;
 
