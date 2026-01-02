@@ -1,9 +1,10 @@
 package org.adde0109.pcf.v19_2.forge.forwarding.modern;
 
+import dev.neuralnexus.taterapi.adapter.AdapterCodec;
+
 import net.minecraft.world.entity.player.ProfilePublicKey;
 
 import org.adde0109.pcf.forwarding.modern.ProfilePublicKeyData;
-import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterCodec;
 import org.jetbrains.annotations.NotNull;
 
 public final class ProfilePublicKeyDataAdapter
@@ -11,13 +12,12 @@ public final class ProfilePublicKeyDataAdapter
     public static final ProfilePublicKeyDataAdapter INSTANCE = new ProfilePublicKeyDataAdapter();
 
     @Override
-    public @NotNull ProfilePublicKeyData fromMC(@NotNull ProfilePublicKey.Data mcObject) {
-        return new ProfilePublicKeyData(
-                mcObject.expiresAt(), mcObject.key(), mcObject.keySignature());
+    public @NotNull ProfilePublicKeyData from(@NotNull ProfilePublicKey.Data object) {
+        return new ProfilePublicKeyData(object.expiresAt(), object.key(), object.keySignature());
     }
 
     @Override
-    public @NotNull ProfilePublicKey.Data toMC(@NotNull ProfilePublicKeyData object) {
+    public @NotNull ProfilePublicKey.Data to(@NotNull ProfilePublicKeyData object) {
         return new ProfilePublicKey.Data(object.expiresAt(), object.key(), object.keySignature());
     }
 }

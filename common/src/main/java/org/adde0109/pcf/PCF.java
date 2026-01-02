@@ -1,5 +1,6 @@
 package org.adde0109.pcf;
 
+import dev.neuralnexus.taterapi.adapter.AdapterRegistry;
 import dev.neuralnexus.taterapi.loader.EntrypointLoader;
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.meta.Constraint;
@@ -12,7 +13,6 @@ import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 
 import org.adde0109.pcf.forwarding.Mode;
-import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterRegistry;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 

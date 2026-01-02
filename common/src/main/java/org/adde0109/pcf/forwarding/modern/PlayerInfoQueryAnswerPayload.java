@@ -1,22 +1,24 @@
 package org.adde0109.pcf.forwarding.modern;
 
+import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readAddress;
+import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readPayload;
+import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readUUID;
+import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readUtf;
+import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readVarInt;
+
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_FORWARDING_WITH_KEY;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_FORWARDING_WITH_KEY_V2;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.createProfile;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.readForwardedKey;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.readSignerUuidOrElse;
-import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readAddress;
-import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readPayload;
-import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readUUID;
-import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readUtf;
-import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readVarInt;
 
 import com.mojang.authlib.GameProfile;
 
+import dev.neuralnexus.taterapi.network.codec.StreamCodec;
+import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryAnswerPayload;
+
 import io.netty.buffer.ByteBuf;
 
-import org.adde0109.pcf.forwarding.network.codec.StreamCodec;
-import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryAnswerPayload;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -1,16 +1,17 @@
 package org.adde0109.pcf.forwarding.modern;
 
-import static org.adde0109.pcf.common.Identifier.identifier;
+import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.Crypt.MAX_KEY_SIGNATURE_SIZE;
+import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readByteArray;
+import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readInstant;
+import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readNullable;
+import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readOrElse;
+import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readPublicKey;
+import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readUtf;
+import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readVarInt;
+import static dev.neuralnexus.taterapi.resources.Identifier.identifier;
+
 import static org.adde0109.pcf.forwarding.modern.ReflectionUtils.V21_9;
 import static org.adde0109.pcf.forwarding.modern.ReflectionUtils.getProperties;
-import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.Crypt.MAX_KEY_SIGNATURE_SIZE;
-import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readByteArray;
-import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readInstant;
-import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readNullable;
-import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readOrElse;
-import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readPublicKey;
-import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readUtf;
-import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readVarInt;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
@@ -21,14 +22,14 @@ import com.mojang.authlib.properties.PropertyMap;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
+import dev.neuralnexus.taterapi.network.FriendlyByteBuf;
+import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayload;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.DecoderException;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.forwarding.network.FriendlyByteBuf;
-import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryPayload;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -1,11 +1,12 @@
 package org.adde0109.pcf.v12_2.forge.forwarding.network;
 
+import dev.neuralnexus.taterapi.network.protocol.login.ServerboundCustomQueryAnswerPacket;
+import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryAnswerPayload;
+
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.login.INetHandlerLoginServer;
 
-import org.adde0109.pcf.forwarding.network.protocol.login.ServerboundCustomQueryAnswerPacket;
-import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryAnswerPayload;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

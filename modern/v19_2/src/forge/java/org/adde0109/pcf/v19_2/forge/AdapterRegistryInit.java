@@ -7,6 +7,7 @@ import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.enums.Platform;
+import dev.neuralnexus.taterapi.network.NetworkAdapters;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.PCFInitializer;
@@ -27,11 +28,8 @@ public final class AdapterRegistryInit implements PCFInitializer {
                 .result()) {
             PCF.instance().adapters().register(ProfilePublicKeyDataAdapter.INSTANCE);
         }
-        PCF.instance()
-                .adapters()
-                .register(
-                        CCustomQueryPacketAdapter.INSTANCE,
-                        SCustomQueryAnswerPacketAdapter.INSTANCE);
+        NetworkAdapters.register(
+                CCustomQueryPacketAdapter.INSTANCE, SCustomQueryAnswerPacketAdapter.INSTANCE);
     }
 
     @Override

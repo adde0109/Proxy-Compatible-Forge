@@ -1,7 +1,8 @@
 package org.adde0109.pcf.forwarding.modern;
 
-import static org.adde0109.pcf.common.Component.literal;
-import static org.adde0109.pcf.common.Component.translatable;
+import static dev.neuralnexus.taterapi.network.chat.Component.literal;
+import static dev.neuralnexus.taterapi.network.chat.Component.translatable;
+
 import static org.adde0109.pcf.forwarding.modern.ReflectionUtils.enforceSecureProfile;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_DEFAULT;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_FORWARDING_WITH_KEY;
@@ -16,6 +17,9 @@ import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.mixin.CancellableMixin;
+import dev.neuralnexus.taterapi.network.protocol.login.ClientboundCustomQueryPacket;
+import dev.neuralnexus.taterapi.network.protocol.login.ServerboundCustomQueryAnswerPacket;
+import dev.neuralnexus.taterapi.server.players.NameAndId;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.DecoderException;
@@ -23,8 +27,6 @@ import io.netty.handler.codec.DecoderException;
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.forwarding.Mode;
 import org.adde0109.pcf.forwarding.compat.ArclightBridge;
-import org.adde0109.pcf.forwarding.network.protocol.login.ClientboundCustomQueryPacket;
-import org.adde0109.pcf.forwarding.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;

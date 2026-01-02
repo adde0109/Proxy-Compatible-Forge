@@ -5,6 +5,7 @@ import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.enums.Platform;
+import dev.neuralnexus.taterapi.network.NetworkAdapters;
 
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -24,11 +25,8 @@ import org.apache.commons.lang3.tuple.Pair;
         version = @Versions(min = MinecraftVersion.V14))
 public final class Initializer implements PCFInitializer {
     public Initializer() {
-        PCF.instance()
-                .adapters()
-                .register(
-                        CCustomQueryPacketAdapter.INSTANCE,
-                        SCustomQueryAnswerPacketAdapter.INSTANCE);
+        NetworkAdapters.register(
+                CCustomQueryPacketAdapter.INSTANCE, SCustomQueryAnswerPacketAdapter.INSTANCE);
     }
 
     @Override
