@@ -5,6 +5,7 @@ import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_FORWARDING
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.createProfile;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.readForwardedKey;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.readSignerUuidOrElse;
+import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readAddress;
 import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readPayload;
 import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readUUID;
 import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readUtf;
@@ -19,6 +20,7 @@ import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryAnsw
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.net.InetAddress;
 import java.util.UUID;
 
 /**
@@ -32,7 +34,7 @@ import java.util.UUID;
  */
 public record PlayerInfoQueryAnswerPayload(
         int version,
-        @NotNull String address,
+        @NotNull InetAddress address,
         @NotNull GameProfile profile,
         @Nullable ProfilePublicKeyData key,
         @Nullable UUID signer)
@@ -46,7 +48,7 @@ public record PlayerInfoQueryAnswerPayload(
     private static @NotNull PlayerInfoQueryAnswerPayload read(final @NotNull ByteBuf buf) {
         final ByteBuf data = readPayload(buf);
         final int version = readVarInt(data);
-        final String address = readUtf(data);
+        final InetAddress address = readAddress(data);
         final UUID playerId = readUUID(data);
         final String playerName = readUtf(data, 16);
         final GameProfile profile = createProfile(playerId, playerName, data);
