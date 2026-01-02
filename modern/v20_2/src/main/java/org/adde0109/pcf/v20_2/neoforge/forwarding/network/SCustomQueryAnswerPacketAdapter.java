@@ -1,15 +1,15 @@
 package org.adde0109.pcf.v20_2.neoforge.forwarding.network;
 
+import dev.neuralnexus.taterapi.adapter.AdapterCodec;
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
+import dev.neuralnexus.taterapi.network.protocol.login.ServerboundCustomQueryAnswerPacket;
+import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryAnswerPayloadImpl;
 
 import io.netty.buffer.Unpooled;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterCodec;
-import org.adde0109.pcf.forwarding.network.protocol.login.ServerboundCustomQueryAnswerPacket;
-import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryAnswerPayloadImpl;
 import org.jetbrains.annotations.NotNull;
 
 @AConstraint(mappings = Mappings.MOJANG)
@@ -21,20 +21,20 @@ public final class SCustomQueryAnswerPacketAdapter
             new SCustomQueryAnswerPacketAdapter();
 
     @Override
-    public @NotNull ServerboundCustomQueryAnswerPacket fromMC(
+    public @NotNull ServerboundCustomQueryAnswerPacket from(
             final @NotNull net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket
-                            mcObject) {
-        if (mcObject.payload() == null) {
-            return new ServerboundCustomQueryAnswerPacket(mcObject.transactionId());
+                            object) {
+        if (object.payload() == null) {
+            return new ServerboundCustomQueryAnswerPacket(object.transactionId());
         }
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        mcObject.payload().write(buf);
+        object.payload().write(buf);
         return new ServerboundCustomQueryAnswerPacket(
-                mcObject.transactionId(), new CustomQueryAnswerPayloadImpl(buf.slice()));
+                object.transactionId(), new CustomQueryAnswerPayloadImpl(buf.slice()));
     }
 
     @Override
-    public @NotNull net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket toMC(
+    public @NotNull net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket to(
             final @NotNull ServerboundCustomQueryAnswerPacket object) {
         if (object.payload() == null) {
             return new net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket(

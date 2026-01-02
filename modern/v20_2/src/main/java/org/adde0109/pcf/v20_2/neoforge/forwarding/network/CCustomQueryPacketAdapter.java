@@ -1,17 +1,17 @@
 package org.adde0109.pcf.v20_2.neoforge.forwarding.network;
 
-import static org.adde0109.pcf.common.Identifier.identifier;
+import static dev.neuralnexus.taterapi.resources.Identifier.identifier;
 
+import dev.neuralnexus.taterapi.adapter.AdapterCodec;
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
+import dev.neuralnexus.taterapi.network.protocol.login.ClientboundCustomQueryPacket;
+import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayloadImpl;
 
 import io.netty.buffer.Unpooled;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterCodec;
-import org.adde0109.pcf.forwarding.network.protocol.login.ClientboundCustomQueryPacket;
-import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryPayloadImpl;
 import org.jetbrains.annotations.NotNull;
 
 @AConstraint(mappings = Mappings.MOJANG)
@@ -22,18 +22,18 @@ public final class CCustomQueryPacketAdapter
     public static final CCustomQueryPacketAdapter INSTANCE = new CCustomQueryPacketAdapter();
 
     @Override
-    public @NotNull ClientboundCustomQueryPacket fromMC(
+    public @NotNull ClientboundCustomQueryPacket from(
             final @NotNull net.minecraft.network.protocol.login.ClientboundCustomQueryPacket
-                            mcObject) {
+                            object) {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        mcObject.payload().write(buf);
+        object.payload().write(buf);
         return new ClientboundCustomQueryPacket(
-                mcObject.transactionId(),
-                new CustomQueryPayloadImpl(mcObject.payload().id().toString(), buf.slice()));
+                object.transactionId(),
+                new CustomQueryPayloadImpl(object.payload().id().toString(), buf.slice()));
     }
 
     @Override
-    public @NotNull net.minecraft.network.protocol.login.ClientboundCustomQueryPacket toMC(
+    public @NotNull net.minecraft.network.protocol.login.ClientboundCustomQueryPacket to(
             final @NotNull ClientboundCustomQueryPacket object) {
         return new net.minecraft.network.protocol.login.ClientboundCustomQueryPacket(
                 object.transactionId(),

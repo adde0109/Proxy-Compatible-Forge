@@ -6,6 +6,8 @@ import static org.adde0109.pcf.v20_4.forge.crossstitch.CSBootstrap.shouldWrapArg
 
 import com.mojang.brigadier.arguments.ArgumentType;
 
+import dev.neuralnexus.taterapi.network.FriendlyByteBuf;
+
 import io.netty.buffer.Unpooled;
 
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
@@ -13,7 +15,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.forwarding.network.FriendlyByteBuf;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Optional;

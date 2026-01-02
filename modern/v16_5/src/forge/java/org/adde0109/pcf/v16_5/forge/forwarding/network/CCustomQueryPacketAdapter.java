@@ -1,12 +1,13 @@
 package org.adde0109.pcf.v16_5.forge.forwarding.network;
 
-import static org.adde0109.pcf.common.Identifier.identifier;
+import static dev.neuralnexus.taterapi.resources.Identifier.identifier;
+
+import dev.neuralnexus.taterapi.adapter.AdapterCodec;
+import dev.neuralnexus.taterapi.network.protocol.login.ClientboundCustomQueryPacket;
+import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayloadImpl;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterCodec;
-import org.adde0109.pcf.forwarding.network.protocol.login.ClientboundCustomQueryPacket;
-import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryPayloadImpl;
 import org.adde0109.pcf.mixin.v16_5.forge.forwarding.modern.ClientboundCustomQueryPacketAccessor;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,21 +18,21 @@ public final class CCustomQueryPacketAdapter
     public static final CCustomQueryPacketAdapter INSTANCE = new CCustomQueryPacketAdapter();
 
     @Override
-    public @NotNull ClientboundCustomQueryPacket fromMC(
+    public @NotNull ClientboundCustomQueryPacket from(
             final @NotNull net.minecraft.network.protocol.login.ClientboundCustomQueryPacket
-                            mcObject) {
+                            object) {
         return new ClientboundCustomQueryPacket(
-                ((ClientboundCustomQueryPacketAccessor) mcObject).pcf$getTransactionId(),
+                ((ClientboundCustomQueryPacketAccessor) object).pcf$getTransactionId(),
                 new CustomQueryPayloadImpl(
-                        ((ClientboundCustomQueryPacketAccessor) mcObject)
+                        ((ClientboundCustomQueryPacketAccessor) object)
                                 .pcf$getIdentifier()
                                 .toString(),
-                        ((ClientboundCustomQueryPacketAccessor) mcObject).pcf$getData().slice()));
+                        ((ClientboundCustomQueryPacketAccessor) object).pcf$getData().slice()));
     }
 
     @SuppressWarnings("DataFlowIssue")
     @Override
-    public @NotNull net.minecraft.network.protocol.login.ClientboundCustomQueryPacket toMC(
+    public @NotNull net.minecraft.network.protocol.login.ClientboundCustomQueryPacket to(
             final @NotNull ClientboundCustomQueryPacket object) {
         net.minecraft.network.protocol.login.ClientboundCustomQueryPacket mcObject =
                 new net.minecraft.network.protocol.login.ClientboundCustomQueryPacket();

@@ -4,13 +4,14 @@ import static org.adde0109.pcf.v14_4.forge.crossstitch.CSBootstrap.shouldWrapArg
 
 import com.mojang.brigadier.arguments.ArgumentType;
 
+import dev.neuralnexus.taterapi.network.FriendlyByteBuf;
+
 import io.netty.buffer.Unpooled;
 
 import net.minecraft.commands.synchronization.ArgumentSerializer;
 import net.minecraft.resources.ResourceLocation;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.forwarding.network.FriendlyByteBuf;
 
 /**
  * Adapted from <a

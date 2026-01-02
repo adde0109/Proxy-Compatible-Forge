@@ -1,12 +1,13 @@
 package org.adde0109.pcf.v19_2.forge.forwarding.network;
 
-import static org.adde0109.pcf.common.Identifier.identifier;
+import static dev.neuralnexus.taterapi.resources.Identifier.identifier;
+
+import dev.neuralnexus.taterapi.adapter.AdapterCodec;
+import dev.neuralnexus.taterapi.network.protocol.login.ClientboundCustomQueryPacket;
+import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayloadImpl;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterCodec;
-import org.adde0109.pcf.forwarding.network.protocol.login.ClientboundCustomQueryPacket;
-import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryPayloadImpl;
 import org.jetbrains.annotations.NotNull;
 
 public final class CCustomQueryPacketAdapter
@@ -16,17 +17,17 @@ public final class CCustomQueryPacketAdapter
     public static final CCustomQueryPacketAdapter INSTANCE = new CCustomQueryPacketAdapter();
 
     @Override
-    public @NotNull ClientboundCustomQueryPacket fromMC(
+    public @NotNull ClientboundCustomQueryPacket from(
             final @NotNull net.minecraft.network.protocol.login.ClientboundCustomQueryPacket
-                            mcObject) {
+                            object) {
         return new ClientboundCustomQueryPacket(
-                mcObject.getTransactionId(),
+                object.getTransactionId(),
                 new CustomQueryPayloadImpl(
-                        mcObject.getIdentifier().toString(), mcObject.getData().slice()));
+                        object.getIdentifier().toString(), object.getData().slice()));
     }
 
     @Override
-    public @NotNull net.minecraft.network.protocol.login.ClientboundCustomQueryPacket toMC(
+    public @NotNull net.minecraft.network.protocol.login.ClientboundCustomQueryPacket to(
             final @NotNull ClientboundCustomQueryPacket object) {
         return new net.minecraft.network.protocol.login.ClientboundCustomQueryPacket(
                 object.transactionId(),

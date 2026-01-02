@@ -58,7 +58,8 @@ public final class Config {
                         .writingMode(WritingMode.REPLACE)
                         .build();
         config.load();
-        try { // Fix due to the return type of ModConfigSpec#correct being changed from int to void
+        try { // Fix due to the return type of ModConfigSpec#correct being changed from int
+            // to void
             ModConfigSpec.class.getMethod("correct", CommentedConfig.class).invoke(spec, config);
             if (MetaAPI.instance().version().isAtLeast(MinecraftVersions.V21)) {
                 // This is unholy, maybe we should just parse the toml and grab the values manually

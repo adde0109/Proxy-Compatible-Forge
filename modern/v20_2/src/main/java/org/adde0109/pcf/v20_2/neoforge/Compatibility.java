@@ -1,8 +1,9 @@
 package org.adde0109.pcf.v20_2.neoforge;
 
+import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readResourceLocation;
+import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readVarInt;
+
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_CHANNEL;
-import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readResourceLocation;
-import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readVarInt;
 
 import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;

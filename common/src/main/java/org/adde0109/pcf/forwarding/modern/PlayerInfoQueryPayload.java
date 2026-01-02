@@ -1,14 +1,15 @@
 package org.adde0109.pcf.forwarding.modern;
 
-import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readPayload;
-import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.readResourceLocation;
-import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.writePayload;
-import static org.adde0109.pcf.forwarding.network.FriendlyByteBuf.writeResourceLocation;
+import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readPayload;
+import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readResourceLocation;
+import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.writePayload;
+import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.writeResourceLocation;
+
+import dev.neuralnexus.taterapi.network.codec.StreamCodec;
+import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayload;
 
 import io.netty.buffer.ByteBuf;
 
-import org.adde0109.pcf.forwarding.network.codec.StreamCodec;
-import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryPayload;
 import org.jetbrains.annotations.NotNull;
 
 /**

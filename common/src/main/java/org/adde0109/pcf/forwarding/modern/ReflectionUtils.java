@@ -15,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.util.UUID;
 
 public final class ReflectionUtils {
     private ReflectionUtils() {}
@@ -23,26 +22,14 @@ public final class ReflectionUtils {
     // com.mojang:authlib:7.0.0 or newer
     static final Constraint V21_9 = Constraint.builder().min(MinecraftVersions.V21_9).build();
 
-    private static final MethodHandle nameHandle;
-    private static final MethodHandle idHandle;
     private static final MethodHandle profilePropertiesHandle;
 
     static {
         if (V21_9.result()) {
-            nameHandle = null;
-            idHandle = null;
             profilePropertiesHandle = null;
         } else {
             try {
                 MethodHandles.Lookup lookup = MethodHandles.lookup();
-                //noinspection JavaLangInvokeHandleSignature
-                nameHandle =
-                        lookup.findVirtual(
-                                GameProfile.class, "getName", MethodType.methodType(String.class));
-                //noinspection JavaLangInvokeHandleSignature
-                idHandle =
-                        lookup.findVirtual(
-                                GameProfile.class, "getId", MethodType.methodType(UUID.class));
                 //noinspection JavaLangInvokeHandleSignature
                 profilePropertiesHandle =
                         lookup.findVirtual(
@@ -67,42 +54,6 @@ public final class ReflectionUtils {
             return (PropertyMap) profilePropertiesHandle.invokeExact(profile);
         } catch (final Throwable e) {
             throw new IllegalStateException("Failed to get properties from GameProfile", e);
-        }
-    }
-
-    /**
-     * Gets the name from the given GameProfile
-     *
-     * @param profile the profile
-     * @return the name
-     */
-    static @NotNull String getName(final @NotNull GameProfile profile) {
-        if (V21_9.result()) {
-            return profile.name();
-        } else {
-            try {
-                return (String) nameHandle.invokeExact(profile);
-            } catch (final Throwable e) {
-                throw new IllegalStateException("Failed to get name from GameProfile", e);
-            }
-        }
-    }
-
-    /**
-     * Gets the id from the given GameProfile
-     *
-     * @param profile the profile
-     * @return the id
-     */
-    static @NotNull UUID getId(final @NotNull GameProfile profile) {
-        if (V21_9.result()) {
-            return profile.id();
-        } else {
-            try {
-                return (UUID) idHandle.invokeExact(profile);
-            } catch (final Throwable e) {
-                throw new IllegalStateException("Failed to get id from GameProfile", e);
-            }
         }
     }
 

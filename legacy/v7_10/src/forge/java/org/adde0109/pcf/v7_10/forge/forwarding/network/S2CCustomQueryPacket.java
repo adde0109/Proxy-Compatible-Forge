@@ -1,14 +1,15 @@
 package org.adde0109.pcf.v7_10.forge.forwarding.network;
 
-import static org.adde0109.pcf.common.Identifier.identifier;
+import static dev.neuralnexus.taterapi.resources.Identifier.identifier;
+
+import dev.neuralnexus.taterapi.network.protocol.login.ClientboundCustomQueryPacket;
+import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayload;
 
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 
-import org.adde0109.pcf.forwarding.network.protocol.login.ClientboundCustomQueryPacket;
-import org.adde0109.pcf.forwarding.network.protocol.login.custom.CustomQueryPayload;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused")

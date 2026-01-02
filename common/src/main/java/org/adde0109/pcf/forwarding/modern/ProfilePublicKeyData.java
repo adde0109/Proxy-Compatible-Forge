@@ -1,10 +1,10 @@
 package org.adde0109.pcf.forwarding.modern;
 
+import dev.neuralnexus.taterapi.adapter.AdapterCodec;
 import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.forwarding.network.codec.adapter.AdapterCodec;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.PublicKey;
@@ -29,8 +29,7 @@ public record ProfilePublicKeyData(
                 .build()
                 .result()) {
             ADAPTER_CODEC =
-                    (AdapterCodec<?, ProfilePublicKeyData>)
-                            PCF.instance().adapters().toMC(ProfilePublicKeyData.class);
+                    PCF.instance().adapters().getTo(ProfilePublicKeyData.class).orElse(null);
         } else {
             PCF.logger.debug(
                     "Not loading ProfilePublicKeyData adapter, version not between 1.19 and 1.19.2");
@@ -40,11 +39,11 @@ public record ProfilePublicKeyData(
 
     public static <T> @NotNull ProfilePublicKeyData fromMC(final @NotNull T obj) {
         assert ADAPTER_CODEC != null;
-        return ((AdapterCodec<T, ProfilePublicKeyData>) ADAPTER_CODEC).fromMC(obj);
+        return ((AdapterCodec<T, ProfilePublicKeyData>) ADAPTER_CODEC).from(obj);
     }
 
     public <T> @NotNull T toMC() {
         assert ADAPTER_CODEC != null;
-        return ((AdapterCodec<T, ProfilePublicKeyData>) ADAPTER_CODEC).toMC(this);
+        return ((AdapterCodec<T, ProfilePublicKeyData>) ADAPTER_CODEC).to(this);
     }
 }
