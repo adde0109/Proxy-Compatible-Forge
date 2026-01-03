@@ -202,7 +202,7 @@ public final class ModernForwarding {
         PCF.logger.debug("Using modern forwarding version: " + version);
 
         // Apply IP forwarding
-        final int port = ((InetSocketAddress) slpl.bridge$connection().bridge$address()).getPort();
+        final int port = slpl.bridge$connection().bridge$address().getPort();
         final InetSocketAddress address = new InetSocketAddress(payload.address(), port);
         slpl.bridge$connection().bridge$address(address);
 
