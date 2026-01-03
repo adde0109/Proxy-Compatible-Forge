@@ -1,11 +1,11 @@
 package org.adde0109.pcf.forwarding.modern;
 
-import java.net.SocketAddress;
+import java.net.InetSocketAddress;
 
 public interface ConnectionBridge {
-    SocketAddress bridge$address();
+    InetSocketAddress bridge$address();
 
-    void bridge$address(SocketAddress address);
+    void bridge$address(InetSocketAddress address);
 
     void bridge$send(Object packet);
 }
