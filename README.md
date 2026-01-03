@@ -17,22 +17,37 @@ This mod brings Velocity's [modern forwarding](<https://docs.papermc.io/velocity
 
 ### Supported Versions/Platforms
 
-- Forge versions 1.14-1.21.10
+- Forge versions 1.7.2-1.21.10
   - [MixinBootstrap](https://modrinth.com/mod/mixinbootstrap) is required on Forge 1.14.x - 1.15.1
+  - Forge 1.13.x isn't supported (yet)
+  - [MixinBooter](https://modrinth.com/mod/mixinbooter) is required on Forge 1.8.x - 1.12.2
+  - [UniMixins](https://modrinth.com/mod/unimixins) is required on Forge 1.7.x
+  - 1.7.2 - 1.12.2 also require a modified Velocity proxy
 - NeoForge versions 1.20.1-1.21.10
 - SpongeForge/SpongeNeo
   - PCF shouldn't be needed, as Sponge supports legacy+modern forwarding and command argument wrapping
-  - However, if Forgified Fabric API is installed, you may need to use PCF and disable Sponge's forwarding
+  - However, if Forgified Fabric API is installed (specifically `fabric_networking_api_v1`), you may need to use PCF and disable Sponge's forwarding
 - Bukkit+Neo/Forge Hybrid servers
-  - Use the Hybrid's built-in forwarding support when possible, or PCF if their implementation is incompatible
+  - Use the Hybrid's built-in forwarding support when possible, otherwise use PCF if their implementation is incompatible
 
 See the [Compatibility](https://github.com/adde0109/Proxy-Compatible-Forge/blob/main/docs/Compatibility.md) page for more details on supported platforms and modpacks.
 
 ### Player Info Forwarding
 
-As mentioned above, PCF implements Velocity's "Modern" forwarding protocol, allowing you to secure modded servers behind proxies.
+As mentioned above, PCF implements Velocity's `MODERN` forwarding protocol, allowing you to secure modded
+servers behind proxies.
 
-Currently, PCF only supports the default modern forwarding (v1) variant of the protocol, but with the recent refactor cleaning things up I'd like to add the other three when I have the chance.
+Modern Forwarding versions 1-4 are supported:
+
+| Name                            | Value | Supported MC Versions |
+|---------------------------------|-------|-----------------------|
+| `MODERN_DEFAULT`                | 1     | Any                   |
+| `MODERN_FORWARDING_WITH_KEY`    | 2     | 1.19                  |
+| `MODERN_FORWARDING_WITH_KEY_V2` | 3     | 1.19.1 - 1.19.2       |
+| `MODERN_LAZY_SESSION`           | 4     | 1.19.3 and above      |
+
+If you run into compatibility issues regarding chat signing, report the issue, then change
+`advanced.modernForwardingVersion` to `MODERN_DEFAULT` in PCF's config.
 
 ### Modded Command Argument Wrapping, aka [CrossStitch](<https://github.com/VelocityPowered/CrossStitch>)
 
@@ -46,10 +61,10 @@ there needing to be a custom packet deserializer for each and every command argu
 
 In some rare cases mods will register their command arguments under the `minecraft` namespace or make modifications to
 vanilla arguments, bypassing PCF's argument wrapper. In such cases, you can add the custom argument's ID to PCF's
-`forceWrappedArguments` setting to force PCF to wrap the argument.
+`crossStitch.forceWrappedArguments` setting to force PCF to wrap the argument.
 
 In situations where mods inject and register their arguments before Vanilla does, offsetting all the argument ID values,
-you can enable the `forceWrapVanillaArguments` setting to force-wrap the `minecraft` and `brigadier` namespaces.
+you can enable the `crossStitch.forceWrapVanillaArguments` setting to force-wrap the `minecraft` and `brigadier` namespaces.
 This is more of a band-aid solution as the offset argument IDs cannot be read by Velocity, and if the argument IDs on
 the client have the same offset Velocity commands cannot be read by the client, preventing connections entirely unless
 you disable all commands on the proxy via permissions or by removing plugins that add commands.
@@ -60,14 +75,14 @@ The easiest way to tell if this is happening is to enable PCF's debug logging in
 A common fix for this is for the mod in question to move their registration mixin to `RETURN`, and to ensure that their
 argument's registration specifies their modid as the namespace.
 
-If you find any wild args, please open an issue so we can add them to the default config,
-or so we can use the information provided to write up a PR for the mod causing the issue. 
+If you find any wild args, please open an issue so we can add them to the default config, or so we can use the
+information provided to write up a PR for the mod causing the issue. 
 
 ## How to Get Started
 
-### Note Regarding Forge 1.13-1.20.1
+### Note Regarding Forge 1.13 - 1.20.1
 
-If you wish to host modern Forge server (1.13-1.20.1) behind a Velocity proxy, check out Ambassador: <https://modrinth.com/plugin/ambassador>
+If you wish to host modern Forge server (1.13 - 1.20.1) behind a Velocity proxy, check out Ambassador: <https://modrinth.com/plugin/ambassador>
 
 *Note: Version 1.2.0-beta or higher of Ambassador doesn't require this mod anymore, but you can still use it if you want modern forwarding.*
 
@@ -78,7 +93,7 @@ The following assumes you've already [configured a Velocity proxy](<https://docs
 1. Download this mod and place it in your Neo/Forge server's `mods` folder (Jars can be found  on [Modrinth](<https://modrinth.com/mod/proxy-compatible-forge/versions>) or in the releases tab).
 2. Start the Neo/Forge server to generate the default config file.
 3. Stop the Neo/Forge server.
-4. Open `proxy-compatible-forge.toml` in the `config` folder and put your forwarding secret in the `secret` config field.
+4. Open `proxy-compatible-forge.toml` in the `config` folder and put your forwarding secret in the `forwarding.secret` config field.
 5. In `server.properties` make sure `online-mode` is set to `false`.
 6. You are now ready to start the server and connect to it with Velocity!
 
@@ -86,20 +101,21 @@ The following assumes you've already [configured a Velocity proxy](<https://docs
 
 The config is located under `config/proxy-compatible-forge.toml` and has the following options:
 
-| Setting Group | Setting Name                | Default Value | Description                                                                                                                                        |
-|---------------|-----------------------------|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `forwarding`  | `enabled`                   | `true`        | Enable or disable player info forwarding. Changing this setting requires a server restart.                                                         |
-| `forwarding`  | `mode`                      | `\"MODERN\"`  | The type of forwarding to use.                                                                                                                     |
-| `forwarding`  | `secret`                    | `\"\"`        | The secret used to verify the player's connection is coming from a trusted proxy. PCF will only handle argument wrapping if this setting is blank. |
-| `crossStitch` | `enabled`                   | `true`        | Enable or disable CrossStitch support. Changing this setting requires a server restart.                                                            |
-| `crossStitch` | `forceWrappedArguments`     | `[]`          | Add any incompatible modded or vanilla command argument types here.                                                                                |
-| `crossStitch` | `forceWrapVanillaArguments` | `false`       | Force wrap vanilla command argument types. Useful for when the above setting gets a bit excessive.                                                 |
-| `debug`       | `enabled`                   | `false`       | Enable or disable debug logging.                                                                                                                   |
-| `debug`       | `disabledMixins`            | `[]`          | List of mixins to disable. Use the Mixin's name and prefix it with it's partial or full package name.                                              |
+| Setting Group | Setting Name                | Default Value   | Description                                                                                                                                                                  |
+|---------------|-----------------------------|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `forwarding`  | `enabled`                   | `true`          | Enable or disable player info forwarding. Changing this setting requires a server restart.                                                                                   |
+| `forwarding`  | `mode`                      | `"MODERN"`      | The type of forwarding to use.                                                                                                                                               |
+| `forwarding`  | `secret`                    | `""`            | The secret used to verify the player's connection is coming from a trusted proxy. PCF will only handle argument wrapping if this setting is blank.                           |
+| `crossStitch` | `enabled`                   | `true`          | Enable or disable CrossStitch support. Changing this setting requires a server restart.                                                                                      |
+| `crossStitch` | `forceWrappedArguments`     | `[]`            | Add any incompatible modded or vanilla command argument types here.                                                                                                          |
+| `crossStitch` | `forceWrapVanillaArguments` | `false`         | Force wrap vanilla command argument types. Useful for when the above setting gets a bit excessive.                                                                           |
+| `debug`       | `enabled`                   | `false`         | Enable or disable debug logging.                                                                                                                                             |
+| `debug`       | `disabledMixins`            | `[]`            | List of mixins to disable. Use the Mixin's name and prefix it with it's partial or full package name.                                                                        |
+| `advanced`    | `modernForwardingVersion`   | `"NO_OVERRIDE"` | Overrides the modern forwarding version decided by PCF. Change it to "MODERN_DEFAULT" if you encounter chat-signing issues. Changing this setting requires a server restart. |
 
-### Common Issues
+## Common Issues
 
-#### Too Many Channels
+### Too Many Channels
 
 **Client Error:**
 ```
@@ -127,12 +143,6 @@ Notes: Due to the amount of channels and mods at play, textures/items may be mis
 
 1. Clone the repository. `git clone https://github.com/adde0109/Proxy-Compatible-Forge.git`
 
-2. Run `./gradlew buildAllTheStuffNowBcGradleIsDumb` in the root directory of the project. (I love gradle so much)
+2. Run `./gradlew build` (`gradlew.exe build` on Windows) in the root directory of the project
 
-    Note: You only need to run this once, after that you can just run `./gradlew build`. On future builds gradle will
-    actually wait for the subprojects to build before merging the jars (usually). The workaround is needed due to how
-    gradle's dependency graph works, causing it to look ahead and have a fit since the built Jars don't exist yet.
-
-3. Run `./gradlew build` in the root directory of the project.
-
-4. The jar will be in `build/libs/`
+3. The jar will be in `build/libs/`
