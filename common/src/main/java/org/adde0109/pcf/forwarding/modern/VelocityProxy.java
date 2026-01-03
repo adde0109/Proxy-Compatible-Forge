@@ -58,25 +58,23 @@ import javax.crypto.spec.SecretKeySpec;
  * into the Minecraft login process by using the 1.13 login plugin message packet.
  */
 public final class VelocityProxy {
-    public static final int MODERN_DEFAULT = 1;
-    public static final int MODERN_FORWARDING_WITH_KEY = 2;
-    public static final int MODERN_FORWARDING_WITH_KEY_V2 = 3;
-    public static final int MODERN_LAZY_SESSION = 4;
     public static final byte MODERN_MAX_VERSION;
     public static final ByteBuf PLAYER_INFO_PACKET;
     public static final Object PLAYER_INFO_CHANNEL = identifier("velocity:player_info");
 
     static {
-        if (Constraint.lessThan(MinecraftVersions.V19).result()) {
-            MODERN_MAX_VERSION = MODERN_DEFAULT;
+        if (PCF.instance().advanced().modernForwardingVersion() != Version.NO_OVERRIDE) {
+            MODERN_MAX_VERSION = PCF.instance().advanced().modernForwardingVersion().id();
+        } else if (Constraint.lessThan(MinecraftVersions.V19).result()) {
+            MODERN_MAX_VERSION = Version.MODERN_DEFAULT.id();
         } else if (Constraint.builder().version(MinecraftVersions.V19).result()) {
-            MODERN_MAX_VERSION = MODERN_FORWARDING_WITH_KEY;
+            MODERN_MAX_VERSION = Version.MODERN_FORWARDING_WITH_KEY.id();
         } else if (Constraint.range(MinecraftVersions.V19_1, MinecraftVersions.V19_2).result()) {
-            MODERN_MAX_VERSION = MODERN_FORWARDING_WITH_KEY_V2;
+            MODERN_MAX_VERSION = Version.MODERN_FORWARDING_WITH_KEY_V2.id();
         } else if (Constraint.noLessThan(MinecraftVersions.V19_3).result()) {
-            MODERN_MAX_VERSION = MODERN_LAZY_SESSION;
+            MODERN_MAX_VERSION = Version.MODERN_LAZY_SESSION.id();
         } else {
-            MODERN_MAX_VERSION = MODERN_DEFAULT;
+            MODERN_MAX_VERSION = Version.MODERN_DEFAULT.id();
         }
         if (Constraint.noLessThan(MinecraftVersions.V12).result()) {
             PLAYER_INFO_PACKET =
@@ -217,5 +215,23 @@ public final class VelocityProxy {
             throws DecoderException {
         return new ProfilePublicKeyData(
                 readInstant(buf), readPublicKey(buf), readByteArray(buf, MAX_KEY_SIGNATURE_SIZE));
+    }
+
+    public enum Version {
+        NO_OVERRIDE(0),
+        MODERN_DEFAULT(1),
+        MODERN_FORWARDING_WITH_KEY(2),
+        MODERN_FORWARDING_WITH_KEY_V2(3),
+        MODERN_LAZY_SESSION(4);
+
+        private final byte id;
+
+        Version(final int id) {
+            this.id = (byte) id;
+        }
+
+        public byte id() {
+            return this.id;
+        }
     }
 }

@@ -6,8 +6,8 @@ import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readUUID;
 import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readUtf;
 import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readVarInt;
 
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_FORWARDING_WITH_KEY;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_FORWARDING_WITH_KEY_V2;
+import static org.adde0109.pcf.forwarding.modern.VelocityProxy.Version.MODERN_FORWARDING_WITH_KEY;
+import static org.adde0109.pcf.forwarding.modern.VelocityProxy.Version.MODERN_FORWARDING_WITH_KEY_V2;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.createProfile;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.readForwardedKey;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.readSignerUuidOrElse;
@@ -55,11 +55,12 @@ public record PlayerInfoQueryAnswerPayload(
         final String playerName = readUtf(data, 16);
         final GameProfile profile = createProfile(playerId, playerName, data);
         ProfilePublicKeyData key = null;
-        if (version == MODERN_FORWARDING_WITH_KEY || version == MODERN_FORWARDING_WITH_KEY_V2) {
+        if (version == MODERN_FORWARDING_WITH_KEY.id()
+                || version == MODERN_FORWARDING_WITH_KEY_V2.id()) {
             key = readForwardedKey(data);
         }
         UUID signer = null;
-        if (version == MODERN_FORWARDING_WITH_KEY_V2) {
+        if (version == MODERN_FORWARDING_WITH_KEY_V2.id()) {
             signer = readSignerUuidOrElse(data, playerId);
         }
         return new PlayerInfoQueryAnswerPayload(version, address, profile, key, signer);
