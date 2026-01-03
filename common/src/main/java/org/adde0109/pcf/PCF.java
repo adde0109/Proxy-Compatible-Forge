@@ -13,6 +13,7 @@ import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
 
 import org.adde0109.pcf.forwarding.Mode;
+import org.adde0109.pcf.forwarding.modern.VelocityProxy;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -140,12 +141,25 @@ public final class PCF {
         this.debug = debug;
     }
 
-    public record Forwarding(boolean enabled, Mode mode, String secret) {}
+    private Advanced advanced;
+
+    public Advanced advanced() {
+        return this.advanced;
+    }
+
+    @ApiStatus.Internal
+    public void setAdvanced(final @NotNull Advanced advanced) {
+        this.advanced = advanced;
+    }
+
+    public record Forwarding(boolean enabled, @NotNull Mode mode, @NotNull String secret) {}
 
     public record CrossStitch(
             boolean enabled,
-            List<String> forceWrappedArguments,
+            List<@NotNull String> forceWrappedArguments,
             boolean forceWrapVanillaArguments) {}
 
-    public record Debug(boolean enabled, List<String> disabledMixins) {}
+    public record Debug(boolean enabled, List<@NotNull String> disabledMixins) {}
+
+    public record Advanced(@NotNull VelocityProxy.Version modernForwardingVersion) {}
 }

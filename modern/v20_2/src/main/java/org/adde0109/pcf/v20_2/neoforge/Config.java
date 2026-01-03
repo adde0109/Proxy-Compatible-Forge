@@ -17,6 +17,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.forwarding.Mode;
+import org.adde0109.pcf.forwarding.modern.VelocityProxy;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -120,6 +121,8 @@ public final class Config {
     private final ModConfigSpec.ConfigValue<Boolean> enableDebug;
     private final ModConfigSpec.ConfigValue<List<? extends String>> disabledMixins;
 
+    private final ModConfigSpec.ConfigValue<VelocityProxy.Version> modernForwardingVersion;
+
     Config(ModConfigSpec.Builder builder) {
         version = builder.comment("Config version, DO NOT CHANGE THIS").define("version", 2.0d);
 
@@ -157,6 +160,12 @@ public final class Config {
                                 "List of mixins to disable. Use the Mixin's name and prefix it with it's partial or full package name.")
                         .defineList("disabledMixins", List.of(), (obj) -> true);
         builder.pop();
+
+        builder.comment("Advanced Settings").push("advanced");
+        modernForwardingVersion =
+                builder.comment("Overrides the modern forwarding version decided by PCF.")
+                        .defineEnum("modernForwardingVersion", VelocityProxy.Version.NO_OVERRIDE);
+        builder.pop();
     }
 
     @SuppressWarnings("unchecked")
@@ -179,5 +188,6 @@ public final class Config {
                         new PCF.Debug(
                                 Config.config.enableDebug.get(),
                                 (List<String>) Config.config.disabledMixins.get()));
+        PCF.instance().setAdvanced(new PCF.Advanced(Config.config.modernForwardingVersion.get()));
     }
 }

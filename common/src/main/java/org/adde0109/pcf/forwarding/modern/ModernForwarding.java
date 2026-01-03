@@ -4,11 +4,11 @@ import static dev.neuralnexus.taterapi.network.chat.Component.literal;
 import static dev.neuralnexus.taterapi.network.chat.Component.translatable;
 
 import static org.adde0109.pcf.forwarding.modern.ReflectionUtils.enforceSecureProfile;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_DEFAULT;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_FORWARDING_WITH_KEY;
-import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_FORWARDING_WITH_KEY_V2;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.MODERN_MAX_VERSION;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.PLAYER_INFO_PAYLOAD;
+import static org.adde0109.pcf.forwarding.modern.VelocityProxy.Version.MODERN_DEFAULT;
+import static org.adde0109.pcf.forwarding.modern.VelocityProxy.Version.MODERN_FORWARDING_WITH_KEY;
+import static org.adde0109.pcf.forwarding.modern.VelocityProxy.Version.MODERN_FORWARDING_WITH_KEY_V2;
 import static org.adde0109.pcf.forwarding.modern.VelocityProxy.checkIntegrity;
 
 import dev.neuralnexus.taterapi.event.Cancellable;
@@ -208,13 +208,13 @@ public final class ModernForwarding {
 
         // Handle profile key
         // Clear key on 1.19.1 - 1.19.2 if using MODERN_DEFAULT
-        if (version == MODERN_DEFAULT
+        if (version == MODERN_DEFAULT.id()
                 && Constraint.range(MinecraftVersions.V19_1, MinecraftVersions.V19_2).result()) {
             ((ServerLoginPacketListenerBridge.KeyV2) slpl).bridge$setProfilePublicKeyData(null);
         }
 
         // 1.19 forwarding with key v1
-        if (version == MODERN_FORWARDING_WITH_KEY) {
+        if (version == MODERN_FORWARDING_WITH_KEY.id()) {
             boolean enforceSecureProfile = enforceSecureProfile();
             try {
                 if (enforceSecureProfile && payload.key() == null) {
@@ -235,7 +235,7 @@ public final class ModernForwarding {
         }
 
         // 1.19.1 - 1.19.2 forwarding with key v2
-        if (version == MODERN_FORWARDING_WITH_KEY_V2) {
+        if (version == MODERN_FORWARDING_WITH_KEY_V2.id()) {
             if (((ServerLoginPacketListenerBridge.KeyV2) slpl).bridge$profilePublicKeyData()
                     == null) {
                 try {

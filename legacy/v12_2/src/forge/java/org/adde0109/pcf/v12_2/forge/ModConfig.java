@@ -6,6 +6,7 @@ import net.minecraftforge.common.config.Configuration;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.forwarding.Mode;
+import org.adde0109.pcf.forwarding.modern.VelocityProxy;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -43,6 +44,12 @@ public final class ModConfig {
         @Comment(
                 "List of mixins to disable. Use the Mixin's name and prefix it with it's partial or full package name.")
         public static List<String> disabledMixins = List.of();
+    }
+
+    private static final class Advanced {
+        @Comment("Overrides the modern forwarding version decided by PCF.")
+        public static VelocityProxy.Version modernForwardingVersion =
+                VelocityProxy.Version.NO_OVERRIDE;
     }
 
     public static void reload() {
@@ -90,6 +97,23 @@ public final class ModConfig {
                                 new String[0],
                                 "List of mixins to disable. Use the Mixin's name and prefix it with it's partial or full package name."));
 
+        String modernForwardingVersionStr =
+                config.getString(
+                        "modernForwardingVersion",
+                        "advanced",
+                        VelocityProxy.Version.NO_OVERRIDE.name(),
+                        "Overrides the modern forwarding version decided by PCF.");
+        try {
+            Advanced.modernForwardingVersion =
+                    VelocityProxy.Version.valueOf(modernForwardingVersionStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            PCF.logger.error(
+                    "Invalid modern forwarding version in config: "
+                            + modernForwardingVersionStr
+                            + ". Using default: "
+                            + VelocityProxy.Version.NO_OVERRIDE.name());
+        }
+
         config.save();
 
         String forwardingSecret = Forwarding.secret;
@@ -98,5 +122,6 @@ public final class ModConfig {
                         new PCF.Forwarding(Forwarding.enabled, Forwarding.mode, forwardingSecret));
         PCF.instance().setCrossStitch(new PCF.CrossStitch(false, List.of(), false));
         PCF.instance().setDebug(new PCF.Debug(Debug.enabled, Debug.disabledMixins));
+        PCF.instance().setAdvanced(new PCF.Advanced(Advanced.modernForwardingVersion));
     }
 }
