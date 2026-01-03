@@ -47,7 +47,8 @@ public final class ModConfig {
     }
 
     private static final class Advanced {
-        @Comment("Overrides the modern forwarding version decided by PCF.")
+        @Comment(
+                "Overrides the modern forwarding version decided by PCF. Change it to \"MODERN_DEFAULT\" if you encounter chat-signing issues. Changing this setting requires a server restart.")
         public static VelocityProxy.Version modernForwardingVersion =
                 VelocityProxy.Version.NO_OVERRIDE;
     }
@@ -102,7 +103,7 @@ public final class ModConfig {
                         "modernForwardingVersion",
                         "advanced",
                         VelocityProxy.Version.NO_OVERRIDE.name(),
-                        "Overrides the modern forwarding version decided by PCF.");
+                        "Overrides the modern forwarding version decided by PCF. Change it to \"MODERN_DEFAULT\" if you encounter chat-signing issues. Changing this setting requires a server restart.");
         try {
             Advanced.modernForwardingVersion =
                     VelocityProxy.Version.valueOf(modernForwardingVersionStr.toUpperCase());

@@ -163,7 +163,8 @@ public final class Config {
 
         builder.comment("Advanced Settings").push("advanced");
         modernForwardingVersion =
-                builder.comment("Overrides the modern forwarding version decided by PCF.")
+                builder.comment(
+                                "Overrides the modern forwarding version decided by PCF. Change it to \"MODERN_DEFAULT\" if you encounter chat-signing issues. Changing this setting requires a server restart.")
                         .defineEnum("modernForwardingVersion", VelocityProxy.Version.NO_OVERRIDE);
         builder.pop();
     }
