@@ -20,7 +20,7 @@ import java.util.Set;
 
 /** A mixin plugin for PCF. */
 @SuppressWarnings("unused")
-public class PCFMixinPlugin implements IMixinConfigPlugin {
+public final class PCFMixinPlugin implements IMixinConfigPlugin {
     @Override
     public void onLoad(final @NotNull String mixinPackage) {
         try {
