@@ -6,7 +6,7 @@ import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
 
-import dev.neuralnexus.taterapi.meta.MetaAPI;
+import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
 import net.neoforged.fml.ModContainer;
@@ -58,10 +58,9 @@ public final class Config {
                         .writingMode(WritingMode.REPLACE)
                         .build();
         config.load();
-        try { // Fix due to the return type of ModConfigSpec#correct being changed from int
-            // to void
+        try { // Fix due to the return type of ModConfigSpec#correct being changed from int to void
             ModConfigSpec.class.getMethod("correct", CommentedConfig.class).invoke(spec, config);
-            if (MetaAPI.instance().version().isAtLeast(MinecraftVersions.V21)) {
+            if (Constraint.noLessThan(MinecraftVersions.V21).result()) {
                 // This is unholy, maybe we should just parse the toml and grab the values manually
                 // TODO: Maybe swap to method handles
                 // spotless:off

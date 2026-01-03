@@ -1,7 +1,6 @@
 package org.adde0109.pcf.common.reflection;
 
-import dev.neuralnexus.taterapi.meta.MetaAPI;
-import dev.neuralnexus.taterapi.meta.MinecraftVersion;
+import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
 import java.lang.invoke.MethodHandle;
@@ -16,13 +15,12 @@ public class ArgumentTypesEntryUtil {
     private static final VarHandle cachedATEntryName;
 
     static {
-        MinecraftVersion mcv = MetaAPI.instance().version();
         String atClassName = "net.minecraft.commands.synchronization.ArgumentTypes";
         String atEntryClassName = "net.minecraft.commands.synchronization.ArgumentTypes$Entry";
         String atGetMethodName = "m_121616_";
         String atEntrySerializerFieldName = "f_121619_";
         String atEntryNameFieldName = "f_121620_";
-        if (mcv.isInRange(MinecraftVersions.V14, MinecraftVersions.V16_5)) {
+        if (Constraint.range(MinecraftVersions.V14, MinecraftVersions.V16_5).result()) {
             atClassName = "net.minecraft.command.arguments.ArgumentTypes";
             atEntryClassName = "net.minecraft.command.arguments.ArgumentTypes$Entry";
             atGetMethodName = "func_201040_a";

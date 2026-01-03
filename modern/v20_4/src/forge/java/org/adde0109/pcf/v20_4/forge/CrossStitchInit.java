@@ -1,6 +1,8 @@
 package org.adde0109.pcf.v20_4.forge;
 
+import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.Mappings;
+import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
@@ -23,7 +25,7 @@ public final class CrossStitchInit implements PCFInitializer {
     public CrossStitchInit() {
         CSBootstrap.COMMAND_ARGUMENT_TYPE_KEY =
                 (type) -> {
-                    if (CSBootstrap.isForge) {
+                    if (Constraint.builder().platform(Platforms.FORGE).result()) {
                         Optional<ResourceKey<ArgumentTypeInfo<?, ?>>> entry =
                                 CSForgeBootstrap.getKey(type);
                         if (entry.isPresent()) {

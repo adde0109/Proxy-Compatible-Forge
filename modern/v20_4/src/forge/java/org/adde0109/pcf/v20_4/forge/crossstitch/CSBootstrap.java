@@ -1,7 +1,5 @@
 package org.adde0109.pcf.v20_4.forge.crossstitch;
 
-import dev.neuralnexus.taterapi.meta.MetaAPI;
-
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -21,8 +19,6 @@ public final class CSBootstrap {
     public static Function<ArgumentTypeInfo<?, ?>, Optional<ResourceKey<ArgumentTypeInfo<?, ?>>>>
             COMMAND_ARGUMENT_TYPE_KEY = (type) -> Optional.empty();
     public static Function<ArgumentTypeInfo<?, ?>, Integer> COMMAND_ARGUMENT_TYPE_ID = (type) -> -1;
-
-    public static final boolean isForge = MetaAPI.instance().platform().isForge();
 
     public static Optional<ResourceKey<ArgumentTypeInfo<?, ?>>> commandArgumentResourceKey(
             ArgumentTypeInfo<?, ?> type) {

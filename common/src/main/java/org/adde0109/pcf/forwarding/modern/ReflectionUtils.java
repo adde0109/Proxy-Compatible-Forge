@@ -19,13 +19,11 @@ import java.lang.invoke.MethodType;
 public final class ReflectionUtils {
     private ReflectionUtils() {}
 
-    // com.mojang:authlib:7.0.0 or newer
-    static final Constraint V21_9 = Constraint.builder().min(MinecraftVersions.V21_9).build();
-
     private static final MethodHandle profilePropertiesHandle;
 
     static {
-        if (V21_9.result()) {
+        // com.mojang:authlib:7.0.0 or newer
+        if (Constraint.noLessThan(MinecraftVersions.V21_9).result()) {
             profilePropertiesHandle = null;
         } else {
             try {
@@ -57,14 +55,11 @@ public final class ReflectionUtils {
         }
     }
 
-    private static final Constraint IS_19_X_19_2 =
-            Constraint.builder().min(MinecraftVersions.V19).max(MinecraftVersions.V19_2).build();
-
     private static final MethodHandle ENFORCE_SECURE_PROFILE;
 
     static {
         MethodHandle enforceSecureProfileHandle = null;
-        if (IS_19_X_19_2.result()) {
+        if (Constraint.range(MinecraftVersions.V19, MinecraftVersions.V19_2).result()) {
             try {
                 Class<MinecraftServer> minecraftServerClass = MinecraftServer.class;
                 //noinspection JavaLangInvokeHandleSignature
