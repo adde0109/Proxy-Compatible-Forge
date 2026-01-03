@@ -152,7 +152,11 @@ public final class PCF {
         this.advanced = advanced;
     }
 
-    public record Forwarding(boolean enabled, @NotNull Mode mode, @NotNull String secret) {}
+    public record Forwarding(
+            boolean enabled,
+            @NotNull Mode mode,
+            @NotNull String secret,
+            List<@NotNull String> approvedProxyHosts) {}
 
     public record CrossStitch(
             boolean enabled,

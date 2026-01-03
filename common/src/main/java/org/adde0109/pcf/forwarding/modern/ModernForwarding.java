@@ -32,6 +32,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.net.InetSocketAddress;
 import java.security.InvalidKeyException;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
@@ -56,6 +57,8 @@ import java.util.function.BiConsumer;
 public final class ModernForwarding {
     public static final Set<Integer> TRANSACTION_IDS = ConcurrentHashMap.newKeySet();
 
+    private static final Object REJECTED_PROXY_ERR = literal("Unapproved proxy host.");
+
     /**
      * Abstract implementation of the hello packet handler
      *
@@ -68,6 +71,25 @@ public final class ModernForwarding {
                 || !PCF.instance().forwarding().mode().equals(Mode.MODERN)) {
             return;
         }
+
+        final List<String> approved = PCF.instance().forwarding().approvedProxyHosts();
+        if (!approved.isEmpty()) {
+            final InetSocketAddress address = slpl.bridge$connection().bridge$address();
+            final String host = address.getHostString();
+            final String ip = address.getAddress().getHostAddress();
+            if (!approved.contains(host) && !approved.contains(ip)) {
+                PCF.logger.warn(
+                        "Rejected connection from unapproved proxy host: "
+                                + host
+                                + " (IP: "
+                                + ip
+                                + ")");
+                slpl.bridge$disconnect(REJECTED_PROXY_ERR);
+                ci.cancel();
+                return;
+            }
+        }
+
         slpl.bridge$setVelocityLoginMessageId(ThreadLocalRandom.current().nextInt());
         TRANSACTION_IDS.add(slpl.bridge$velocityLoginMessageId());
         slpl.bridge$connection()
