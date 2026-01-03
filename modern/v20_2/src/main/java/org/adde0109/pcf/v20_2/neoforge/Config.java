@@ -113,6 +113,7 @@ public final class Config {
     private final ModConfigSpec.ConfigValue<Boolean> enableForwarding;
     private final ModConfigSpec.ConfigValue<Mode> forwardingMode;
     private final ModConfigSpec.ConfigValue<String> forwardingSecret;
+    private final ModConfigSpec.ConfigValue<List<? extends String>> approvedProxyHosts;
 
     private final ModConfigSpec.ConfigValue<Boolean> enableCrossStitch;
     private final ModConfigSpec.ConfigValue<List<? extends String>> forceWrappedArguments;
@@ -135,6 +136,10 @@ public final class Config {
                 builder.comment("The type of forwarding to use").defineEnum("mode", Mode.MODERN);
         forwardingSecret =
                 builder.comment("The forwarding secret shared with the proxy").define("secret", "");
+        approvedProxyHosts =
+                builder.comment(
+                                "A list of approved proxy hostnames or IP addresses. If the connecting proxy's hostname or IP isn't in this list, the player will be disconnected. Leave empty to allow all.")
+                        .defineList("approvedProxyHosts", List.of(), (obj) -> true);
         builder.pop();
 
         builder.comment("CrossStitch Settings - For Wrapping Modded Command Arguments")
@@ -177,7 +182,8 @@ public final class Config {
                         new PCF.Forwarding(
                                 Config.config.enableForwarding.get(),
                                 Config.config.forwardingMode.get(),
-                                forwardingSecret));
+                                forwardingSecret,
+                                (List<String>) Config.config.approvedProxyHosts.get()));
         PCF.instance()
                 .setCrossStitch(
                         new PCF.CrossStitch(

@@ -35,6 +35,10 @@ public final class ModConfig {
 
         @Comment("The forwarding secret shared with the proxy")
         public static String secret = "";
+
+        @Comment(
+                "A list of approved proxy hostnames or IP addresses. If the connecting proxy's hostname or IP isn't in this list, the player will be disconnected. Leave empty to allow all.")
+        public static List<String> approvedProxyHosts = List.of();
     }
 
     private static final class Debug {
@@ -87,6 +91,13 @@ public final class ModConfig {
         Forwarding.secret =
                 config.getString(
                         "secret", "forwarding", "", "The forwarding secret shared with the proxy");
+        Forwarding.approvedProxyHosts =
+                List.of(
+                        config.getStringList(
+                                "approvedProxyHosts",
+                                "forwarding",
+                                new String[0],
+                                "A list of approved proxy hostnames or IP addresses. If the connecting proxy's hostname or IP isn't in this list, the player will be disconnected. Leave empty to allow all."));
 
         Debug.enabled =
                 config.getBoolean("enabled", "debug", false, "Enable or disable debug mode.");
@@ -120,7 +131,11 @@ public final class ModConfig {
         String forwardingSecret = Forwarding.secret;
         PCF.instance()
                 .setForwarding(
-                        new PCF.Forwarding(Forwarding.enabled, Forwarding.mode, forwardingSecret));
+                        new PCF.Forwarding(
+                                Forwarding.enabled,
+                                Forwarding.mode,
+                                forwardingSecret,
+                                Forwarding.approvedProxyHosts));
         PCF.instance().setCrossStitch(new PCF.CrossStitch(false, List.of(), false));
         PCF.instance().setDebug(new PCF.Debug(Debug.enabled, Debug.disabledMixins));
         PCF.instance().setAdvanced(new PCF.Advanced(Advanced.modernForwardingVersion));
