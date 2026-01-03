@@ -42,7 +42,7 @@ public abstract class EnumConnectionStateMixin {
             CallbackInfoReturnable<EnumConnectionState> cir) {
         try {
             if (this.pcf$SCheckClass == null || this.pcf$CCheckClass == null) {
-                if (Constraint.builder().min(MinecraftVersions.V9).build().result()) {
+                if (Constraint.noLessThan(MinecraftVersions.V9).result()) {
                     this.pcf$SCheckClass =
                             (Class<? extends Packet<?>>)
                                     Class.forName(

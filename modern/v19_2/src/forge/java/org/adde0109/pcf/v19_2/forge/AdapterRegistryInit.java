@@ -21,11 +21,7 @@ import org.adde0109.pcf.v19_2.forge.forwarding.network.SCustomQueryAnswerPacketA
         version = @Versions(min = MinecraftVersion.V17, max = MinecraftVersion.V20_1))
 public final class AdapterRegistryInit implements PCFInitializer {
     public AdapterRegistryInit() {
-        if (Constraint.builder()
-                .min(MinecraftVersions.V19)
-                .max(MinecraftVersions.V19_2)
-                .build()
-                .result()) {
+        if (Constraint.range(MinecraftVersions.V19, MinecraftVersions.V19_2).result()) {
             PCF.instance().adapters().register(ProfilePublicKeyDataAdapter.INSTANCE);
         }
         NetworkAdapters.register(

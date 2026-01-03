@@ -10,7 +10,6 @@ import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readUtf;
 import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readVarInt;
 import static dev.neuralnexus.taterapi.resources.Identifier.identifier;
 
-import static org.adde0109.pcf.forwarding.modern.ReflectionUtils.V21_9;
 import static org.adde0109.pcf.forwarding.modern.ReflectionUtils.getProperties;
 
 import com.google.common.collect.ImmutableMultimap;
@@ -19,8 +18,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 
-import dev.neuralnexus.taterapi.meta.MetaAPI;
-import dev.neuralnexus.taterapi.meta.MinecraftVersion;
+import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.network.FriendlyByteBuf;
 import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayload;
@@ -69,19 +67,18 @@ public final class VelocityProxy {
     public static final Object PLAYER_INFO_CHANNEL = identifier("velocity:player_info");
 
     static {
-        final MinecraftVersion version = MetaAPI.instance().version();
-        if (version.isOlderThan(MinecraftVersions.V19)) {
+        if (Constraint.lessThan(MinecraftVersions.V19).result()) {
             MODERN_MAX_VERSION = MODERN_DEFAULT;
-        } else if (version.is(MinecraftVersions.V19)) {
+        } else if (Constraint.builder().version(MinecraftVersions.V19).result()) {
             MODERN_MAX_VERSION = MODERN_FORWARDING_WITH_KEY;
-        } else if (version.isInRange(MinecraftVersions.V19_1, MinecraftVersions.V19_2)) {
+        } else if (Constraint.range(MinecraftVersions.V19_1, MinecraftVersions.V19_2).result()) {
             MODERN_MAX_VERSION = MODERN_FORWARDING_WITH_KEY_V2;
-        } else if (version.isAtLeast(MinecraftVersions.V19_3)) {
+        } else if (Constraint.noLessThan(MinecraftVersions.V19_3).result()) {
             MODERN_MAX_VERSION = MODERN_LAZY_SESSION;
         } else {
             MODERN_MAX_VERSION = MODERN_DEFAULT;
         }
-        if (version.isAtLeast(MinecraftVersions.V12)) {
+        if (Constraint.noLessThan(MinecraftVersions.V12).result()) {
             PLAYER_INFO_PACKET =
                     Unpooled.wrappedBuffer(new byte[] {MODERN_MAX_VERSION}).asReadOnly();
         } else {
@@ -144,7 +141,8 @@ public final class VelocityProxy {
             final @NotNull String playerName,
             final @NotNull ByteBuf buf) {
         final GameProfile profile;
-        if (V21_9.result()) {
+        // com.mojang:authlib:7.0.0 or newer
+        if (Constraint.noLessThan(MinecraftVersions.V21_9).result()) {
             profile = new GameProfile(playerId, playerName, new PropertyMap(readProperties(buf)));
         } else {
             profile = new GameProfile(playerId, playerName);

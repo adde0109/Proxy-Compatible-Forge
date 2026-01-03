@@ -23,11 +23,7 @@ public record ProfilePublicKeyData(
     public static final AdapterCodec<?, ProfilePublicKeyData> ADAPTER_CODEC;
 
     static {
-        if (Constraint.builder()
-                .min(MinecraftVersions.V19)
-                .max(MinecraftVersions.V19_2)
-                .build()
-                .result()) {
+        if (Constraint.range(MinecraftVersions.V19, MinecraftVersions.V19_2).result()) {
             ADAPTER_CODEC =
                     PCF.instance().adapters().getTo(ProfilePublicKeyData.class).orElse(null);
         } else {

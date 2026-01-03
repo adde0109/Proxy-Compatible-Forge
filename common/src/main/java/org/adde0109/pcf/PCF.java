@@ -77,8 +77,8 @@ public final class PCF {
     @ApiStatus.Internal
     public static void forceLoadConfig() {
         try {
-            if (MetaAPI.instance().isPlatformPresent(Platforms.FORGE)) {
-                if (MetaAPI.instance().version().isOlderThan(MinecraftVersions.V13)) {
+            if (Constraint.builder().platform(Platforms.FORGE).result()) {
+                if (Constraint.lessThan(MinecraftVersions.V13).result()) {
                     Class.forName("org.adde0109.pcf.v12_2.forge.ModConfig")
                             .getMethod("reload")
                             .invoke(null);
@@ -87,7 +87,7 @@ public final class PCF {
                             .getMethod("reload")
                             .invoke(null);
                 }
-            } else if (MetaAPI.instance().isPlatformPresent(Platforms.NEOFORGE)) {
+            } else if (Constraint.builder().platform(Platforms.NEOFORGE).result()) {
                 Class.forName("org.adde0109.pcf.v20_2.neoforge.Config")
                         .getMethod("reload")
                         .invoke(null);

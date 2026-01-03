@@ -1,6 +1,6 @@
 package org.adde0109.pcf.crossstitch.compat;
 
-import dev.neuralnexus.taterapi.meta.MetaAPI;
+import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
 import java.util.List;
@@ -11,12 +11,6 @@ public final class ArgumentEdgeCases {
     public static boolean isArgumentEdgeCase(String identifier) {
         return isBookshelfEdgeCase(identifier);
     }
-
-    private static final boolean IS_BOOKSHELF_LOADED =
-            MetaAPI.instance().isModLoaded("bookshelf")
-                    && MetaAPI.instance()
-                            .version()
-                            .isInRange(MinecraftVersions.V14, MinecraftVersions.V17_1);
 
     private static final List<String> BOOKSHELF_EDGE_CASES =
             List.of("minecraft:enum", "minecraft:hand", "minecraft:loot", "minecraft:mod");
@@ -32,6 +26,9 @@ public final class ArgumentEdgeCases {
      * @return true if the identifier matches and Bookshelf is loaded
      */
     private static boolean isBookshelfEdgeCase(String identifier) {
-        return IS_BOOKSHELF_LOADED && BOOKSHELF_EDGE_CASES.contains(identifier);
+        return Constraint.range(MinecraftVersions.V14, MinecraftVersions.V17_1)
+                        .deps("bookshelf")
+                        .result()
+                && BOOKSHELF_EDGE_CASES.contains(identifier);
     }
 }

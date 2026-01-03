@@ -13,7 +13,6 @@ import static org.adde0109.pcf.forwarding.modern.VelocityProxy.checkIntegrity;
 
 import dev.neuralnexus.taterapi.event.Cancellable;
 import dev.neuralnexus.taterapi.meta.Constraint;
-import dev.neuralnexus.taterapi.meta.MetaAPI;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.meta.Platforms;
 import dev.neuralnexus.taterapi.mixin.CancellableMixin;
@@ -210,11 +209,7 @@ public final class ModernForwarding {
         // Handle profile key
         // Clear key on 1.19.1 - 1.19.2 if using MODERN_DEFAULT
         if (version == MODERN_DEFAULT
-                && Constraint.builder()
-                        .min(MinecraftVersions.V19_1)
-                        .max(MinecraftVersions.V19_2)
-                        .build()
-                        .result()) {
+                && Constraint.range(MinecraftVersions.V19_1, MinecraftVersions.V19_2).result()) {
             ((ServerLoginPacketListenerBridge.KeyV2) slpl).bridge$setProfilePublicKeyData(null);
         }
 
@@ -261,7 +256,7 @@ public final class ModernForwarding {
         final NameAndId nameAndId = new NameAndId(payload.profile());
         try {
             // TODO: Pull this into a common compat class when other hybrids are supported
-            if (MetaAPI.instance().isPlatformPresent(Platforms.ARCLIGHT)) {
+            if (Constraint.builder().platform(Platforms.ARCLIGHT).result()) {
                 ((ArclightBridge) slpl).arclight$preLogin();
                 ci.cancel();
                 return;
