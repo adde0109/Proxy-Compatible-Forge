@@ -42,12 +42,12 @@ public final class PCFMixinPlugin implements IMixinConfigPlugin {
             final @NotNull String targetClassName, final @NotNull String mixinClassName) {
         try {
             PCF.forceLoadConfig();
-            final PCF.Debug debug = PCF.instance().debug();
             final PCF.Forwarding forwarding = PCF.instance().forwarding();
             final PCF.CrossStitch crossStitch = PCF.instance().crossStitch();
+            final PCF.Debug debug = PCF.instance().debug();
             final PCF.Advanced advanced = PCF.instance().advanced();
             return shouldApplyMixin(mixinClassName, forwarding, crossStitch, advanced)
-                    || Muxins.shouldApplyMixin(
+                    && Muxins.shouldApplyMixin(
                             mixinClassName, debug.disabledMixins(), debug.enabled());
         } catch (final Exception e) {
             PCF.logger.error("Error while checking whether to apply mixin: " + mixinClassName);
