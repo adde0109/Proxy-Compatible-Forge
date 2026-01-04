@@ -38,6 +38,9 @@ public final class CrossStitch {
         return !forceWrapped && !forceWrapVanilla && !isEdgeCase && isVanilla;
     }
 
+    public static Runnable INFO_DUMP;
+    private static boolean infoDumped = false;
+
     public static Function<@NotNull ArgumentType<?>, @Nullable Object> GET_ARGUMENT_TYPE_ENTRY;
 
     private static @Nullable EntryBridge getArgumentTypeEntry(
@@ -54,6 +57,13 @@ public final class CrossStitch {
         if (!PCF.instance().crossStitch().enabled()) {
             return;
         }
+        if (!infoDumped) {
+            if (PCF.instance().debug().enabled()) {
+                INFO_DUMP.run();
+            }
+            infoDumped = true;
+        }
+
         final FriendlyByteBuf buf = FriendlyByteBuf.wrap(buffer);
         final EntryBridge entry = getArgumentTypeEntry(argumentType);
         final SerializerBridge serializer = (SerializerBridge) entry;
@@ -119,6 +129,13 @@ public final class CrossStitch {
         if (!PCF.instance().crossStitch().enabled()) {
             return;
         }
+        if (!infoDumped) {
+            if (PCF.instance().debug().enabled()) {
+                INFO_DUMP.run();
+            }
+            infoDumped = true;
+        }
+
         final FriendlyByteBuf buf = FriendlyByteBuf.wrap(buffer);
         Optional<String> identifier = commandArgumentResourceKey(serializer);
         if (identifier.isEmpty()) {

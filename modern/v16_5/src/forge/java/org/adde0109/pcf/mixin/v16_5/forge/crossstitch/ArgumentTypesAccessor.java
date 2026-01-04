@@ -11,7 +11,10 @@ import net.minecraft.commands.synchronization.ArgumentTypes;
 
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
+
+import java.util.Map;
 
 @AConstraint(
         mappings = Mappings.LEGACY_SEARGE,
@@ -20,6 +23,12 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface ArgumentTypesAccessor {
     @Invoker("get")
     static <T extends ArgumentType<?>> ArgumentTypes.@Nullable Entry<T> pcf$get(T argumentType) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Accessor("BY_CLASS")
+    static <T extends ArgumentType<?>>
+            Map<Class<? extends T>, ArgumentTypes.Entry<T>> pcf$getByClass() {
         throw new UnsupportedOperationException();
     }
 }

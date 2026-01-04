@@ -9,6 +9,7 @@ import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.enums.Platform;
 import dev.neuralnexus.taterapi.network.NetworkAdapters;
 
+import net.minecraft.commands.synchronization.ArgumentTypes;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
@@ -33,6 +34,14 @@ public final class Initializer implements PCFInitializer {
 
         CrossStitch.GET_ARGUMENT_TYPE_ENTRY =
                 (argumentType) -> ArgumentTypesAccessor.pcf$get((ArgumentType<?>) argumentType);
+
+        CrossStitch.INFO_DUMP = () -> {
+            PCF.logger.info("Registered Command Argument Types:");
+            for (final ArgumentTypes.Entry<?> entry :
+                    ArgumentTypesAccessor.pcf$getByClass().values()) {
+                PCF.logger.debug(" - " + entry.name + " -> " + entry.clazz);
+            }
+        };
     }
 
     @Override
