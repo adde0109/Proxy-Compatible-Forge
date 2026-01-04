@@ -9,6 +9,7 @@
   "package": "org.adde0109.pcf.mixin",
   "server": [
     "v20_2.neoforge.crossstitch.ArgumentNodeStubMixin",
+    "v20_2.neoforge.crossstitch.ArgumentTypeInfoMixin",
     "v20_2.neoforge.forwarding.modern.ServerboundCustomQueryAnswerPacketMixin",
     "v20_2.neoforge.forwarding.modern.ServerLoginPacketListenerImplDisconnectMixin"
   ]

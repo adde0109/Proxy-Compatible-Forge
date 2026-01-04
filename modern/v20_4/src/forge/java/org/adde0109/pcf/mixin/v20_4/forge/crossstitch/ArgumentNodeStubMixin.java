@@ -1,9 +1,5 @@
 package org.adde0109.pcf.mixin.v20_4.forge.crossstitch;
 
-import static org.adde0109.pcf.v20_4.forge.crossstitch.CrossStitchUtil19.writeNode$wrapInVelocityModArgument19;
-
-import com.mojang.brigadier.arguments.ArgumentType;
-
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
@@ -11,10 +7,11 @@ import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 
 import io.netty.buffer.ByteBuf;
 
-import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
 
 import org.adde0109.pcf.PCF;
+import org.adde0109.pcf.crossstitch.CrossStitch;
+import org.adde0109.pcf.crossstitch.SerializerBridge;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,14 +28,13 @@ public class ArgumentNodeStubMixin {
     @Inject(cancellable = true, at = @At("HEAD"),
             method = "serializeCap(Lnet/minecraft/network/FriendlyByteBuf;Lnet/minecraft/commands/synchronization/ArgumentTypeInfo;Lnet/minecraft/commands/synchronization/ArgumentTypeInfo$Template;)V")
     // spotless:on
-    private static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>>
-            void writeNode$wrapInVelocityModArgument(
-                    final @NotNull @Coerce ByteBuf buf,
-                    final @NotNull ArgumentTypeInfo<A, T> serializer,
-                    final @NotNull @Coerce Object properties,
-                    final @NotNull CallbackInfo ci) {
+    private static void writeNode$wrapInVelocityModArgument(
+            final @NotNull @Coerce ByteBuf buf,
+            final @NotNull @Coerce SerializerBridge serializer,
+            final @NotNull @Coerce Object properties,
+            final @NotNull CallbackInfo ci) {
         try {
-            writeNode$wrapInVelocityModArgument19(buf, serializer, properties, ci);
+            CrossStitch.writeNode$wrapInVelocityModArgument(buf, serializer, properties, ci);
         } catch (Exception e) {
             PCF.logger.error(
                     "Failed to serialize command argument type: " + serializer.getClass().getName(),

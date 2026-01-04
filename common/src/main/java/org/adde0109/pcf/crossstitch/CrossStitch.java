@@ -13,6 +13,7 @@ import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.crossstitch.compat.ArgumentEdgeCases;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Optional;
 import java.util.Set;
@@ -26,7 +27,7 @@ public final class CrossStitch {
 
     private static final Set<String> BUILT_IN_REGISTRY_KEYS = Set.of("minecraft", "brigadier");
 
-    public static boolean shouldWrapArgument(final @NotNull String identifier) {
+    public static boolean shouldNotWrapArgument(final @NotNull String identifier) {
         final boolean isVanilla = BUILT_IN_REGISTRY_KEYS.stream().anyMatch(identifier::startsWith);
         final boolean forceWrapped =
                 PCF.instance().crossStitch().forceWrappedArguments().stream()
@@ -34,7 +35,7 @@ public final class CrossStitch {
         final boolean forceWrapVanilla =
                 PCF.instance().crossStitch().forceWrapVanillaArguments() && isVanilla;
         final boolean isEdgeCase = ArgumentEdgeCases.isArgumentEdgeCase(identifier);
-        return forceWrapped || forceWrapVanilla || isEdgeCase || !isVanilla;
+        return !forceWrapped && !forceWrapVanilla && !isEdgeCase && isVanilla;
     }
 
     public static Function<@NotNull ArgumentType<?>, @Nullable Object> GET_ARGUMENT_TYPE_ENTRY;
@@ -55,6 +56,7 @@ public final class CrossStitch {
         }
         final FriendlyByteBuf buf = FriendlyByteBuf.wrap(buffer);
         final EntryBridge entry = getArgumentTypeEntry(argumentType);
+        final SerializerBridge serializer = (SerializerBridge) entry;
 
         if (entry == null) {
             PCF.logger.debug(
@@ -66,27 +68,26 @@ public final class CrossStitch {
         }
 
         final String identifier = entry.bridge$identifier();
-        if (!shouldWrapArgument(identifier)) {
+        if (shouldNotWrapArgument(identifier)) {
             buf.writeResourceLocation(identifier);
-            entry.bridge$serializeToNetwork(argumentType, buf);
-            if (PCF.instance().debug().enabled()) {
-                PCF.logger.debug("Not wrapping argument with identifier: " + identifier);
-            }
+            serializer.bridge$serializeToNetwork(argumentType, buf);
+            PCF.logger.debug("Not wrapping argument with identifier: " + identifier);
             return;
         }
 
         // Not a standard Minecraft argument type - so we need to wrap it
-        PCF.logger.debug("Wrapping argument with identifier: " + identifier);
-        if (PCF.instance().debug().enabled()) {
-            PCF.logger.debug("Wrapping argument with type: " + argumentType.getClass().getName());
-        }
+        PCF.logger.debug(
+                "Wrapping argument with identifier: "
+                        + identifier
+                        + " and type "
+                        + entry.getClass().getName());
 
         // Serialize wrapped argument type
         buf.writeResourceLocation(MOD_ARGUMENT_INDICATOR);
         buf.writeResourceLocation(entry.bridge$identifier());
 
         final ByteBuf extraData = Unpooled.buffer();
-        entry.bridge$serializeToNetwork(argumentType, extraData);
+        serializer.bridge$serializeToNetwork(argumentType, extraData);
 
         buf.writeVarInt(extraData.readableBytes());
         buf.writeBytes(extraData);
@@ -104,5 +105,50 @@ public final class CrossStitch {
 
     public static int commandArgumentTypeId(final @NotNull Object type) {
         return COMMAND_ARGUMENT_TYPE_ID.apply(type);
+    }
+
+    /**
+     * Adapted from <a
+     * href="https://github.com/VelocityPowered/CrossStitch/blob/ebdf1209e8bfae4d6f3a53b636f61ecb1705ce34/src/main/java/com/velocitypowered/crossstitch/mixin/command/CommandTreeSerializationMixin.java">CrossStitch</a>
+     */
+    public static void writeNode$wrapInVelocityModArgument(
+            final @NotNull ByteBuf buffer,
+            final @NotNull SerializerBridge serializer,
+            final @NotNull Object properties,
+            final @NotNull CallbackInfo ci) {
+        if (!PCF.instance().crossStitch().enabled()) {
+            return;
+        }
+        final FriendlyByteBuf buf = FriendlyByteBuf.wrap(buffer);
+        Optional<String> identifier = commandArgumentResourceKey(serializer);
+        if (identifier.isEmpty()) {
+            PCF.logger.debug("Not wrapping argument with unknown identifier.");
+            return;
+        }
+
+        final int id = commandArgumentTypeId(serializer);
+        if (shouldNotWrapArgument(identifier.get())) {
+            PCF.logger.debug(
+                    "Not wrapping argument with identifier: " + identifier.get() + " and id " + id);
+            return;
+        }
+
+        // Not a standard Minecraft argument type - so we need to wrap it
+        PCF.logger.debug(
+                "Wrapping argument with identifier: " + identifier.get() + " and id " + id);
+
+        // Serialize the wrapped argument type
+        buf.writeVarInt(MOD_ARGUMENT_INDICATOR_V2);
+        buf.writeVarInt(id);
+
+        final ByteBuf extraData = Unpooled.buffer();
+        serializer.bridge$serializeToNetwork(properties, extraData);
+
+        buf.writeVarInt(extraData.readableBytes());
+        buf.writeBytes(extraData);
+
+        extraData.release();
+
+        ci.cancel();
     }
 }

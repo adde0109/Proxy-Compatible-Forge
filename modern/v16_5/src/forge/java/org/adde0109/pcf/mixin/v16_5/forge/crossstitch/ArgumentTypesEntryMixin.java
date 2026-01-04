@@ -15,6 +15,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
 import org.adde0109.pcf.crossstitch.EntryBridge;
+import org.adde0109.pcf.crossstitch.SerializerBridge;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,7 +25,8 @@ import org.spongepowered.asm.mixin.Shadow;
         mappings = Mappings.LEGACY_SEARGE,
         version = @Versions(min = MinecraftVersion.V14, max = MinecraftVersion.V16_5))
 @Mixin(ArgumentTypes.Entry.class)
-public class ArgumentTypesEntryMixin<T extends ArgumentType<?>> implements EntryBridge {
+public class ArgumentTypesEntryMixin<T extends ArgumentType<?>>
+        implements EntryBridge, SerializerBridge {
     // spotless:off
     @Shadow @Final public ResourceLocation name;
     @Shadow @Final public ArgumentSerializer<T> serializer;
@@ -37,8 +39,7 @@ public class ArgumentTypesEntryMixin<T extends ArgumentType<?>> implements Entry
 
     @SuppressWarnings("unchecked")
     @Override
-    public void bridge$serializeToNetwork(
-            final @NotNull ArgumentType<?> argument, @NotNull ByteBuf buffer) {
+    public void bridge$serializeToNetwork(final @NotNull Object argument, @NotNull ByteBuf buffer) {
         if (buffer instanceof dev.neuralnexus.taterapi.network.FriendlyByteBuf fByteBuf) {
             buffer = fByteBuf.unwrap();
         }

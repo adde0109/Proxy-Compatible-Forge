@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v17_1.forge.crossstitch;
+package org.adde0109.pcf.mixin.v20_4.forge.crossstitch;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 
@@ -9,37 +9,29 @@ import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 
 import io.netty.buffer.ByteBuf;
 
-import net.minecraft.commands.synchronization.ArgumentSerializer;
-import net.minecraft.commands.synchronization.ArgumentTypes;
+import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 
-import org.adde0109.pcf.crossstitch.EntryBridge;
 import org.adde0109.pcf.crossstitch.SerializerBridge;
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @AConstraint(
         mappings = Mappings.SEARGE,
-        version = @Versions(min = MinecraftVersion.V17, max = MinecraftVersion.V18_2))
-@Mixin(ArgumentTypes.Entry.class)
-public class ArgumentTypesEntryMixin<T extends ArgumentType<?>>
-        implements EntryBridge, SerializerBridge {
+        version = @Versions(min = MinecraftVersion.V19, max = MinecraftVersion.V20_4))
+@Mixin(ArgumentTypeInfo.class)
+public interface ArgumentTypeInfoMixin<
+                A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>>
+        extends SerializerBridge {
     // spotless:off
-    @Shadow @Final public ResourceLocation name;
-    @Shadow @Final public ArgumentSerializer<T> serializer;
+    @Shadow void shadow$serializeToNetwork(T template, FriendlyByteBuf buffer);
     // spotless:on
-
-    @Override
-    public @NotNull String bridge$identifier() {
-        return this.name.toString();
-    }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void bridge$serializeToNetwork(final @NotNull Object argument, @NotNull ByteBuf buffer) {
+    default void bridge$serializeToNetwork(
+            final @NotNull Object argument, @NotNull ByteBuf buffer) {
         if (buffer instanceof dev.neuralnexus.taterapi.network.FriendlyByteBuf fByteBuf) {
             buffer = fByteBuf.unwrap();
         }
@@ -49,6 +41,6 @@ public class ArgumentTypesEntryMixin<T extends ArgumentType<?>>
         } else {
             buf = new FriendlyByteBuf(buffer);
         }
-        this.serializer.serializeToNetwork((T) argument, buf);
+        this.shadow$serializeToNetwork((T) argument, buf);
     }
 }
