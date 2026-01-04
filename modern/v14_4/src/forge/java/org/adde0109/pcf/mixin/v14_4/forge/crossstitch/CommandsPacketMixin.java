@@ -6,14 +6,17 @@ import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
-import dev.neuralnexus.taterapi.network.FriendlyByteBuf;
+
+import io.netty.buffer.ByteBuf;
 
 import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.v14_4.forge.crossstitch.CrossStitchUtil14;
+import org.adde0109.pcf.v16_5.forge.crossstitch.CrossStitchUtil14;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 /**
@@ -28,12 +31,16 @@ public abstract class CommandsPacketMixin {
     // spotless:off
     @Redirect(method = "writeNode",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/commands/synchronization/ArgumentTypes;serialize(Lnet/minecraft/network/FriendlyByteBuf;Lcom/mojang/brigadier/arguments/ArgumentType;)V"))
-    private void writeNode$wrapInVelocityModArgument(net.minecraft.network.FriendlyByteBuf buf, ArgumentType<?> argumentType) {
+    // spotless:on
+    private void writeNode$wrapInVelocityModArgument(
+            final @NotNull @Coerce ByteBuf buf, final @NotNull ArgumentType<?> argumentType) {
         try {
-            CrossStitchUtil14.writeNode$wrapInVelocityModArgument14(FriendlyByteBuf.wrap(buf), argumentType);
+            CrossStitchUtil14.writeNode$wrapInVelocityModArgument14(buf, argumentType);
         } catch (Exception e) {
-            PCF.logger.error("Failed to serialize command argument type: " + argumentType.getClass().getName(), e);
+            PCF.logger.error(
+                    "Failed to serialize command argument type: "
+                            + argumentType.getClass().getName(),
+                    e);
         }
     }
-    // spotless:on
 }

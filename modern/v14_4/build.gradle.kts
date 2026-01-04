@@ -27,6 +27,8 @@ unimined.minecraft(forge) {
 
 dependencies {
     forgeCompileOnly(libs.mixin)
+    evaluationDependsOn(":modern:v16_5")
+    forgeCompileOnly(srcSetAsDep(":modern:v16_5", "forge"))
     forgeCompileOnly(project(":common"))
 }
 

@@ -6,16 +6,23 @@ import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
-import dev.neuralnexus.taterapi.network.FriendlyByteBuf;
+
+import io.netty.buffer.ByteBuf;
 
 import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.v17_1.forge.crossstitch.CrossStitchUtil17;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
+/**
+ * Adapted from <a
+ * href="https://github.com/VelocityPowered/CrossStitch/blob/fe3f3be49c52dc9c1b6b7cd3cafefb953adf4486/src/main/java/com/velocitypowered/crossstitch/mixin/command/CommandTreeSerializationMixin.java">CrossStitch</a>
+ */
 @AConstraint(
         mappings = Mappings.SEARGE,
         version = @Versions(min = MinecraftVersion.V17, max = MinecraftVersion.V18_2))
@@ -24,12 +31,16 @@ public class CommandsPacketMixin {
     // spotless:off
     @Redirect(method = "writeNode",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/commands/synchronization/ArgumentTypes;serialize(Lnet/minecraft/network/FriendlyByteBuf;Lcom/mojang/brigadier/arguments/ArgumentType;)V"))
-    private static void writeNode$wrapInVelocityModArgument(net.minecraft.network.FriendlyByteBuf buf, ArgumentType<?> argumentType) {
+    // spotless:on
+    private static void writeNode$wrapInVelocityModArgument(
+            final @NotNull @Coerce ByteBuf buf, final @NotNull ArgumentType<?> argumentType) {
         try {
-            CrossStitchUtil17.writeNode$wrapInVelocityModArgument17(FriendlyByteBuf.wrap(buf), argumentType);
+            CrossStitchUtil17.writeNode$wrapInVelocityModArgument17(buf, argumentType);
         } catch (Exception e) {
-            PCF.logger.error("Failed to serialize command argument type: " + argumentType.getClass().getName(), e);
+            PCF.logger.error(
+                    "Failed to serialize command argument type: "
+                            + argumentType.getClass().getName(),
+                    e);
         }
     }
-    // spotless:on
 }

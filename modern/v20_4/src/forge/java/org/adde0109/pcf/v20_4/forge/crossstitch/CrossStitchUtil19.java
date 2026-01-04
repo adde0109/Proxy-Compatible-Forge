@@ -1,5 +1,6 @@
 package org.adde0109.pcf.v20_4.forge.crossstitch;
 
+import static org.adde0109.pcf.crossstitch.compat.CrossStitch.MOD_ARGUMENT_INDICATOR_V2;
 import static org.adde0109.pcf.v20_4.forge.crossstitch.CSBootstrap.commandArgumentResourceKey;
 import static org.adde0109.pcf.v20_4.forge.crossstitch.CSBootstrap.commandArgumentTypeId;
 import static org.adde0109.pcf.v20_4.forge.crossstitch.CSBootstrap.shouldWrapArgument;
@@ -8,6 +9,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 
 import dev.neuralnexus.taterapi.network.FriendlyByteBuf;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
@@ -15,6 +17,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
 import org.adde0109.pcf.PCF;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Optional;
@@ -24,17 +27,16 @@ import java.util.Optional;
  * href="https://github.com/VelocityPowered/CrossStitch/blob/ebdf1209e8bfae4d6f3a53b636f61ecb1705ce34/src/main/java/com/velocitypowered/crossstitch/mixin/command/CommandTreeSerializationMixin.java">CrossStitch</a>
  */
 public final class CrossStitchUtil19 {
-    private static final int MOD_ARGUMENT_INDICATOR = -256;
-
     public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>>
             void writeNode$wrapInVelocityModArgument19(
-                    FriendlyByteBuf buf,
-                    ArgumentTypeInfo<A, T> serializer,
-                    ArgumentTypeInfo.Template<A> properties,
-                    CallbackInfo ci) {
+                    final @NotNull ByteBuf buffer,
+                    final @NotNull ArgumentTypeInfo<A, T> serializer,
+                    final @NotNull ArgumentTypeInfo.Template<A> properties,
+                    final @NotNull CallbackInfo ci) {
         if (!PCF.instance().crossStitch().enabled()) {
             return;
         }
+        final FriendlyByteBuf buf = FriendlyByteBuf.wrap(buffer);
         Optional<ResourceLocation> identifier =
                 commandArgumentResourceKey(serializer).map(ResourceKey::location);
         if (identifier.isEmpty()) {
@@ -70,7 +72,7 @@ public final class CrossStitchUtil19 {
                     FriendlyByteBuf buf,
                     ArgumentTypeInfo<A, T> serializer,
                     ArgumentTypeInfo.Template<A> properties) {
-        buf.writeVarInt(MOD_ARGUMENT_INDICATOR);
+        buf.writeVarInt(MOD_ARGUMENT_INDICATOR_V2);
         buf.writeVarInt(commandArgumentTypeId(serializer));
 
         net.minecraft.network.FriendlyByteBuf extraData =
