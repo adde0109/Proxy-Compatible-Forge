@@ -1,9 +1,9 @@
 package org.adde0109.pcf.v20_2.neoforge.crossstitch;
 
-import static org.adde0109.pcf.crossstitch.compat.CrossStitch.MOD_ARGUMENT_INDICATOR_V2;
-import static org.adde0109.pcf.crossstitch.compat.CrossStitch.shouldWrapArgument;
-import static org.adde0109.pcf.v20_2.neoforge.crossstitch.CSBootstrap.commandArgumentResourceKey;
-import static org.adde0109.pcf.v20_2.neoforge.crossstitch.CSBootstrap.commandArgumentTypeId;
+import static org.adde0109.pcf.crossstitch.CrossStitch.MOD_ARGUMENT_INDICATOR_V2;
+import static org.adde0109.pcf.crossstitch.CrossStitch.commandArgumentResourceKey;
+import static org.adde0109.pcf.crossstitch.CrossStitch.commandArgumentTypeId;
+import static org.adde0109.pcf.crossstitch.CrossStitch.shouldWrapArgument;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 
@@ -13,7 +13,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
-import net.minecraft.resources.ResourceKey;
 
 import org.adde0109.pcf.PCF;
 import org.jetbrains.annotations.NotNull;
@@ -30,20 +29,21 @@ public final class CrossStitchUtil19 {
             void writeNode$wrapInVelocityModArgument19(
                     final @NotNull ByteBuf buffer,
                     final @NotNull ArgumentTypeInfo<A, T> serializer,
-                    final @NotNull ArgumentTypeInfo.Template<A> properties,
+                    final @NotNull Object properties,
                     final @NotNull CallbackInfo ci) {
         if (!PCF.instance().crossStitch().enabled()) {
             return;
         }
         final FriendlyByteBuf buf = FriendlyByteBuf.wrap(buffer);
-        Optional<Object> identifier =
-                commandArgumentResourceKey(serializer).map(ResourceKey::location);
+        Optional<String> identifier = commandArgumentResourceKey(serializer);
         if (identifier.isEmpty()) {
             if (PCF.instance().debug().enabled()) {
                 PCF.logger.debug("Not wrapping argument with unknown identifier.");
             }
             return;
-        } else if (!shouldWrapArgument(identifier.get().toString())) {
+        }
+
+        if (!shouldWrapArgument(identifier.get())) {
             if (PCF.instance().debug().enabled()) {
                 PCF.logger.debug(
                         "Not wrapping argument with identifier: "
@@ -67,9 +67,9 @@ public final class CrossStitchUtil19 {
     @SuppressWarnings("unchecked")
     private static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>>
             void serializeWrappedArgumentType19(
-                    FriendlyByteBuf buf,
-                    ArgumentTypeInfo<A, T> serializer,
-                    ArgumentTypeInfo.Template<A> properties) {
+                    final @NotNull FriendlyByteBuf buf,
+                    final @NotNull ArgumentTypeInfo<A, T> serializer,
+                    final @NotNull Object properties) {
         buf.writeVarInt(MOD_ARGUMENT_INDICATOR_V2);
         buf.writeVarInt(commandArgumentTypeId(serializer));
 

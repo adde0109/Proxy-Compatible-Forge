@@ -35,7 +35,7 @@ public class ArgumentNodeStubMixin {
             void writeNode$wrapInVelocityModArgument(
                     final @NotNull @Coerce ByteBuf buf,
                     final @NotNull ArgumentTypeInfo<A, T> serializer,
-                    final @NotNull ArgumentTypeInfo.Template<A> properties,
+                    final @NotNull @Coerce Object properties,
                     final @NotNull CallbackInfo ci) {
         try {
             writeNode$wrapInVelocityModArgument19(buf, serializer, properties, ci);

@@ -12,7 +12,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
 
 import org.adde0109.pcf.PCF;
-import org.adde0109.pcf.v16_5.forge.crossstitch.CrossStitchUtil14;
+import org.adde0109.pcf.crossstitch.CrossStitch;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -33,7 +33,7 @@ public abstract class CommandsPacketMixin {
     private static void writeNode$wrapInVelocityModArgument(
             final @NotNull @Coerce ByteBuf buf, final @NotNull ArgumentType<?> argumentType) {
         try {
-            CrossStitchUtil14.writeNode$wrapInVelocityModArgument14(buf, argumentType);
+            CrossStitch.writeNode$wrapInVelocityModArgument(buf, argumentType);
         } catch (Exception e) {
             PCF.logger.error(
                     "Failed to serialize command argument type: "

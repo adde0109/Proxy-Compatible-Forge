@@ -9,6 +9,7 @@ import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 
 import net.minecraft.commands.synchronization.ArgumentTypes;
 
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
@@ -18,7 +19,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(ArgumentTypes.class)
 public interface ArgumentTypesAccessor {
     @Invoker("get")
-    static <T extends ArgumentType<?>> ArgumentTypes.Entry<T> get(T argumentType) {
+    static <T extends ArgumentType<?>> ArgumentTypes.@Nullable Entry<T> pcf$get(T argumentType) {
         throw new UnsupportedOperationException();
     }
 }
