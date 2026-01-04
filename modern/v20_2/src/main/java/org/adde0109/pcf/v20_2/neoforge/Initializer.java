@@ -43,15 +43,18 @@ public final class Initializer implements PCFInitializer {
                         BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId(
                                 (ArgumentTypeInfo<?, ?>) type);
 
-        CrossStitch.INFO_DUMP = () -> {
-            PCF.logger.info("Registered Command Argument Types:");
-            for (final Map.Entry<ResourceKey<ArgumentTypeInfo<?, ?>>, ArgumentTypeInfo<?, ?>>
-                    entry : BuiltInRegistries.COMMAND_ARGUMENT_TYPE.entrySet()) {
-                final ResourceLocation identifier = entry.getKey().location();
-                final int id = BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId(entry.getValue());
-                PCF.logger.debug(" - " + identifier + " -> " + id);
-            }
-        };
+        CrossStitch.INFO_DUMP =
+                () -> {
+                    PCF.logger.info("Registered Command Argument Types:");
+                    for (final Map.Entry<
+                                    ResourceKey<ArgumentTypeInfo<?, ?>>, ArgumentTypeInfo<?, ?>>
+                            entry : BuiltInRegistries.COMMAND_ARGUMENT_TYPE.entrySet()) {
+                        final ResourceLocation identifier = entry.getKey().location();
+                        final int id =
+                                BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getId(entry.getValue());
+                        PCF.logger.debug(" - " + identifier + " -> " + id);
+                    }
+                };
     }
 
     @Override
