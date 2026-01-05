@@ -9,6 +9,7 @@
   "package": "org.adde0109.pcf.mixin",
   "server": [
     "v20_4.forge.crossstitch.ArgumentNodeStubMixin",
+    "v20_4.forge.crossstitch.ArgumentTypeInfoMixin",
     "v20_4.forge.forwarding.modern.ConnectionMixin",
     "v20_4.forge.forwarding.modern.ServerLoginPacketListenerImplLoggerMixin",
     "v20_4.forge.forwarding.modern.ServerLoginPacketListenerImplMixin",

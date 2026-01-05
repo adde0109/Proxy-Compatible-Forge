@@ -8,6 +8,8 @@
   "plugin": "org.adde0109.pcf.mixin.plugin.PCFMixinPlugin",
   "package": "org.adde0109.pcf.mixin",
   "server": [
+    "v16_5.forge.crossstitch.ArgumentTypesAccessor",
+    "v16_5.forge.crossstitch.ArgumentTypesEntryMixin",
     "v16_5.forge.crossstitch.CommandsPacketMixin",
     "v16_5.forge.forwarding.modern.ClientboundCustomQueryPacketAccessor",
     "v16_5.forge.forwarding.modern.ConnectionMixin",

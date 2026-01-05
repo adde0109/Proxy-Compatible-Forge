@@ -8,6 +8,7 @@ base {
 
 dependencies {
     compileOnly(libs.mojang.authlib)
+    compileOnly(libs.mojang.brigadier)
     compileOnly(libs.guava)
     compileOnly(libs.mixin)
     compileOnly(libs.netty.buffer)

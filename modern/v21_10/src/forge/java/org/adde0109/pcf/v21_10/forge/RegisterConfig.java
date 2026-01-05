@@ -10,7 +10,7 @@ import net.minecraftforge.fml.config.ModConfig;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.PCFInitializer;
-import org.adde0109.pcf.v14_4.forge.Config;
+import org.adde0109.pcf.v16_5.forge.Config;
 
 @AConstraint(platform = Platform.FORGE, version = @Versions(min = MinecraftVersion.V17))
 public final class RegisterConfig implements PCFInitializer {

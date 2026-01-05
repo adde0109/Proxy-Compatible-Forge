@@ -20,12 +20,15 @@ unimined.minecraft(forge) {
     minecraftForge {
         loader(forgeVersion)
         mixinConfig("$modId.mixins.v14_4.forge.json")
+        accessTransformer(aw2at(rootProject.file("common/src/main/resources/accessWidener.aw")))
     }
     defaultRemapJar = true
 }
 
 dependencies {
     forgeCompileOnly(libs.mixin)
+    evaluationDependsOn(":modern:v16_5")
+    forgeCompileOnly(srcSetAsDep(":modern:v16_5", "forge"))
     forgeCompileOnly(project(":common"))
 }
 
