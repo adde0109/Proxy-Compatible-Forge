@@ -11,6 +11,7 @@ annotations = { group = "org.jetbrains", name = "annotations", version = "26.0.2
 asm-tree = { group = "org.ow2.asm", name = "asm-tree", version = "6.2" }
 entrypoint-spoof = { group = "dev.neuralnexus", name = "entrypoint-spoof", version = "0.1.26" }
 guava = { group = "com.google.guava", name = "guava", version = "33.3.1-jre" }
+jspecify = { group = "org.jspecify", name = "jspecify", version = "1.0.0" }
 mixin = { group = "org.spongepowered", name = "mixin", version = "0.8.5-SNAPSHOT" }
 mojang-authlib = { group = "com.mojang", name = "authlib", version = "7.0.61" }
 mojang-brigadier = { group = "com.mojang", name = "brigadier", version = "1.0.18" }

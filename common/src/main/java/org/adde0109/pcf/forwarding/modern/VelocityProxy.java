@@ -28,8 +28,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.DecoderException;
 
 import org.adde0109.pcf.PCF;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -102,7 +102,7 @@ public final class VelocityProxy {
      * @return true if the integrity is valid, false otherwise
      * @throws AssertionError if the algorithm is not found or the key is invalid
      */
-    public static boolean checkIntegrity(final @NotNull ByteBuf buf) {
+    public static boolean checkIntegrity(final @NonNull ByteBuf buf) {
         final byte[] signature = new byte[32];
         buf.readBytes(signature);
 
@@ -134,10 +134,10 @@ public final class VelocityProxy {
      * @param buf the buffer
      * @return the GameProfile
      */
-    public static @NotNull GameProfile createProfile(
-            final @NotNull UUID playerId,
-            final @NotNull String playerName,
-            final @NotNull ByteBuf buf) {
+    public static @NonNull GameProfile createProfile(
+            final @NonNull UUID playerId,
+            final @NonNull String playerName,
+            final @NonNull ByteBuf buf) {
         final GameProfile profile;
         // com.mojang:authlib:7.0.0 or newer
         if (Constraint.noLessThan(MinecraftVersions.V21_9).result()) {
@@ -159,7 +159,7 @@ public final class VelocityProxy {
      * @param buf the buffer
      * @return a multimap of properties
      */
-    private static @NotNull Multimap<String, Property> readProperties(final @NotNull ByteBuf buf) {
+    private static @NonNull Multimap<String, Property> readProperties(final @NonNull ByteBuf buf) {
         final int count = readVarInt(buf);
         final ImmutableMultimap.Builder<String, Property> propertiesBuilder =
                 ImmutableMultimap.builder();
@@ -178,8 +178,8 @@ public final class VelocityProxy {
      * @param buf the buffer
      * @return a list of properties
      */
-    private static @NotNull List<Map.Entry<String, Property>> readProperties_7(
-            final @NotNull ByteBuf buf) {
+    private static @NonNull List<Map.Entry<String, Property>> readProperties_7(
+            final @NonNull ByteBuf buf) {
         final int count = readVarInt(buf);
         final List<Map.Entry<String, Property>> properties = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
@@ -198,8 +198,8 @@ public final class VelocityProxy {
      * @param orElse The UUID to return if no UUID is present
      * @return The UUID read from the ByteBuf, or the given UUID if none is present
      */
-    public static @NotNull UUID readSignerUuidOrElse(
-            final @NotNull ByteBuf buf, final @NotNull UUID orElse) {
+    public static @NonNull UUID readSignerUuidOrElse(
+            final @NonNull ByteBuf buf, final @NonNull UUID orElse) {
         return readOrElse(buf, FriendlyByteBuf::readUUID, orElse);
     }
 
@@ -211,7 +211,7 @@ public final class VelocityProxy {
      * @return The ProfilePublicKey.Data read from the ByteBuf
      * @throws DecoderException If there was an error reading the key
      */
-    public static @NotNull ProfilePublicKeyData readForwardedKey(final @NotNull ByteBuf buf)
+    public static @NonNull ProfilePublicKeyData readForwardedKey(final @NonNull ByteBuf buf)
             throws DecoderException {
         return new ProfilePublicKeyData(
                 readInstant(buf), readPublicKey(buf), readByteArray(buf, MAX_KEY_SIGNATURE_SIZE));

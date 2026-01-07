@@ -1,5 +1,4 @@
 val mainCompileOnly: Configuration by configurations.getting
-configurations.compileOnly.get().extendsFrom(mainCompileOnly)
 val modImplementation: Configuration by configurations.creating
 
 unimined.minecraft {

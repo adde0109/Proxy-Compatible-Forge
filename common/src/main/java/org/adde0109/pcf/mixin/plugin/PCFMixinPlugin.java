@@ -10,8 +10,8 @@ import dev.neuralnexus.taterapi.muxins.Muxins;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.forwarding.Mode;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -23,7 +23,7 @@ import java.util.Set;
 @SuppressWarnings("unused")
 public final class PCFMixinPlugin implements IMixinConfigPlugin {
     @Override
-    public void onLoad(final @NotNull String mixinPackage) {
+    public void onLoad(final @NonNull String mixinPackage) {
         try {
             PCF.forceLoadConfig();
             Muxins.bootstrap(mixinPackage, PCF.instance().debug().enabled());
@@ -40,7 +40,7 @@ public final class PCFMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(
-            final @NotNull String targetClassName, final @NotNull String mixinClassName) {
+            final @NonNull String targetClassName, final @NonNull String mixinClassName) {
         try {
             PCF.forceLoadConfig();
             final PCF.Forwarding forwarding = PCF.instance().forwarding();
@@ -73,10 +73,10 @@ public final class PCFMixinPlugin implements IMixinConfigPlugin {
      * @return true if the mixin should be applied, false otherwise
      */
     private static boolean shouldApplyMixin(
-            final @NotNull String m,
-            final @NotNull PCF.Forwarding forwarding,
-            final @NotNull PCF.CrossStitch crossStitch,
-            final @NotNull PCF.Advanced advanced) {
+            final @NonNull String m,
+            final PCF.@NonNull Forwarding forwarding,
+            final PCF.@NonNull CrossStitch crossStitch,
+            final PCF.@NonNull Advanced advanced) {
         if (!forwarding.enabled() && m.contains(".forwarding.")) {
             PCF.logger.debug("Skipping mixin " + m + " because forwarding is disabled.");
             return false;
@@ -118,7 +118,7 @@ public final class PCFMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void acceptTargets(
-            final Set<@NotNull String> myTargets, final Set<@NotNull String> otherTargets) {}
+            final Set<@NonNull String> myTargets, final Set<@NonNull String> otherTargets) {}
 
     @Override
     public @Nullable List<String> getMixins() {
@@ -127,15 +127,15 @@ public final class PCFMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void preApply(
-            final @NotNull String targetClassName,
-            final @NotNull ClassNode targetClass,
-            final @NotNull String mixinClassName,
-            final @NotNull IMixinInfo mixinInfo) {}
+            final @NonNull String targetClassName,
+            final @NonNull ClassNode targetClass,
+            final @NonNull String mixinClassName,
+            final @NonNull IMixinInfo mixinInfo) {}
 
     @Override
     public void postApply(
-            final @NotNull String targetClassName,
-            final @NotNull ClassNode targetClass,
-            final @NotNull String mixinClassName,
-            final @NotNull IMixinInfo mixinInfo) {}
+            final @NonNull String targetClassName,
+            final @NonNull ClassNode targetClass,
+            final @NonNull String mixinClassName,
+            final @NonNull IMixinInfo mixinInfo) {}
 }

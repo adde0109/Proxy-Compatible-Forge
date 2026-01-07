@@ -19,8 +19,8 @@ import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryAnswerP
 
 import io.netty.buffer.ByteBuf;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.net.InetAddress;
 import java.util.UUID;
@@ -36,18 +36,18 @@ import java.util.UUID;
  */
 public record PlayerInfoQueryAnswerPayload(
         int version,
-        @NotNull InetAddress address,
-        @NotNull GameProfile profile,
+        @NonNull InetAddress address,
+        @NonNull GameProfile profile,
         @Nullable ProfilePublicKeyData key,
         @Nullable UUID signer)
         implements CustomQueryAnswerPayload {
-    public static final StreamCodec<@NotNull ByteBuf, @NotNull PlayerInfoQueryAnswerPayload>
+    public static final StreamCodec<@NonNull ByteBuf, @NonNull PlayerInfoQueryAnswerPayload>
             STREAM_CODEC =
                     CustomQueryAnswerPayload.codec(
                             PlayerInfoQueryAnswerPayload::write,
                             PlayerInfoQueryAnswerPayload::read);
 
-    private static @NotNull PlayerInfoQueryAnswerPayload read(final @NotNull ByteBuf buf) {
+    private static @NonNull PlayerInfoQueryAnswerPayload read(final @NonNull ByteBuf buf) {
         final ByteBuf data = readPayload(buf);
         final int version = readVarInt(data);
         final InetAddress address = readAddress(data);
@@ -66,19 +66,19 @@ public record PlayerInfoQueryAnswerPayload(
         return new PlayerInfoQueryAnswerPayload(version, address, profile, key, signer);
     }
 
-    private void write(final @NotNull ByteBuf buf) {
+    private void write(final @NonNull ByteBuf buf) {
         throw new UnsupportedOperationException(
                 this.getClass().getName() + " does not support serialization.");
     }
 
     @Override
-    public @NotNull ByteBuf data() {
+    public @NonNull ByteBuf data() {
         throw new UnsupportedOperationException(
                 this.getClass().getName() + " does not retain raw data.");
     }
 
     @Override
-    public @NotNull StreamCodec<@NotNull ByteBuf, @NotNull PlayerInfoQueryAnswerPayload> codec() {
+    public @NonNull StreamCodec<@NonNull ByteBuf, @NonNull PlayerInfoQueryAnswerPayload> codec() {
         return STREAM_CODEC;
     }
 }

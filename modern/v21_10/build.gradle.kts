@@ -1,7 +1,6 @@
 val forge: SourceSet by sourceSets.creating
 val neoforge: SourceSet by sourceSets.creating
 val mainCompileOnly: Configuration by configurations.getting
-configurations.compileOnly.get().extendsFrom(mainCompileOnly)
 val forgeCompileOnly: Configuration by configurations.getting {
     extendsFrom(mainCompileOnly)
 }

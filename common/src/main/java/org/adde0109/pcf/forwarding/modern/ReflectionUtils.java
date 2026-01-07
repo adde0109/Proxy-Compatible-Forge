@@ -10,7 +10,7 @@ import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import net.minecraft.server.MinecraftServer;
 
 import org.adde0109.pcf.PCF;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -47,7 +47,7 @@ public final class ReflectionUtils {
      * @param profile the profile
      * @return the properties
      */
-    static @NotNull PropertyMap getProperties(final @NotNull GameProfile profile) {
+    static @NonNull PropertyMap getProperties(final @NonNull GameProfile profile) {
         try {
             return (PropertyMap) profilePropertiesHandle.invokeExact(profile);
         } catch (final Throwable e) {

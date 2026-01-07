@@ -5,7 +5,7 @@ import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 
 import org.adde0109.pcf.PCF;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.security.PublicKey;
 import java.time.Instant;
@@ -19,7 +19,7 @@ import java.time.Instant;
  */
 @SuppressWarnings("unchecked")
 public record ProfilePublicKeyData(
-        @NotNull Instant expiresAt, @NotNull PublicKey key, byte[] keySignature) {
+        @NonNull Instant expiresAt, @NonNull PublicKey key, byte[] keySignature) {
     public static final AdapterCodec<?, ProfilePublicKeyData> ADAPTER_CODEC;
 
     static {
@@ -33,12 +33,12 @@ public record ProfilePublicKeyData(
         }
     }
 
-    public static <T> @NotNull ProfilePublicKeyData fromMC(final @NotNull T obj) {
+    public static <T> @NonNull ProfilePublicKeyData fromMC(final @NonNull T obj) {
         assert ADAPTER_CODEC != null;
         return ((AdapterCodec<T, ProfilePublicKeyData>) ADAPTER_CODEC).from(obj);
     }
 
-    public <T> @NotNull T toMC() {
+    public <T> @NonNull T toMC() {
         assert ADAPTER_CODEC != null;
         return ((AdapterCodec<T, ProfilePublicKeyData>) ADAPTER_CODEC).to(this);
     }

@@ -11,7 +11,7 @@ import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -25,7 +25,7 @@ public abstract class ServerLoginPacketListenerImplQueryMixin
         implements ServerLoginPacketListenerBridge {
     @Inject(method = "handleCustomQueryPacket", at = @At("HEAD"), cancellable = true)
     private void onHandleCustomQueryPacket(
-            final @NotNull ServerboundCustomQueryPacket packet, final @NotNull CallbackInfo ci) {
+            final @NonNull ServerboundCustomQueryPacket packet, final @NonNull CallbackInfo ci) {
         handleCustomQueryPacket(this, packet.getTransactionId(), packet, ci);
     }
 }

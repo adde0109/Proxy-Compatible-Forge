@@ -13,7 +13,7 @@ import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.crossstitch.CrossStitch;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Coerce;
@@ -33,7 +33,7 @@ public class CommandsPacketMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/commands/synchronization/ArgumentTypes;serialize(Lnet/minecraft/network/FriendlyByteBuf;Lcom/mojang/brigadier/arguments/ArgumentType;)V"))
     // spotless:on
     private static void writeNode$wrapInVelocityModArgument(
-            final @NotNull @Coerce ByteBuf buf, final @NotNull ArgumentType<?> argumentType) {
+            final @NonNull @Coerce ByteBuf buf, final @NonNull ArgumentType<?> argumentType) {
         try {
             CrossStitch.writeNode$wrapInVelocityModArgument(buf, argumentType);
         } catch (Exception e) {

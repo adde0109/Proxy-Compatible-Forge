@@ -13,7 +13,7 @@ import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.forwarding.modern.ConnectionBridge;
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -46,29 +46,29 @@ public abstract class ServerLoginPacketListenerImplMixin
     }
 
     @Override
-    public @NotNull ConnectionBridge bridge$connection() {
+    public @NonNull ConnectionBridge bridge$connection() {
         return (ConnectionBridge) this.connection;
     }
 
     @AConstraint(version = @Versions(min = MinecraftVersion.V21))
     @Override
-    public void bridge$disconnect(final @NotNull Object reason) {
+    public void bridge$disconnect(final @NonNull Object reason) {
         this.shadow$onDisconnect(
                 new net.minecraft.network.DisconnectionDetails((Component) reason));
     }
 
     @Override
-    public void bridge$startClientVerification(final @NotNull GameProfile profile) {
+    public void bridge$startClientVerification(final @NonNull GameProfile profile) {
         this.shadow$startClientVerification(profile);
     }
 
     @Override
-    public void bridge$logger_info(final @NotNull String text, final Object... params) {
+    public void bridge$logger_info(final @NonNull String text, final Object... params) {
         LOGGER.info(text, params);
     }
 
     @Override
-    public void bridge$logger_error(final @NotNull String text, final Object... params) {
+    public void bridge$logger_error(final @NonNull String text, final Object... params) {
         LOGGER.error(text, params);
     }
 }

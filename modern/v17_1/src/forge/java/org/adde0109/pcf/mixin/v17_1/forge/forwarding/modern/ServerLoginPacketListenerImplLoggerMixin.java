@@ -9,7 +9,7 @@ import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,12 +25,12 @@ public abstract class ServerLoginPacketListenerImplLoggerMixin
     // spotless:on
 
     @Override
-    public void bridge$logger_info(final @NotNull String text, final Object... params) {
+    public void bridge$logger_info(final @NonNull String text, final Object... params) {
         LOGGER.info(text, params);
     }
 
     @Override
-    public void bridge$logger_error(final @NotNull String text, final Object... params) {
+    public void bridge$logger_error(final @NonNull String text, final Object... params) {
         LOGGER.error(text, params);
     }
 }

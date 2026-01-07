@@ -7,7 +7,7 @@ import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryAnswerP
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public final class SCustomQueryAnswerPacketAdapter
         implements AdapterCodec<ServerboundCustomQueryPacket, ServerboundCustomQueryAnswerPacket> {
@@ -15,8 +15,8 @@ public final class SCustomQueryAnswerPacketAdapter
             new SCustomQueryAnswerPacketAdapter();
 
     @Override
-    public @NotNull ServerboundCustomQueryAnswerPacket from(
-            final @NotNull ServerboundCustomQueryPacket object) {
+    public @NonNull ServerboundCustomQueryAnswerPacket from(
+            final @NonNull ServerboundCustomQueryPacket object) {
         if (object.getData() == null) {
             return new ServerboundCustomQueryAnswerPacket(object.getTransactionId());
         }
@@ -26,8 +26,8 @@ public final class SCustomQueryAnswerPacketAdapter
     }
 
     @Override
-    public @NotNull ServerboundCustomQueryPacket to(
-            final @NotNull ServerboundCustomQueryAnswerPacket object) {
+    public @NonNull ServerboundCustomQueryPacket to(
+            final @NonNull ServerboundCustomQueryAnswerPacket object) {
         if (object.payload() == null) {
             return new ServerboundCustomQueryPacket(object.transactionId(), null);
         }

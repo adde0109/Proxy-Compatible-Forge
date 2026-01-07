@@ -11,7 +11,7 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 
 import org.adde0109.pcf.v20_2.neoforge.forwarding.network.MCQueryAnswerPayload;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @AConstraint(mappings = Mappings.SEARGE)
 public final class SCustomQueryAnswerPacketAdapter
@@ -22,9 +22,9 @@ public final class SCustomQueryAnswerPacketAdapter
             new SCustomQueryAnswerPacketAdapter();
 
     @Override
-    public @NotNull ServerboundCustomQueryAnswerPacket from(
-            final @NotNull net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket
-                            object) {
+    public @NonNull ServerboundCustomQueryAnswerPacket from(
+            final net.minecraft.network.protocol.login.@NonNull ServerboundCustomQueryAnswerPacket
+                    object) {
         if (object.payload() == null) {
             return new ServerboundCustomQueryAnswerPacket(object.transactionId());
         }
@@ -35,8 +35,8 @@ public final class SCustomQueryAnswerPacketAdapter
     }
 
     @Override
-    public @NotNull net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket to(
-            final @NotNull ServerboundCustomQueryAnswerPacket object) {
+    public net.minecraft.network.protocol.login.@NonNull ServerboundCustomQueryAnswerPacket to(
+            final @NonNull ServerboundCustomQueryAnswerPacket object) {
         if (object.payload() == null) {
             return new net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket(
                     object.transactionId(), null);

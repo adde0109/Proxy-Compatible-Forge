@@ -13,13 +13,4 @@ subprojects {
             disableRefmap()
         }
     }
-
-    var mainCompileOnly = configurations.maybeCreate("mainCompileOnly")
-
-    dependencies {
-        mainCompileOnly(rootProject.libs.taterlib.lite.base)
-        mainCompileOnly(rootProject.libs.taterlib.lite.core)
-        mainCompileOnly(rootProject.libs.taterlib.lite.metadata)
-        mainCompileOnly(rootProject.libs.taterlib.lite.muxins)
-    }
 }

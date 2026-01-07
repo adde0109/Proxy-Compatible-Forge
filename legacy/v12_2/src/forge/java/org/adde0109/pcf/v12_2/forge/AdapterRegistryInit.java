@@ -13,7 +13,7 @@ import dev.neuralnexus.taterapi.network.protocol.login.ServerboundCustomQueryAns
 import org.adde0109.pcf.PCFInitializer;
 import org.adde0109.pcf.v12_2.forge.forwarding.network.C2SCustomQueryAnswerPacket;
 import org.adde0109.pcf.v12_2.forge.forwarding.network.S2CCustomQueryPacket;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @AConstraint(
         mappings = Mappings.LEGACY_SEARGE,
@@ -33,14 +33,14 @@ public final class AdapterRegistryInit implements PCFInitializer {
         public static final CCustomQueryPacketAdapter INSTANCE = new CCustomQueryPacketAdapter();
 
         @Override
-        public @NotNull ClientboundCustomQueryPacket from(
-                final @NotNull S2CCustomQueryPacket object) {
+        public @NonNull ClientboundCustomQueryPacket from(
+                final @NonNull S2CCustomQueryPacket object) {
             return new ClientboundCustomQueryPacket(object.transactionId(), object.payload());
         }
 
         @Override
-        public @NotNull S2CCustomQueryPacket to(
-                final @NotNull ClientboundCustomQueryPacket object) {
+        public @NonNull S2CCustomQueryPacket to(
+                final @NonNull ClientboundCustomQueryPacket object) {
             return new S2CCustomQueryPacket(object);
         }
     }
@@ -52,8 +52,8 @@ public final class AdapterRegistryInit implements PCFInitializer {
                 new SCustomQueryAnswerPacketAdapter();
 
         @Override
-        public @NotNull ServerboundCustomQueryAnswerPacket from(
-                final @NotNull C2SCustomQueryAnswerPacket object) {
+        public @NonNull ServerboundCustomQueryAnswerPacket from(
+                final @NonNull C2SCustomQueryAnswerPacket object) {
             if (object.payload() == null) {
                 return new ServerboundCustomQueryAnswerPacket(object.transactionId());
             }
@@ -61,8 +61,8 @@ public final class AdapterRegistryInit implements PCFInitializer {
         }
 
         @Override
-        public @NotNull C2SCustomQueryAnswerPacket to(
-                final @NotNull ServerboundCustomQueryAnswerPacket object) {
+        public @NonNull C2SCustomQueryAnswerPacket to(
+                final @NonNull ServerboundCustomQueryAnswerPacket object) {
             return new C2SCustomQueryAnswerPacket(object);
         }
     }

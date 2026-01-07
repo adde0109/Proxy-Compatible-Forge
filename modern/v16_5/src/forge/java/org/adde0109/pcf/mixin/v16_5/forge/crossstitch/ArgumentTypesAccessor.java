@@ -9,7 +9,7 @@ import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 
 import net.minecraft.commands.synchronization.ArgumentTypes;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;

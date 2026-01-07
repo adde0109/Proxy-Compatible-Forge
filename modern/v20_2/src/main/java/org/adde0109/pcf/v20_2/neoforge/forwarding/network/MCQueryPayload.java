@@ -8,13 +8,13 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @AConstraint(mappings = Mappings.MOJANG)
-public record MCQueryPayload(@NotNull ResourceLocation id, @NotNull ByteBuf data)
+public record MCQueryPayload(@NonNull ResourceLocation id, @NonNull ByteBuf data)
         implements net.minecraft.network.protocol.login.custom.CustomQueryPayload {
     @Override
-    public void write(final @NotNull FriendlyByteBuf buf) {
+    public void write(final @NonNull FriendlyByteBuf buf) {
         buf.writeBytes(this.data.slice());
     }
 }

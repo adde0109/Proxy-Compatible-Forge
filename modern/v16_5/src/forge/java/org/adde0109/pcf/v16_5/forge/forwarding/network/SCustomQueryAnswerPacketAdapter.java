@@ -8,7 +8,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
 
 import org.adde0109.pcf.mixin.v16_5.forge.forwarding.modern.ServerboundCustomQueryPacketAccessor;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public final class SCustomQueryAnswerPacketAdapter
         implements AdapterCodec<ServerboundCustomQueryPacket, ServerboundCustomQueryAnswerPacket> {
@@ -16,8 +16,8 @@ public final class SCustomQueryAnswerPacketAdapter
             new SCustomQueryAnswerPacketAdapter();
 
     @Override
-    public @NotNull ServerboundCustomQueryAnswerPacket from(
-            final @NotNull ServerboundCustomQueryPacket object) {
+    public @NonNull ServerboundCustomQueryAnswerPacket from(
+            final @NonNull ServerboundCustomQueryPacket object) {
         if (((ServerboundCustomQueryPacketAccessor) object).pcf$getData() == null) {
             return new ServerboundCustomQueryAnswerPacket(
                     ((ServerboundCustomQueryPacketAccessor) object).pcf$getTransactionId());
@@ -29,8 +29,8 @@ public final class SCustomQueryAnswerPacketAdapter
     }
 
     @Override
-    public @NotNull ServerboundCustomQueryPacket to(
-            final @NotNull ServerboundCustomQueryAnswerPacket object) {
+    public @NonNull ServerboundCustomQueryPacket to(
+            final @NonNull ServerboundCustomQueryAnswerPacket object) {
         if (object.payload() == null) {
             return new ServerboundCustomQueryPacket(object.transactionId(), null);
         }
