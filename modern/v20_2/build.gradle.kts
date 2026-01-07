@@ -1,7 +1,7 @@
 val mainCompileOnly: Configuration by configurations.getting
 val modImplementation: Configuration by configurations.creating
 
-unimined.minecraft {
+unimined.minecraft(sourceSets.main.get()) {
     version(minecraftVersion)
     neoForge {
         loader(neoforgeVersion)

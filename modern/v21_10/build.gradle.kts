@@ -8,7 +8,7 @@ val neoforgeCompileOnly: Configuration by configurations.getting {
     extendsFrom(mainCompileOnly)
 }
 
-unimined.minecraft {
+unimined.minecraft(sourceSets.main.get()) {
     version(minecraftVersion)
     mappings {
         parchment(parchmentMinecraft, parchmentVersion)

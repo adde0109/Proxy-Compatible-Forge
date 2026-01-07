@@ -4,7 +4,7 @@ val forgeCompileOnly: Configuration by configurations.getting {
     extendsFrom(mainCompileOnly)
 }
 
-unimined.minecraft {
+unimined.minecraft(sourceSets.main.get()) {
     version(minecraftVersion)
     mappings {
         searge()
