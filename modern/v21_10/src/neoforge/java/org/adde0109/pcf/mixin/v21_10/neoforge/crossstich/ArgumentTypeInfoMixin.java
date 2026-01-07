@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v20_2.neoforge.crossstitch;
+package org.adde0109.pcf.mixin.v21_10.neoforge.crossstich;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 

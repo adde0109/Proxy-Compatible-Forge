@@ -1,4 +1,4 @@
-package org.adde0109.pcf.v20_2.neoforge.forwarding.network;
+package org.adde0109.pcf.v21_10.neoforge.forwarding.network;
 
 import static dev.neuralnexus.taterapi.resources.Identifier.identifier;
 

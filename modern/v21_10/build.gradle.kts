@@ -30,6 +30,7 @@ unimined.minecraft(neoforge) {
     combineWith(sourceSets.main.get())
     neoForge {
         loader(neoforgeVersion)
+        accessTransformer(aw2at(rootProject.file("common/src/main/resources/accessWidener.aw")))
     }
     defaultRemapJar = true
 }

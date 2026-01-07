@@ -1,4 +1,4 @@
-package org.adde0109.pcf.v20_2.neoforge;
+package org.adde0109.pcf.v21_10.neoforge;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
@@ -15,8 +15,9 @@ import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.PCFInitializer;
 import org.adde0109.pcf.crossstitch.CrossStitch;
 import org.adde0109.pcf.forwarding.modern.ModernForwarding;
-import org.adde0109.pcf.v20_2.neoforge.forwarding.network.CCustomQueryPacketAdapter;
-import org.adde0109.pcf.v20_2.neoforge.forwarding.network.SCustomQueryAnswerPacketAdapter;
+import org.adde0109.pcf.v20_2.neoforge.Compatibility;
+import org.adde0109.pcf.v21_10.neoforge.forwarding.network.CCustomQueryPacketAdapter;
+import org.adde0109.pcf.v21_10.neoforge.forwarding.network.SCustomQueryAnswerPacketAdapter;
 
 import java.util.Map;
 
