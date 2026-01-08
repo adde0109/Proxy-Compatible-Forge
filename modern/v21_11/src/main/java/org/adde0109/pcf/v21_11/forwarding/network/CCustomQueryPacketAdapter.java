@@ -13,6 +13,7 @@ import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayload
 import io.netty.buffer.Unpooled;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.login.custom.CustomQueryPayload;
 
 import org.adde0109.pcf.v20_2.neoforge.forwarding.network.MCQueryPayload_RL;
 import org.jspecify.annotations.NonNull;
@@ -38,14 +39,16 @@ public final class CCustomQueryPacketAdapter
     @Override
     public net.minecraft.network.protocol.login.@NonNull ClientboundCustomQueryPacket to(
             final @NonNull ClientboundCustomQueryPacket object) {
+        final CustomQueryPayload payload;
         if (Constraint.lessThan(MinecraftVersions.V21_11).result()) {
-            return new net.minecraft.network.protocol.login.ClientboundCustomQueryPacket(
-                    object.transactionId(),
+            payload =
                     new MCQueryPayload_RL(
-                            identifier(object.payload().id()), object.payload().data()));
+                            identifier(object.payload().id()), object.payload().data());
+        } else {
+            payload =
+                    new MCQueryPayload(identifier(object.payload().id()), object.payload().data());
         }
         return new net.minecraft.network.protocol.login.ClientboundCustomQueryPacket(
-                object.transactionId(),
-                new MCQueryPayload(identifier(object.payload().id()), object.payload().data()));
+                object.transactionId(), payload);
     }
 }
