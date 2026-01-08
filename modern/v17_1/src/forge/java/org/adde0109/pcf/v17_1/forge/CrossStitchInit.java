@@ -26,7 +26,7 @@ public final class CrossStitchInit implements PCFInitializer {
                     PCF.logger.info("Registered Command Argument Types:");
                     for (final ArgumentTypes.Entry<?> entry :
                             ArgumentTypesAccessor.pcf$getByClass().values()) {
-                        PCF.logger.debug(" - " + entry.name + " -> " + entry.clazz);
+                        PCF.logger.debug(" - " + entry.name + " -> " + entry.serializer.getClass());
                     }
                 };
     }
