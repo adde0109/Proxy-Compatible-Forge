@@ -20,9 +20,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
-@AConstraint(
-        mappings = Mappings.SEARGE,
-        version = @Versions(min = MinecraftVersion.V17, max = MinecraftVersion.V20_1))
+@AConstraint(mappings = Mappings.SEARGE)
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ServerLoginPacketListenerImplMixin
         implements ServerLoginPacketListenerBridge {
@@ -54,6 +52,7 @@ public abstract class ServerLoginPacketListenerImplMixin
         this.shadow$onDisconnect((Component) reason);
     }
 
+    @AConstraint(version = @Versions(max = MinecraftVersion.V20_1))
     @Override
     public void bridge$startClientVerification(final @NonNull GameProfile profile) {
         this.gameProfile = profile;
