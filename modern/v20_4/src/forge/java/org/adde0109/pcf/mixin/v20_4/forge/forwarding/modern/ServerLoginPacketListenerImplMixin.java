@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v19_2.forge.forwarding.modern;
+package org.adde0109.pcf.mixin.v20_4.forge.forwarding.modern;
 
 import com.mojang.authlib.GameProfile;
 
@@ -14,7 +14,6 @@ import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import org.adde0109.pcf.forwarding.modern.ConnectionBridge;
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,10 +24,12 @@ import org.spongepowered.asm.mixin.Unique;
 public abstract class ServerLoginPacketListenerImplMixin
         implements ServerLoginPacketListenerBridge {
     // spotless:off
-    @Shadow @Final public Connection connection;
-    @Shadow @Nullable public GameProfile gameProfile;
-    @Shadow ServerLoginPacketListenerImpl.State state;
+    @Shadow @Final Connection connection;
     @Shadow public abstract void shadow$onDisconnect(Component reason);
+
+    @AConstraint(version = @Versions(min = MinecraftVersion.V20_2))
+    @Shadow abstract void shadow$startClientVerification(GameProfile profile);
+
     @Unique private int pcf$velocityLoginMessageId = -1;
     // spotless:on
 
@@ -52,10 +53,9 @@ public abstract class ServerLoginPacketListenerImplMixin
         this.shadow$onDisconnect((Component) reason);
     }
 
-    @AConstraint(version = @Versions(max = MinecraftVersion.V20_1))
+    @AConstraint(version = @Versions(min = MinecraftVersion.V20_2))
     @Override
     public void bridge$startClientVerification(final @NonNull GameProfile profile) {
-        this.gameProfile = profile;
-        this.state = ServerLoginPacketListenerImpl.State.NEGOTIATING;
+        this.shadow$startClientVerification(profile);
     }
 }

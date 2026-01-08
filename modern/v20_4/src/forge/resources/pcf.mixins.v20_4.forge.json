@@ -12,7 +12,7 @@
     "v20_4.forge.crossstitch.ArgumentTypeInfoMixin",
     "v20_4.forge.forwarding.modern.ConnectionMixin",
     "v20_4.forge.forwarding.modern.ServerLoginPacketListenerImplLoggerMixin",
-    "v20_4.forge.forwarding.modern.ServerLoginPacketListenerImplStartClientVerificationMixin",
+    "v20_4.forge.forwarding.modern.ServerLoginPacketListenerImplMixin",
     "v20_4.forge.forwarding.modern.ServerLoginPacketListenerImplQueryMixin"
   ]
 }
