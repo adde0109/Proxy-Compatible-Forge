@@ -12,7 +12,7 @@ import net.minecraft.server.network.NetHandlerLoginServer;
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
 import org.adde0109.pcf.v7_10.forge.forwarding.network.C2SCustomQueryAnswerPacket;
 import org.adde0109.pcf.v7_10.forge.forwarding.network.ServerLoginQueryListener;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.Mixin;
 @Mixin(NetHandlerLoginServer.class)
 public abstract class ServerLoginPacketListenerImplQueryMixin
         implements ServerLoginPacketListenerBridge {
-    public void pcf$handleCustomQueryPacket(final @NotNull C2SCustomQueryAnswerPacket packet) {
+    public void pcf$handleCustomQueryPacket(final @NonNull C2SCustomQueryAnswerPacket packet) {
         handleCustomQueryPacket(this, packet.transactionId(), packet);
     }
 }

@@ -11,8 +11,8 @@ import io.netty.buffer.Unpooled;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.crossstitch.compat.ArgumentEdgeCases;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Optional;
@@ -27,7 +27,7 @@ public final class CrossStitch {
 
     private static final Set<String> BUILT_IN_REGISTRY_KEYS = Set.of("minecraft", "brigadier");
 
-    public static boolean shouldNotWrapArgument(final @NotNull String identifier) {
+    public static boolean shouldNotWrapArgument(final @NonNull String identifier) {
         final boolean isVanilla = BUILT_IN_REGISTRY_KEYS.stream().anyMatch(identifier::startsWith);
         final boolean forceWrapped =
                 PCF.instance().crossStitch().forceWrappedArguments().stream()
@@ -41,10 +41,10 @@ public final class CrossStitch {
     public static Runnable INFO_DUMP;
     private static boolean infoDumped = false;
 
-    public static Function<@NotNull ArgumentType<?>, @Nullable Object> GET_ARGUMENT_TYPE_ENTRY;
+    public static Function<@NonNull ArgumentType<?>, @Nullable Object> GET_ARGUMENT_TYPE_ENTRY;
 
     private static @Nullable EntryBridge getArgumentTypeEntry(
-            final @NotNull ArgumentType<?> argumentType) {
+            final @NonNull ArgumentType<?> argumentType) {
         return (EntryBridge) GET_ARGUMENT_TYPE_ENTRY.apply(argumentType);
     }
 
@@ -53,7 +53,7 @@ public final class CrossStitch {
      * href="https://github.com/VelocityPowered/CrossStitch/blob/fe3f3be49c52dc9c1b6b7cd3cafefb953adf4486/src/main/java/com/velocitypowered/crossstitch/mixin/command/CommandTreeSerializationMixin.java">CrossStitch</a>
      */
     public static void writeNode$wrapInVelocityModArgument(
-            final @NotNull ByteBuf buffer, final @NotNull ArgumentType<?> argumentType) {
+            final @NonNull ByteBuf buffer, final @NonNull ArgumentType<?> argumentType) {
         if (!PCF.instance().crossStitch().enabled()) {
             return;
         }
@@ -105,15 +105,15 @@ public final class CrossStitch {
         extraData.release();
     }
 
-    public static Function<@NotNull Object, Optional<String>> COMMAND_ARGUMENT_IDENTIFIER;
+    public static Function<@NonNull Object, Optional<String>> COMMAND_ARGUMENT_IDENTIFIER;
 
-    public static Optional<String> commandArgumentResourceKey(final @NotNull Object type) {
+    public static Optional<String> commandArgumentResourceKey(final @NonNull Object type) {
         return COMMAND_ARGUMENT_IDENTIFIER.apply(type);
     }
 
-    public static Function<@NotNull Object, Integer> COMMAND_ARGUMENT_TYPE_ID;
+    public static Function<@NonNull Object, Integer> COMMAND_ARGUMENT_TYPE_ID;
 
-    public static int commandArgumentTypeId(final @NotNull Object type) {
+    public static int commandArgumentTypeId(final @NonNull Object type) {
         return COMMAND_ARGUMENT_TYPE_ID.apply(type);
     }
 
@@ -122,10 +122,10 @@ public final class CrossStitch {
      * href="https://github.com/VelocityPowered/CrossStitch/blob/ebdf1209e8bfae4d6f3a53b636f61ecb1705ce34/src/main/java/com/velocitypowered/crossstitch/mixin/command/CommandTreeSerializationMixin.java">CrossStitch</a>
      */
     public static void writeNode$wrapInVelocityModArgument(
-            final @NotNull ByteBuf buffer,
-            final @NotNull SerializerBridge serializer,
-            final @NotNull Object properties,
-            final @NotNull CallbackInfo ci) {
+            final @NonNull ByteBuf buffer,
+            final @NonNull SerializerBridge serializer,
+            final @NonNull Object properties,
+            final @NonNull CallbackInfo ci) {
         if (!PCF.instance().crossStitch().enabled()) {
             return;
         }

@@ -10,7 +10,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 @SuppressWarnings("unused")
 public final class S2CCustomQueryPacket extends Packet {
@@ -18,22 +18,22 @@ public final class S2CCustomQueryPacket extends Packet {
 
     public S2CCustomQueryPacket() {}
 
-    public S2CCustomQueryPacket(final @NotNull ClientboundCustomQueryPacket packet) {
+    public S2CCustomQueryPacket(final @NonNull ClientboundCustomQueryPacket packet) {
         this.packet = packet;
     }
 
     @Override
-    public void readPacketData(@NotNull PacketBuffer buf) {
+    public void readPacketData(@NonNull PacketBuffer buf) {
         this.packet = ClientboundCustomQueryPacket.STREAM_CODEC.decode(buf);
     }
 
     @Override
-    public void writePacketData(@NotNull PacketBuffer buf) {
+    public void writePacketData(@NonNull PacketBuffer buf) {
         ClientboundCustomQueryPacket.STREAM_CODEC.encode(buf, this.packet);
     }
 
     @Override
-    public void processPacket(@NotNull INetHandler handler) {
+    public void processPacket(@NonNull INetHandler handler) {
         ((ClientLoginQueryListener) handler).handleCustomQuery(this);
     }
 
@@ -41,11 +41,11 @@ public final class S2CCustomQueryPacket extends Packet {
         return this.packet.transactionId();
     }
 
-    public @NotNull ResourceLocation id() {
+    public @NonNull ResourceLocation id() {
         return identifier(this.packet.payload().id());
     }
 
-    public @NotNull CustomQueryPayload payload() {
+    public @NonNull CustomQueryPayload payload() {
         return this.packet.payload();
     }
 }

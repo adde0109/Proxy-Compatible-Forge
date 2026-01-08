@@ -7,9 +7,11 @@ base {
 }
 
 dependencies {
+    compileOnly(libs.annotations)
     compileOnly(libs.mojang.authlib)
     compileOnly(libs.mojang.brigadier)
     compileOnly(libs.guava)
+    compileOnly(libs.jspecify)
     compileOnly(libs.mixin)
     compileOnly(libs.netty.buffer)
     compileOnly(libs.netty.codec)

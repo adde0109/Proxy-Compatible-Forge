@@ -1,17 +1,23 @@
 # Platform Compatibility
 
 ## Modern Forwarding and CrossStitch Command Wrapping
-| MC Version | Forge | NeoForge |
-|------------|-------|----------|
-| 1.21.x     | ✅     | ✅        |
-| 1.20.x     | ✅     | ✅        |
-| 1.19.x     | ✅     | N/A      |
-| 1.18.x     | ✅     | N/A      |
-| 1.17.x     | ✅     | N/A      |
-| 1.16.x     | ✅     | N/A      |
-| 1.15.x     | ✅     | N/A      |
-| 1.14.x     | ✅     | N/A      |
-| 1.13.x     | ❌     | N/A      |
+| MC Version | Forge | NeoForge | Modern Forwarding | CrossStitch | Notes                                                                                      |
+|------------|-------|----------|-------------------|-------------|--------------------------------------------------------------------------------------------|
+| 1.21.x     | ✅     | ✅        | ✅                 | ✅           |                                                                                            |
+| 1.20.x     | ✅     | ✅        | ✅                 | ✅           |                                                                                            |
+| 1.19.x     | ✅     | N/A      | ✅                 | ✅           |                                                                                            |
+| 1.18.x     | ✅     | N/A      | ✅                 | ✅           |                                                                                            |
+| 1.17.x     | ✅     | N/A      | ✅                 | ✅           |                                                                                            |
+| 1.16.x     | ✅     | N/A      | ✅                 | ✅           | Requires [MixinBootstrap](https://modrinth.com/mod/mixinbootstrap) on 1.16 - 1.16.1        |
+| 1.15.x     | ✅     | N/A      | ✅                 | ✅           | Requires [MixinBootstrap](https://modrinth.com/mod/mixinbootstrap) on 1.15 - 1.15.1        |
+| 1.14.x     | ✅     | N/A      | ✅                 | ✅           | Requires [MixinBootstrap](https://modrinth.com/mod/mixinbootstrap)                         |
+| 1.13.x     | ❌     | N/A      | ❌                 | ❌           |                                                                                            |
+| 1.12.x     | ✅     | N/A      | ✅                 | ❌           | Requires [MixinBooter](https://modrinth.com/mod/mixinbooter) and a modified Velocity proxy |
+| 1.11.x     | ✅     | N/A      | ✅                 | ❌           | Requires [MixinBooter](https://modrinth.com/mod/mixinbooter) and a modified Velocity proxy |
+| 1.10.x     | ✅     | N/A      | ✅                 | ❌           | Requires [MixinBooter](https://modrinth.com/mod/mixinbooter) and a modified Velocity proxy |
+| 1.9.x      | ✅     | N/A      | ✅                 | ❌           | Requires [MixinBooter](https://modrinth.com/mod/mixinbooter) and a modified Velocity proxy |
+| 1.8.x      | ✅     | N/A      | ✅                 | ❌           | Requires [MixinBooter](https://modrinth.com/mod/mixinbooter) and a modified Velocity proxy |
+| 1.7.x      | ✅     | N/A      | ✅                 | ❌           | Requires [MixinBooter](https://modrinth.com/mod/mixinbooter) and a modified Velocity proxy |
 
 ## Modpack Compatibility
 Try adding [BeQuietNegotiator](<https://modrinth.com/mod/be-quiet-negotiator>) to your NeoForge client if you're trying to join a Vanilla server.

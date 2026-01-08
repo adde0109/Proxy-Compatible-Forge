@@ -1,7 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import xyz.wagyourtail.jvmdg.gradle.task.DowngradeJar
 import xyz.wagyourtail.jvmdg.gradle.task.ShadeJar
-import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 import java.time.Instant
 
 plugins {
@@ -38,8 +37,19 @@ subprojects {
         maven("https://api.modrinth.com/maven")
     }
 
+    val mainCompileOnly: Configuration = configurations.maybeCreate("mainCompileOnly")
+    configurations.compileOnly.get().extendsFrom(mainCompileOnly)
+
     dependencies {
-        compileOnly(rootProject.libs.annotations)
+        listOf(
+            rootProject.libs.jspecify,
+            rootProject.libs.taterlib.lite.base,
+            rootProject.libs.taterlib.lite.core,
+            rootProject.libs.taterlib.lite.metadata,
+            rootProject.libs.taterlib.lite.muxins
+        ).forEach {
+            mainCompileOnly(it)
+        }
     }
 
     spotless {
@@ -92,7 +102,8 @@ val projs = listOf(
     ":modern:v19_2",
     ":modern:v20_2",
     ":modern:v20_4",
-    ":modern:v21_10"
+    ":modern:v21_10",
+    ":modern:v21_11"
 )
 
 val mergeMixins = tasks.register<MergeMixinConfigs>("mergeMixins") {

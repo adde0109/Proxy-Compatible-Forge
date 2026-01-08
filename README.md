@@ -17,13 +17,13 @@ This mod brings Velocity's [modern forwarding](<https://docs.papermc.io/velocity
 
 ### Supported Versions/Platforms
 
-- Forge versions 1.7.2-1.21.10
+- Forge versions 1.7.2-1.21.11
   - [MixinBootstrap](https://modrinth.com/mod/mixinbootstrap) is required on Forge 1.14.x - 1.15.1
   - Forge 1.13.x isn't supported (yet)
   - [MixinBooter](https://modrinth.com/mod/mixinbooter) is required on Forge 1.8.x - 1.12.2
   - [UniMixins](https://modrinth.com/mod/unimixins) is required on Forge 1.7.x
   - 1.7.2 - 1.12.2 also require a modified Velocity proxy
-- NeoForge versions 1.20.1-1.21.10
+- NeoForge versions 1.20.1-1.21.11
 - SpongeForge/SpongeNeo
   - PCF shouldn't be needed, as Sponge supports legacy+modern forwarding and command argument wrapping
   - However, if Forgified Fabric API is installed (specifically `fabric_networking_api_v1`), you may need to use PCF and disable Sponge's forwarding

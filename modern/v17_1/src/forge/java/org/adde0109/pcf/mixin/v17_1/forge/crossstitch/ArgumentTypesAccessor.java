@@ -9,16 +9,14 @@ import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 
 import net.minecraft.commands.synchronization.ArgumentTypes;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 import java.util.Map;
 
-@AConstraint(
-        mappings = Mappings.SEARGE,
-        version = @Versions(min = MinecraftVersion.V17, max = MinecraftVersion.V18_2))
+@AConstraint(mappings = Mappings.SEARGE, version = @Versions(max = MinecraftVersion.V18_2))
 @Mixin(ArgumentTypes.class)
 public interface ArgumentTypesAccessor {
     @Invoker("get")

@@ -1,16 +1,16 @@
-package org.adde0109.pcf.v20_2.neoforge.forwarding.network;
+package org.adde0109.pcf.v21_11.forwarding.network;
 
 import io.netty.buffer.ByteBuf;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
-public record MCQueryAnswerPayload(@NotNull ByteBuf data)
+public record MCQueryAnswerPayload(@NonNull ByteBuf data)
         implements net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload,
                 QueryAnswerPayloadSearge {
     @Override
-    public void write(final @NotNull FriendlyByteBuf buf) {
+    public void write(final @NonNull FriendlyByteBuf buf) {
         buf.writeBytes(this.data.slice());
     }
 }

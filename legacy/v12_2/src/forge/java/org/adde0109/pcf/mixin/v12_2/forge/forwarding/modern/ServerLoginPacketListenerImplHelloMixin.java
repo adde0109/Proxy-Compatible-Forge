@@ -10,7 +10,7 @@ import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import net.minecraft.server.network.NetHandlerLoginServer;
 
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,7 +28,7 @@ public abstract class ServerLoginPacketListenerImplHelloMixin
             cancellable = true, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, ordinal = 1,
             target = "Lnet/minecraft/server/network/NetHandlerLoginServer;currentLoginState:Lnet/minecraft/server/network/NetHandlerLoginServer$LoginState;"))
     // spotless:on
-    private void onHandleHello(final @NotNull CallbackInfo ci) {
+    private void onHandleHello(final @NonNull CallbackInfo ci) {
         handleHello(this, ci);
     }
 }

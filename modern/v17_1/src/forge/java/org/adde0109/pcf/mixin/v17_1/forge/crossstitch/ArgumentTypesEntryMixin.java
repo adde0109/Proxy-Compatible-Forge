@@ -16,14 +16,12 @@ import net.minecraft.resources.ResourceLocation;
 
 import org.adde0109.pcf.crossstitch.EntryBridge;
 import org.adde0109.pcf.crossstitch.SerializerBridge;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@AConstraint(
-        mappings = Mappings.SEARGE,
-        version = @Versions(min = MinecraftVersion.V17, max = MinecraftVersion.V18_2))
+@AConstraint(mappings = Mappings.SEARGE, version = @Versions(max = MinecraftVersion.V18_2))
 @Mixin(ArgumentTypes.Entry.class)
 public class ArgumentTypesEntryMixin<T extends ArgumentType<?>>
         implements EntryBridge, SerializerBridge {
@@ -33,13 +31,13 @@ public class ArgumentTypesEntryMixin<T extends ArgumentType<?>>
     // spotless:on
 
     @Override
-    public @NotNull String bridge$identifier() {
+    public @NonNull String bridge$identifier() {
         return this.name.toString();
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void bridge$serializeToNetwork(final @NotNull Object argument, @NotNull ByteBuf buffer) {
+    public void bridge$serializeToNetwork(final @NonNull Object argument, @NonNull ByteBuf buffer) {
         if (buffer instanceof dev.neuralnexus.taterapi.network.FriendlyByteBuf fByteBuf) {
             buffer = fByteBuf.unwrap();
         }

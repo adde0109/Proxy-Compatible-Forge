@@ -15,7 +15,7 @@ import dev.neuralnexus.taterapi.meta.Platforms;
 import org.adde0109.pcf.forwarding.Mode;
 import org.adde0109.pcf.forwarding.modern.VelocityProxy;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
@@ -35,7 +35,7 @@ public final class PCF {
         return INSTANCE;
     }
 
-    private static final @NotNull String SERVICE_PATH =
+    private static final @NonNull String SERVICE_PATH =
             "META-INF/services/org.adde0109.pcf.PCFInitializer";
     private static EntrypointLoader<PCFInitializer> loader;
 
@@ -115,7 +115,7 @@ public final class PCF {
     }
 
     @ApiStatus.Internal
-    public void setForwarding(final @NotNull Forwarding forwarding) {
+    public void setForwarding(final @NonNull Forwarding forwarding) {
         this.forwarding = forwarding;
     }
 
@@ -126,7 +126,7 @@ public final class PCF {
     }
 
     @ApiStatus.Internal
-    public void setCrossStitch(final @NotNull CrossStitch crossStitch) {
+    public void setCrossStitch(final @NonNull CrossStitch crossStitch) {
         this.crossStitch = crossStitch;
     }
 
@@ -137,7 +137,7 @@ public final class PCF {
     }
 
     @ApiStatus.Internal
-    public void setDebug(final @NotNull Debug debug) {
+    public void setDebug(final @NonNull Debug debug) {
         this.debug = debug;
     }
 
@@ -148,22 +148,22 @@ public final class PCF {
     }
 
     @ApiStatus.Internal
-    public void setAdvanced(final @NotNull Advanced advanced) {
+    public void setAdvanced(final @NonNull Advanced advanced) {
         this.advanced = advanced;
     }
 
     public record Forwarding(
             boolean enabled,
-            @NotNull Mode mode,
-            @NotNull String secret,
-            List<@NotNull String> approvedProxyHosts) {}
+            @NonNull Mode mode,
+            @NonNull String secret,
+            List<@NonNull String> approvedProxyHosts) {}
 
     public record CrossStitch(
             boolean enabled,
-            List<@NotNull String> forceWrappedArguments,
+            List<@NonNull String> forceWrappedArguments,
             boolean forceWrapVanillaArguments) {}
 
-    public record Debug(boolean enabled, List<@NotNull String> disabledMixins) {}
+    public record Debug(boolean enabled, List<@NonNull String> disabledMixins) {}
 
-    public record Advanced(@NotNull VelocityProxy.Version modernForwardingVersion) {}
+    public record Advanced(VelocityProxy.@NonNull Version modernForwardingVersion) {}
 }

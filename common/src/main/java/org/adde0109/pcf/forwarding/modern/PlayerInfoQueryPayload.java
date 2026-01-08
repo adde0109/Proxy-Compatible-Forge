@@ -10,7 +10,7 @@ import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayload
 
 import io.netty.buffer.ByteBuf;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Payload for the player info query <br>
@@ -19,27 +19,27 @@ import org.jetbrains.annotations.NotNull;
  *
  * @param data the buffer
  */
-public record PlayerInfoQueryPayload(@NotNull ByteBuf data) implements CustomQueryPayload {
+public record PlayerInfoQueryPayload(@NonNull ByteBuf data) implements CustomQueryPayload {
     public static final StreamCodec<ByteBuf, PlayerInfoQueryPayload> STREAM_CODEC =
             CustomQueryPayload.codec(PlayerInfoQueryPayload::write, PlayerInfoQueryPayload::read);
 
-    private static @NotNull PlayerInfoQueryPayload read(final @NotNull ByteBuf buf) {
+    private static @NonNull PlayerInfoQueryPayload read(final @NonNull ByteBuf buf) {
         readResourceLocation(buf); // Discard
         return new PlayerInfoQueryPayload(readPayload(buf));
     }
 
-    private void write(final @NotNull ByteBuf buf) {
+    private void write(final @NonNull ByteBuf buf) {
         writeResourceLocation(buf, this.id());
         writePayload(buf, this.data);
     }
 
     @Override
-    public @NotNull String id() {
+    public @NonNull String id() {
         return VelocityProxy.PLAYER_INFO_CHANNEL.toString();
     }
 
     @Override
-    public @NotNull StreamCodec<@NotNull ByteBuf, @NotNull PlayerInfoQueryPayload> codec() {
+    public @NonNull StreamCodec<@NonNull ByteBuf, @NonNull PlayerInfoQueryPayload> codec() {
         return STREAM_CODEC;
     }
 }

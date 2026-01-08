@@ -27,7 +27,7 @@ import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.forwarding.Mode;
 import org.adde0109.pcf.forwarding.compat.ArclightBridge;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.net.InetSocketAddress;
@@ -66,7 +66,7 @@ public final class ModernForwarding {
      * @param ci The callback info
      */
     public static void handleHello(
-            final @NotNull ServerLoginPacketListenerBridge slpl, final @NotNull CallbackInfo ci) {
+            final @NonNull ServerLoginPacketListenerBridge slpl, final @NonNull CallbackInfo ci) {
         if (!PCF.instance().forwarding().enabled()
                 || !PCF.instance().forwarding().mode().equals(Mode.MODERN)) {
             return;
@@ -102,7 +102,7 @@ public final class ModernForwarding {
     }
 
     @ApiStatus.Internal
-    public static BiConsumer<@NotNull ServerLoginPacketListenerBridge, @NotNull ByteBuf>
+    public static BiConsumer<@NonNull ServerLoginPacketListenerBridge, @NonNull ByteBuf>
             preProcessor = (slpl, buf) -> {};
 
     private static final Object DIRECT_CONNECT_ERR =
@@ -125,9 +125,9 @@ public final class ModernForwarding {
      * @param mcPacket The Minecraft packet
      */
     public static void handleCustomQueryPacket(
-            final @NotNull ServerLoginPacketListenerBridge slpl,
+            final @NonNull ServerLoginPacketListenerBridge slpl,
             final int transactionId,
-            final @NotNull Object mcPacket) {
+            final @NonNull Object mcPacket) {
         handleCustomQueryPacket(slpl, transactionId, mcPacket, Cancellable.DUMMY);
     }
 
@@ -140,10 +140,10 @@ public final class ModernForwarding {
      * @param ci The callback info
      */
     public static void handleCustomQueryPacket(
-            final @NotNull ServerLoginPacketListenerBridge slpl,
+            final @NonNull ServerLoginPacketListenerBridge slpl,
             final int transactionId,
-            final @NotNull Object mcPacket,
-            final @NotNull CallbackInfo ci) {
+            final @NonNull Object mcPacket,
+            final @NonNull CallbackInfo ci) {
         handleCustomQueryPacket(slpl, transactionId, mcPacket, new CancellableMixin(ci));
     }
 
@@ -156,10 +156,10 @@ public final class ModernForwarding {
      * @param ci The callback info wrapper
      */
     public static void handleCustomQueryPacket(
-            final @NotNull ServerLoginPacketListenerBridge slpl,
+            final @NonNull ServerLoginPacketListenerBridge slpl,
             final int transactionId,
-            final @NotNull Object mcPacket,
-            final @NotNull Cancellable ci) {
+            final @NonNull Object mcPacket,
+            final @NonNull Cancellable ci) {
         if (!PCF.instance().forwarding().enabled()
                 || !PCF.instance().forwarding().mode().equals(Mode.MODERN)
                 || transactionId != slpl.bridge$velocityLoginMessageId()) {

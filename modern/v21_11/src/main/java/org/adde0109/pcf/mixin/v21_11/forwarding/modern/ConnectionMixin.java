@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v21_10.neoforge.forwarding.modern;
+package org.adde0109.pcf.mixin.v21_11.forwarding.modern;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;

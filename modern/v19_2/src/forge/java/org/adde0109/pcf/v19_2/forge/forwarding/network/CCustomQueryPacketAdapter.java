@@ -8,7 +8,7 @@ import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayload
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public final class CCustomQueryPacketAdapter
         implements AdapterCodec<
@@ -17,9 +17,9 @@ public final class CCustomQueryPacketAdapter
     public static final CCustomQueryPacketAdapter INSTANCE = new CCustomQueryPacketAdapter();
 
     @Override
-    public @NotNull ClientboundCustomQueryPacket from(
-            final @NotNull net.minecraft.network.protocol.login.ClientboundCustomQueryPacket
-                            object) {
+    public @NonNull ClientboundCustomQueryPacket from(
+            final net.minecraft.network.protocol.login.@NonNull ClientboundCustomQueryPacket
+                    object) {
         return new ClientboundCustomQueryPacket(
                 object.getTransactionId(),
                 new CustomQueryPayloadImpl(
@@ -27,8 +27,8 @@ public final class CCustomQueryPacketAdapter
     }
 
     @Override
-    public @NotNull net.minecraft.network.protocol.login.ClientboundCustomQueryPacket to(
-            final @NotNull ClientboundCustomQueryPacket object) {
+    public net.minecraft.network.protocol.login.@NonNull ClientboundCustomQueryPacket to(
+            final @NonNull ClientboundCustomQueryPacket object) {
         return new net.minecraft.network.protocol.login.ClientboundCustomQueryPacket(
                 object.transactionId(),
                 identifier(object.payload().id()),

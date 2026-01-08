@@ -2,8 +2,6 @@ package org.adde0109.pcf.mixin.v20_4.forge.forwarding.modern;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
-import dev.neuralnexus.taterapi.meta.anno.Versions;
-import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
@@ -15,7 +13,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
-@AConstraint(mappings = Mappings.SEARGE, version = @Versions(min = MinecraftVersion.V17))
+@AConstraint(mappings = Mappings.SEARGE)
 @Mixin(Connection.class)
 public abstract class ConnectionMixin implements ConnectionBridge {
     // spotless:off

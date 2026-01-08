@@ -13,13 +13,11 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.network.FriendlyByteBuf;
 
 import org.adde0109.pcf.crossstitch.SerializerBridge;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@AConstraint(
-        mappings = Mappings.SEARGE,
-        version = @Versions(min = MinecraftVersion.V19, max = MinecraftVersion.V20_4))
+@AConstraint(mappings = Mappings.SEARGE, version = @Versions(min = MinecraftVersion.V19))
 @Mixin(ArgumentTypeInfo.class)
 public interface ArgumentTypeInfoMixin<
                 A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>>
@@ -31,7 +29,7 @@ public interface ArgumentTypeInfoMixin<
     @SuppressWarnings("unchecked")
     @Override
     default void bridge$serializeToNetwork(
-            final @NotNull Object argument, @NotNull ByteBuf buffer) {
+            final @NonNull Object argument, @NonNull ByteBuf buffer) {
         if (buffer instanceof dev.neuralnexus.taterapi.network.FriendlyByteBuf fByteBuf) {
             buffer = fByteBuf.unwrap();
         }

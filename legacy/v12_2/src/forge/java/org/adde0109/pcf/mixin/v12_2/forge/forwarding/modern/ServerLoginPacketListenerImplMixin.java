@@ -14,7 +14,7 @@ import net.minecraft.util.text.ITextComponent;
 import org.adde0109.pcf.forwarding.modern.ConnectionBridge;
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -44,12 +44,12 @@ public abstract class ServerLoginPacketListenerImplMixin
     }
 
     @Override
-    public @NotNull ConnectionBridge bridge$connection() {
+    public @NonNull ConnectionBridge bridge$connection() {
         return (ConnectionBridge) this.networkManager;
     }
 
     @Override
-    public void bridge$startClientVerification(final @NotNull GameProfile profile) {
+    public void bridge$startClientVerification(final @NonNull GameProfile profile) {
         this.loginGameProfile = profile;
         this.currentLoginState = NetHandlerLoginServer.LoginState.READY_TO_ACCEPT;
     }
@@ -65,17 +65,17 @@ public abstract class ServerLoginPacketListenerImplMixin
         // spotless:on
 
         @Override
-        public void bridge$disconnect(final @NotNull Object reason) {
+        public void bridge$disconnect(final @NonNull Object reason) {
             this.shadow$onDisconnect((ITextComponent) reason);
         }
 
         @Override
-        public void bridge$logger_info(final @NotNull String text, final Object... params) {
+        public void bridge$logger_info(final @NonNull String text, final Object... params) {
             LOGGER.info(text, params);
         }
 
         @Override
-        public void bridge$logger_error(final @NotNull String text, final Object... params) {
+        public void bridge$logger_error(final @NonNull String text, final Object... params) {
             LOGGER.error(text, params);
         }
     }

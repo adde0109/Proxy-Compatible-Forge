@@ -14,12 +14,13 @@ subprojects {
         }
     }
 
-    var mainCompileOnly = configurations.maybeCreate("mainCompileOnly")
+    val mainCompileOnly: Configuration by configurations.getting
 
     dependencies {
-        mainCompileOnly(rootProject.libs.taterlib.lite.base)
-        mainCompileOnly(rootProject.libs.taterlib.lite.core)
-        mainCompileOnly(rootProject.libs.taterlib.lite.metadata)
-        mainCompileOnly(rootProject.libs.taterlib.lite.muxins)
+        listOf(
+            project(":common")
+        ).forEach {
+            mainCompileOnly(it)
+        }
     }
 }

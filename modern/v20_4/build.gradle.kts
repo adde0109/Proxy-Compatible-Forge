@@ -1,11 +1,10 @@
 val forge: SourceSet by sourceSets.creating
 val mainCompileOnly: Configuration by configurations.getting
-configurations.compileOnly.get().extendsFrom(mainCompileOnly)
 val forgeCompileOnly: Configuration by configurations.getting {
     extendsFrom(mainCompileOnly)
 }
 
-unimined.minecraft {
+unimined.minecraft(sourceSets.main.get()) {
     version(minecraftVersion)
     mappings {
         parchment(parchmentMinecraft, parchmentVersion)
@@ -28,7 +27,8 @@ unimined.minecraft(forge) {
 dependencies {
     forgeCompileOnly(srcSetAsDep(":modern:v16_5", "forge"))
     forgeCompileOnly(srcSetAsDep(":modern:v17_1", "forge"))
-    forgeCompileOnly(srcSetAsDep(":modern:v20_2", "main"))
+    evaluationDependsOn(":modern:v21_11")
+    forgeCompileOnly(project(":modern:v21_11"))
     forgeCompileOnly(project(":common"))
 }
 

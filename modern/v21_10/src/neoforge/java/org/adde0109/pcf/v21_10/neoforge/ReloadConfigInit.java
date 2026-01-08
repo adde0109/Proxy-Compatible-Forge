@@ -1,4 +1,4 @@
-package org.adde0109.pcf.v20_2.neoforge;
+package org.adde0109.pcf.v21_10.neoforge;
 
 import dev.neuralnexus.taterapi.Wrapped;
 import dev.neuralnexus.taterapi.meta.MetaAPI;
@@ -13,6 +13,7 @@ import net.neoforged.fml.event.config.ModConfigEvent;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.PCFInitializer;
+import org.adde0109.pcf.v20_2.neoforge.Config;
 
 @AConstraint(platform = Platform.NEOFORGE, version = @Versions(min = MinecraftVersion.V20_2))
 public final class ReloadConfigInit implements PCFInitializer {

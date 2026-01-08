@@ -7,8 +7,8 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.login.INetHandlerLoginServer;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 
@@ -18,22 +18,22 @@ public final class C2SCustomQueryAnswerPacket implements Packet<INetHandlerLogin
 
     public C2SCustomQueryAnswerPacket() {}
 
-    public C2SCustomQueryAnswerPacket(final @NotNull ServerboundCustomQueryAnswerPacket packet) {
+    public C2SCustomQueryAnswerPacket(final @NonNull ServerboundCustomQueryAnswerPacket packet) {
         this.packet = packet;
     }
 
     @Override
-    public void readPacketData(final @NotNull PacketBuffer buf) throws IOException {
+    public void readPacketData(final @NonNull PacketBuffer buf) throws IOException {
         this.packet = ServerboundCustomQueryAnswerPacket.STREAM_CODEC.decode(buf);
     }
 
     @Override
-    public void writePacketData(final @NotNull PacketBuffer buf) throws IOException {
+    public void writePacketData(final @NonNull PacketBuffer buf) throws IOException {
         ServerboundCustomQueryAnswerPacket.STREAM_CODEC.encode(buf, this.packet);
     }
 
     @Override
-    public void processPacket(final @NotNull INetHandlerLoginServer handler) {
+    public void processPacket(final @NonNull INetHandlerLoginServer handler) {
         ((ServerLoginQueryListener) handler).handleCustomQueryPacket(this);
     }
 

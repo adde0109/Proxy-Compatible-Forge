@@ -12,16 +12,14 @@ import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.crossstitch.CrossStitch;
 import org.adde0109.pcf.crossstitch.SerializerBridge;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@AConstraint(
-        mappings = Mappings.SEARGE,
-        version = @Versions(min = MinecraftVersion.V19, max = MinecraftVersion.V20_4))
+@AConstraint(mappings = Mappings.SEARGE, version = @Versions(min = MinecraftVersion.V19))
 @Mixin(ClientboundCommandsPacket.ArgumentNodeStub.class)
 public class ArgumentNodeStubMixin {
     // spotless:off
@@ -29,10 +27,10 @@ public class ArgumentNodeStubMixin {
             method = "serializeCap(Lnet/minecraft/network/FriendlyByteBuf;Lnet/minecraft/commands/synchronization/ArgumentTypeInfo;Lnet/minecraft/commands/synchronization/ArgumentTypeInfo$Template;)V")
     // spotless:on
     private static void writeNode$wrapInVelocityModArgument(
-            final @NotNull @Coerce ByteBuf buf,
-            final @NotNull @Coerce SerializerBridge serializer,
-            final @NotNull @Coerce Object properties,
-            final @NotNull CallbackInfo ci) {
+            final @NonNull @Coerce ByteBuf buf,
+            final @NonNull @Coerce SerializerBridge serializer,
+            final @NonNull @Coerce Object properties,
+            final @NonNull CallbackInfo ci) {
         try {
             CrossStitch.writeNode$wrapInVelocityModArgument(buf, serializer, properties, ci);
         } catch (Exception e) {

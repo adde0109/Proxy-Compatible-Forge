@@ -20,8 +20,8 @@ import net.neoforged.neoforge.network.custom.payload.SimpleQueryPayload;
 
 import org.adde0109.pcf.PCF;
 import org.adde0109.pcf.forwarding.modern.ServerLoginPacketListenerBridge;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.lang.invoke.MethodHandle;
@@ -48,7 +48,7 @@ public final class Compatibility {
      * @param buf The ByteBuf from the packet
      */
     public static void neoForgeReadSimpleQueryPayload(
-            final @NotNull ServerLoginPacketListenerBridge ignored, final @NotNull ByteBuf buf) {
+            final @NonNull ServerLoginPacketListenerBridge ignored, final @NonNull ByteBuf buf) {
         if (NEOFORGE_V20_2.result()) {
             readVarInt(buf);
             readResourceLocation(buf);
@@ -66,7 +66,7 @@ public final class Compatibility {
     public static void neoForgeReturnSimpleQueryPayload(
             final @Nullable ByteBuf buf,
             final int transactionId,
-            final @NotNull CallbackInfoReturnable<CustomQueryAnswerPayload> cir) {
+            final @NonNull CallbackInfoReturnable<CustomQueryAnswerPayload> cir) {
         if (NEOFORGE_V20_2.result()) {
             cir.setReturnValue(
                     buf == null
@@ -87,7 +87,7 @@ public final class Compatibility {
      */
     @SuppressWarnings("unchecked")
     public static void applyFFAPIFix(
-            final @NotNull ServerLoginPacketListenerBridge slpl, final @NotNull ByteBuf ignored) {
+            final @NonNull ServerLoginPacketListenerBridge slpl, final @NonNull ByteBuf ignored) {
         if (!FFAPI_V21_1.result()) {
             return;
         }
