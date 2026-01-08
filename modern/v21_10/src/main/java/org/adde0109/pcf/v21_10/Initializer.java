@@ -21,7 +21,7 @@ import org.adde0109.pcf.v21_10.forwarding.network.SCustomQueryAnswerPacketAdapte
 
 import java.util.Map;
 
-@AConstraint(mappings = Mappings.MOJANG, version = @Versions(min = MinecraftVersion.V20_2))
+@AConstraint(mappings = Mappings.MOJANG, version = @Versions(min = MinecraftVersion.V19_3))
 public final class Initializer implements PCFInitializer {
     public Initializer() {
         NetworkAdapters.register(
