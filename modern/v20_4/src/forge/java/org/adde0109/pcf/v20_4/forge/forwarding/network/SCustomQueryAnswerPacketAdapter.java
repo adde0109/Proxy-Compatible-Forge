@@ -10,7 +10,7 @@ import io.netty.buffer.Unpooled;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import org.adde0109.pcf.v21_10.neoforge.forwarding.network.MCQueryAnswerPayload;
+import org.adde0109.pcf.v21_10.forwarding.network.MCQueryAnswerPayload;
 import org.jspecify.annotations.NonNull;
 
 @AConstraint(mappings = Mappings.SEARGE)

@@ -37,15 +37,19 @@ subprojects {
         maven("https://api.modrinth.com/maven")
     }
 
-    var mainCompileOnly: Configuration = configurations.maybeCreate("mainCompileOnly")
+    val mainCompileOnly: Configuration = configurations.maybeCreate("mainCompileOnly")
     configurations.compileOnly.get().extendsFrom(mainCompileOnly)
 
     dependencies {
-        mainCompileOnly(rootProject.libs.jspecify)
-        mainCompileOnly(rootProject.libs.taterlib.lite.base)
-        mainCompileOnly(rootProject.libs.taterlib.lite.core)
-        mainCompileOnly(rootProject.libs.taterlib.lite.metadata)
-        mainCompileOnly(rootProject.libs.taterlib.lite.muxins)
+        listOf(
+            rootProject.libs.jspecify,
+            rootProject.libs.taterlib.lite.base,
+            rootProject.libs.taterlib.lite.core,
+            rootProject.libs.taterlib.lite.metadata,
+            rootProject.libs.taterlib.lite.muxins
+        ).forEach {
+            mainCompileOnly(it)
+        }
     }
 
     spotless {

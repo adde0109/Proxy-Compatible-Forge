@@ -19,9 +19,7 @@ import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@AConstraint(
-        mappings = Mappings.SEARGE,
-        version = @Versions(min = MinecraftVersion.V19, max = MinecraftVersion.V20_4))
+@AConstraint(mappings = Mappings.SEARGE, version = @Versions(min = MinecraftVersion.V19))
 @Mixin(ClientboundCommandsPacket.ArgumentNodeStub.class)
 public class ArgumentNodeStubMixin {
     // spotless:off

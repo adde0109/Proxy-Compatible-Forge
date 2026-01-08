@@ -13,4 +13,14 @@ subprojects {
             disableRefmap()
         }
     }
+
+    val mainCompileOnly: Configuration by configurations.getting
+
+    dependencies {
+        listOf(
+            project(":common")
+        ).forEach {
+            mainCompileOnly(it)
+        }
+    }
 }

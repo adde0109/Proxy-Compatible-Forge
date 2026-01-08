@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v21_10.neoforge.crossstich;
+package org.adde0109.pcf.mixin.v21_10.crossstich;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 
@@ -17,7 +17,7 @@ import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@AConstraint(mappings = Mappings.MOJANG, version = @Versions(min = MinecraftVersion.V20_2))
+@AConstraint(mappings = Mappings.MOJANG, version = @Versions(min = MinecraftVersion.V19))
 @Mixin(ArgumentTypeInfo.class)
 public interface ArgumentTypeInfoMixin<
                 A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>>

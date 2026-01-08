@@ -24,6 +24,6 @@ org.adde0109.pcf.v21_10.forge.ReloadConfigInit
 
 org.adde0109.pcf.v20_2.neoforge.RegisterConfig
 
-org.adde0109.pcf.v21_10.neoforge.Initializer
+org.adde0109.pcf.v21_10.Initializer
 org.adde0109.pcf.v21_10.neoforge.RegisterConfig
 org.adde0109.pcf.v21_10.neoforge.ReloadConfigInit

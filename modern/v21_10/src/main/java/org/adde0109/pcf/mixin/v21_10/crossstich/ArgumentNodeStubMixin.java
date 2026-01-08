@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v21_10.neoforge.crossstich;
+package org.adde0109.pcf.mixin.v21_10.crossstich;
 
 import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@AConstraint(mappings = Mappings.MOJANG, version = @Versions(min = MinecraftVersion.V20_2))
+@AConstraint(mappings = Mappings.MOJANG, version = @Versions(min = MinecraftVersion.V19))
 @Mixin(ClientboundCommandsPacket.ArgumentNodeStub.class)
 public class ArgumentNodeStubMixin {
     // spotless:off

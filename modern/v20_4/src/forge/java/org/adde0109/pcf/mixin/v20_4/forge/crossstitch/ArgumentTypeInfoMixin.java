@@ -17,9 +17,7 @@ import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@AConstraint(
-        mappings = Mappings.SEARGE,
-        version = @Versions(min = MinecraftVersion.V19, max = MinecraftVersion.V20_4))
+@AConstraint(mappings = Mappings.SEARGE, version = @Versions(min = MinecraftVersion.V19))
 @Mixin(ArgumentTypeInfo.class)
 public interface ArgumentTypeInfoMixin<
                 A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>>

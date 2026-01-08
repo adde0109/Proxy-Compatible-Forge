@@ -1,4 +1,4 @@
-package org.adde0109.pcf.mixin.v21_10.neoforge.forwarding.modern;
+package org.adde0109.pcf.mixin.v21_10.forwarding.modern;
 
 import static dev.neuralnexus.taterapi.network.FriendlyByteBuf.readNullablePayload;
 
@@ -14,7 +14,7 @@ import net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket;
 import net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload;
 
 import org.adde0109.pcf.v20_2.neoforge.Compatibility;
-import org.adde0109.pcf.v21_10.neoforge.forwarding.network.MCQueryAnswerPayload;
+import org.adde0109.pcf.v21_10.forwarding.network.MCQueryAnswerPayload;
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
