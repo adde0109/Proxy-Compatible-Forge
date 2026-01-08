@@ -21,9 +21,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@AConstraint(
-        mappings = Mappings.SEARGE,
-        version = @Versions(min = MinecraftVersion.V17, max = MinecraftVersion.V18_2))
+@AConstraint(mappings = Mappings.SEARGE, version = @Versions(max = MinecraftVersion.V18_2))
 @Mixin(ArgumentTypes.Entry.class)
 public class ArgumentTypesEntryMixin<T extends ArgumentType<?>>
         implements EntryBridge, SerializerBridge {
