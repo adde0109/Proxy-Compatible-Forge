@@ -22,8 +22,11 @@ org.adde0109.pcf.v21_10.forge.DisplayTestReg
 org.adde0109.pcf.v21_10.forge.RegisterConfig
 org.adde0109.pcf.v21_10.forge.ReloadConfigInit
 
+org.adde0109.pcf.v20_2.CrossStitchInit
 org.adde0109.pcf.v20_2.neoforge.RegisterConfig
 
-org.adde0109.pcf.v21_10.Initializer
 org.adde0109.pcf.v21_10.neoforge.RegisterConfig
 org.adde0109.pcf.v21_10.neoforge.ReloadConfigInit
+
+org.adde0109.pcf.v21_11.AdapterRegistryInit
+org.adde0109.pcf.v21_11.CrossStitchInit

@@ -102,7 +102,8 @@ val projs = listOf(
     ":modern:v19_2",
     ":modern:v20_2",
     ":modern:v20_4",
-    ":modern:v21_10"
+    ":modern:v21_10",
+    ":modern:v21_11"
 )
 
 val mergeMixins = tasks.register<MergeMixinConfigs>("mergeMixins") {

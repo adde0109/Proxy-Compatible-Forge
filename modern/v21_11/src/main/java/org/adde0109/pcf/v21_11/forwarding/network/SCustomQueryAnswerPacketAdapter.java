@@ -1,4 +1,4 @@
-package org.adde0109.pcf.v20_4.forge.forwarding.network;
+package org.adde0109.pcf.v21_11.forwarding.network;
 
 import dev.neuralnexus.taterapi.adapter.AdapterCodec;
 import dev.neuralnexus.taterapi.meta.Mappings;
@@ -10,10 +10,9 @@ import io.netty.buffer.Unpooled;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import org.adde0109.pcf.v21_11.forwarding.network.MCQueryAnswerPayload;
 import org.jspecify.annotations.NonNull;
 
-@AConstraint(mappings = Mappings.SEARGE)
+@AConstraint(mappings = Mappings.MOJANG)
 public final class SCustomQueryAnswerPacketAdapter
         implements AdapterCodec<
                 net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket,

@@ -10,9 +10,6 @@ val neoforgeCompileOnly: Configuration by configurations.getting {
 
 unimined.minecraft(sourceSets.main.get()) {
     version(minecraftVersion)
-    accessWidener {
-        accessWidener(rootProject.file("common/src/main/resources/accessWidener.aw"))
-    }
     mappings {
         parchment(parchmentMinecraft, parchmentVersion)
         mojmap()
@@ -38,8 +35,6 @@ unimined.minecraft(neoforge) {
 }
 
 dependencies {
-    mainCompileOnly(libs.mixin)
-    mainCompileOnly(project(":modern:v20_2"))
     forgeCompileOnly(srcSetAsDep(":modern:v16_5", "forge"))
     forgeCompileOnly(srcSetAsDep(":modern:v17_1", "forge"))
     forgeCompileOnly(project(":modern:v20_2"))
@@ -49,6 +44,6 @@ dependencies {
 }
 
 tasks.jar {
-    from(sourceSets.main.get().output, forge.output, neoforge.output)
+    from(forge.output, neoforge.output)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

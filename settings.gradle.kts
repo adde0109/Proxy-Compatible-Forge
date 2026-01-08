@@ -39,7 +39,8 @@ val modernVersions = listOf(
     "19_2",
     "20_2",
     "20_4",
-    "21_10"
+    "21_10",
+    "21_11"
 ).forEach { version ->
     include(":modern:v$version")
 }
