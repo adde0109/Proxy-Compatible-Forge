@@ -1,6 +1,5 @@
 package org.adde0109.pcf;
 
-import dev.neuralnexus.taterapi.adapter.AdapterRegistry;
 import dev.neuralnexus.taterapi.loader.EntrypointLoader;
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.meta.Constraint;
@@ -11,6 +10,7 @@ import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.ModResource;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
+import dev.neuralnexus.taterapi.registries.AdapterRegistry;
 
 import org.adde0109.pcf.forwarding.Mode;
 import org.adde0109.pcf.forwarding.modern.VelocityProxy;
