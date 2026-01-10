@@ -1,7 +1,7 @@
 package org.adde0109.pcf.v20_4.forge.forwarding.network;
 
 import dev.neuralnexus.taterapi.network.protocol.login.ServerboundCustomQueryAnswerPacket;
-import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryAnswerPayloadImpl;
+import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryAnswerPayload;
 import dev.neuralnexus.taterapi.serialization.Result;
 import dev.neuralnexus.taterapi.serialization.codecs.ReversibleCodec;
 
@@ -21,14 +21,16 @@ public final class SCustomQueryAnswerPacketAdapter
     @Override
     public Result<ServerboundCustomQueryAnswerPacket> encode(
             final net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket object) {
+        final int transactionId = object.transactionId();
         if (object.payload() == null) {
-            return Result.success(new ServerboundCustomQueryAnswerPacket(object.transactionId()));
+            return Result.success(new ServerboundCustomQueryAnswerPacket(transactionId));
         }
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         object.payload().write(buf);
         return Result.success(
                 new ServerboundCustomQueryAnswerPacket(
-                        object.transactionId(), new CustomQueryAnswerPayloadImpl(buf.slice())));
+                        transactionId,
+                        CustomQueryAnswerPayload.codec(transactionId).decode(buf.slice())));
     }
 
     @Override

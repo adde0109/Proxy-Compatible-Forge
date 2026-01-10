@@ -76,9 +76,4 @@ public record PlayerInfoQueryAnswerPayload(
         throw new UnsupportedOperationException(
                 this.getClass().getName() + " does not retain raw data.");
     }
-
-    @Override
-    public @NonNull StreamCodec<@NonNull ByteBuf, @NonNull PlayerInfoQueryAnswerPayload> codec() {
-        return STREAM_CODEC;
-    }
 }

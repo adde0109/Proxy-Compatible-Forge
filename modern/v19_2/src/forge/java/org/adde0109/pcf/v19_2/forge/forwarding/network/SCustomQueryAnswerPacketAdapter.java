@@ -1,7 +1,7 @@
 package org.adde0109.pcf.v19_2.forge.forwarding.network;
 
 import dev.neuralnexus.taterapi.network.protocol.login.ServerboundCustomQueryAnswerPacket;
-import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryAnswerPayloadImpl;
+import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryAnswerPayload;
 import dev.neuralnexus.taterapi.serialization.Result;
 import dev.neuralnexus.taterapi.serialization.codecs.ReversibleCodec;
 
@@ -17,14 +17,15 @@ public final class SCustomQueryAnswerPacketAdapter
     @Override
     public Result<ServerboundCustomQueryAnswerPacket> encode(
             final ServerboundCustomQueryPacket object) {
+        final int transactionId = object.getTransactionId();
         if (object.getData() == null) {
-            return Result.success(
-                    new ServerboundCustomQueryAnswerPacket(object.getTransactionId()));
+            return Result.success(new ServerboundCustomQueryAnswerPacket(transactionId));
         }
         return Result.success(
                 new ServerboundCustomQueryAnswerPacket(
-                        object.getTransactionId(),
-                        new CustomQueryAnswerPayloadImpl(object.getData().slice())));
+                        transactionId,
+                        CustomQueryAnswerPayload.codec(transactionId)
+                                .decode(object.getData().slice())));
     }
 
     @Override

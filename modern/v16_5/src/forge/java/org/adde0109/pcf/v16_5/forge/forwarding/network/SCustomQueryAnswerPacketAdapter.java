@@ -1,7 +1,7 @@
 package org.adde0109.pcf.v16_5.forge.forwarding.network;
 
 import dev.neuralnexus.taterapi.network.protocol.login.ServerboundCustomQueryAnswerPacket;
-import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryAnswerPayloadImpl;
+import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryAnswerPayload;
 import dev.neuralnexus.taterapi.serialization.Result;
 import dev.neuralnexus.taterapi.serialization.codecs.ReversibleCodec;
 
@@ -20,19 +20,19 @@ public final class SCustomQueryAnswerPacketAdapter
     @Override
     public Result<ServerboundCustomQueryAnswerPacket> encode(
             final ServerboundCustomQueryPacket object) {
+        final int transactionId =
+                ((ServerboundCustomQueryPacketAccessor) object).pcf$getTransactionId();
         if (((ServerboundCustomQueryPacketAccessor) object).pcf$getData() == null) {
-            return Result.success(
-                    new ServerboundCustomQueryAnswerPacket(
-                            ((ServerboundCustomQueryPacketAccessor) object)
-                                    .pcf$getTransactionId()));
+            return Result.success(new ServerboundCustomQueryAnswerPacket(transactionId));
         }
         return Result.success(
                 new ServerboundCustomQueryAnswerPacket(
-                        ((ServerboundCustomQueryPacketAccessor) object).pcf$getTransactionId(),
-                        new CustomQueryAnswerPayloadImpl(
-                                ((ServerboundCustomQueryPacketAccessor) object)
-                                        .pcf$getData()
-                                        .slice())));
+                        transactionId,
+                        CustomQueryAnswerPayload.codec(transactionId)
+                                .decode(
+                                        ((ServerboundCustomQueryPacketAccessor) object)
+                                                .pcf$getData()
+                                                .slice())));
     }
 
     @Override

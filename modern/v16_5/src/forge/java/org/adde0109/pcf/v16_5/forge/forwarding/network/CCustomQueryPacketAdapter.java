@@ -3,7 +3,7 @@ package org.adde0109.pcf.v16_5.forge.forwarding.network;
 import static dev.neuralnexus.taterapi.resources.Identifier.identifier;
 
 import dev.neuralnexus.taterapi.network.protocol.login.ClientboundCustomQueryPacket;
-import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayloadImpl;
+import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayload;
 import dev.neuralnexus.taterapi.serialization.Result;
 import dev.neuralnexus.taterapi.serialization.codecs.ReversibleCodec;
 
@@ -23,13 +23,14 @@ public final class CCustomQueryPacketAdapter
         return Result.success(
                 new ClientboundCustomQueryPacket(
                         ((ClientboundCustomQueryPacketAccessor) object).pcf$getTransactionId(),
-                        new CustomQueryPayloadImpl(
-                                ((ClientboundCustomQueryPacketAccessor) object)
-                                        .pcf$getIdentifier()
-                                        .toString(),
-                                ((ClientboundCustomQueryPacketAccessor) object)
-                                        .pcf$getData()
-                                        .slice())));
+                        CustomQueryPayload.codec(
+                                        ((ClientboundCustomQueryPacketAccessor) object)
+                                                .pcf$getIdentifier()
+                                                .toString())
+                                .decode(
+                                        ((ClientboundCustomQueryPacketAccessor) object)
+                                                .pcf$getData()
+                                                .slice())));
     }
 
     @SuppressWarnings("DataFlowIssue")

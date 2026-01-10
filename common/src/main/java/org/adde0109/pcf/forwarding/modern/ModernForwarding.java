@@ -210,7 +210,7 @@ public final class ModernForwarding {
 
         // Decode payload
         final PlayerInfoQueryAnswerPayload payload =
-                packet.payload().as(PlayerInfoQueryAnswerPayload.STREAM_CODEC);
+                PlayerInfoQueryAnswerPayload.STREAM_CODEC.decode(packet.payload().data());
 
         // Validate version
         int version = payload.version();

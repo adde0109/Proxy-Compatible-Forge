@@ -3,7 +3,7 @@ package org.adde0109.pcf.v20_4.forge.forwarding.network;
 import static dev.neuralnexus.taterapi.resources.Identifier.identifier;
 
 import dev.neuralnexus.taterapi.network.protocol.login.ClientboundCustomQueryPacket;
-import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayloadImpl;
+import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryPayload;
 import dev.neuralnexus.taterapi.serialization.Result;
 import dev.neuralnexus.taterapi.serialization.codecs.ReversibleCodec;
 
@@ -25,7 +25,8 @@ public final class CCustomQueryPacketAdapter
         return Result.success(
                 new ClientboundCustomQueryPacket(
                         object.transactionId(),
-                        new CustomQueryPayloadImpl(object.payload().id().toString(), buf.slice())));
+                        CustomQueryPayload.codec(object.payload().id().toString())
+                                .decode(buf.slice())));
     }
 
     @Override
