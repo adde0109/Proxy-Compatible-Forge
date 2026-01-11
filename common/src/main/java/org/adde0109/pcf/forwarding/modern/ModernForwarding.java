@@ -220,8 +220,8 @@ public final class ModernForwarding {
                 PlayerInfoQueryAnswerPayload.STREAM_CODEC.decode(packet.payload().data());
 
         // Validate version
-        int version = payload.version();
-        if (version > MODERN_MAX_VERSION) {
+        VelocityProxy.Version version = payload.version();
+        if (version.id() > MODERN_MAX_VERSION) {
             throw new IllegalStateException(
                     "Unsupported forwarding version "
                             + version
@@ -236,41 +236,40 @@ public final class ModernForwarding {
         slpl.bridge$connection().bridge$address(address);
 
         // Handle profile key
-        // Clear key on 1.19.1 - 1.19.2 if using MODERN_DEFAULT
-        if (version == MODERN_DEFAULT.id()
-                && Constraint.range(MinecraftVersions.V19_1, MinecraftVersions.V19_2).result()) {
-            ((ServerLoginPacketListenerBridge.KeyV2) slpl).bridge$setProfilePublicKeyData(null);
-        }
-
-        // 1.19 forwarding with key v1
-        if (version == MODERN_FORWARDING_WITH_KEY.id()) {
-            boolean enforceSecureProfile = enforceSecureProfile();
-            try {
-                if (enforceSecureProfile && payload.key() == null) {
-                    throw new ThrowingComponent(MISSING_PROFILE_PUBLIC_KEY);
-                }
-                ((ServerLoginPacketListenerBridge.KeyV1) slpl)
-                        .bridge$setPlayerProfilePublicKey(payload.key());
-            } catch (DecoderException e) {
-                PCF.logger.error("Public key read failed.", e);
-                if (enforceSecureProfile) {
-                    throw new ThrowingComponent(INVALID_SIGNATURE, e);
+        switch (version) {
+            case MODERN_DEFAULT -> { // Clear key on 1.19.1 - 1.19.2 if using MODERN_DEFAULT
+                if (Constraint.range(MinecraftVersions.V19_1, MinecraftVersions.V19_2).result()) {
+                    ((ServerLoginPacketListenerBridge.KeyV2) slpl)
+                            .bridge$setProfilePublicKeyData(null);
                 }
             }
-        }
-
-        // 1.19.1 - 1.19.2 forwarding with key v2
-        if (version == MODERN_FORWARDING_WITH_KEY_V2.id()) {
-            if (((ServerLoginPacketListenerBridge.KeyV2) slpl).bridge$profilePublicKeyData()
-                    == null) {
+            case MODERN_FORWARDING_WITH_KEY -> { // 1.19 forwarding with key v1
+                boolean enforceSecureProfile = enforceSecureProfile();
                 try {
-                    ((ServerLoginPacketListenerBridge.KeyV2) slpl)
-                            .bridge$validatePublicKey(payload.key(), payload.signer());
-                    ((ServerLoginPacketListenerBridge.KeyV2) slpl)
-                            .bridge$setProfilePublicKeyData(payload.key());
-                } catch (Exception e) {
-                    slpl.bridge$logger_error("Failed to validate profile key: {}", e.getMessage());
-                    throw new ThrowingComponent(INVALID_SIGNATURE, e);
+                    if (enforceSecureProfile && payload.key() == null) {
+                        throw new ThrowingComponent(MISSING_PROFILE_PUBLIC_KEY);
+                    }
+                    ((ServerLoginPacketListenerBridge.KeyV1) slpl)
+                            .bridge$setPlayerProfilePublicKey(payload.key());
+                } catch (DecoderException e) {
+                    PCF.logger.error("Public key read failed.", e);
+                    if (enforceSecureProfile) {
+                        throw new ThrowingComponent(INVALID_SIGNATURE, e);
+                    }
+                }
+            }
+            case MODERN_FORWARDING_WITH_KEY_V2 -> { // 1.19.1 - 1.19.2 forwarding with key v2
+                final ServerLoginPacketListenerBridge.KeyV2 keyV2 =
+                        (ServerLoginPacketListenerBridge.KeyV2) slpl;
+                if (keyV2.bridge$profilePublicKeyData() == null) {
+                    try {
+                        keyV2.bridge$validatePublicKey(payload.key(), payload.signer());
+                        keyV2.bridge$setProfilePublicKeyData(payload.key());
+                    } catch (Exception e) {
+                        slpl.bridge$logger_error(
+                                "Failed to validate profile key: {}", e.getMessage());
+                        throw new ThrowingComponent(INVALID_SIGNATURE, e);
+                    }
                 }
             }
         }

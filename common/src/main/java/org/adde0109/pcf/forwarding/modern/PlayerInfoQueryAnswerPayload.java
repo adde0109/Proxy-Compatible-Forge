@@ -35,7 +35,7 @@ import java.util.UUID;
  * @param signer the signer's UUID
  */
 public record PlayerInfoQueryAnswerPayload(
-        int version,
+        VelocityProxy.Version version,
         @NonNull InetAddress address,
         @NonNull GameProfile profile,
         @Nullable ProfilePublicKeyData key,
@@ -49,19 +49,19 @@ public record PlayerInfoQueryAnswerPayload(
 
     private static @NonNull PlayerInfoQueryAnswerPayload read(final @NonNull ByteBuf buf) {
         final ByteBuf data = readPayload(buf);
-        final int version = readVarInt(data);
+        final VelocityProxy.Version version = VelocityProxy.Version.from(readVarInt(data));
         final InetAddress address = readAddress(data);
         final UUID playerId = readUUID(data);
         final String playerName = readUtf(data, 16);
         final GameProfile profile = createProfile(playerId, playerName, data);
         ProfilePublicKeyData key = null;
-        if (version == MODERN_FORWARDING_WITH_KEY.id()
-                || version == MODERN_FORWARDING_WITH_KEY_V2.id()) {
-            key = readForwardedKey(data);
-        }
         UUID signer = null;
-        if (version == MODERN_FORWARDING_WITH_KEY_V2.id()) {
-            signer = readSignerUuidOrElse(data, playerId);
+        switch (version) {
+            case MODERN_FORWARDING_WITH_KEY -> key = readForwardedKey(data);
+            case MODERN_FORWARDING_WITH_KEY_V2 -> {
+                key = readForwardedKey(data);
+                signer = readSignerUuidOrElse(data, playerId);
+            }
         }
         return new PlayerInfoQueryAnswerPayload(version, address, profile, key, signer);
     }
