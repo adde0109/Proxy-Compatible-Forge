@@ -7,7 +7,7 @@ import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
 import dev.neuralnexus.taterapi.meta.enums.Platform;
-import dev.neuralnexus.taterapi.network.NetworkAdapters;
+import dev.neuralnexus.taterapi.network.NetworkRegistry;
 
 import net.minecraft.commands.synchronization.ArgumentTypes;
 import net.minecraftforge.fml.ExtensionPoint;
@@ -29,7 +29,7 @@ import org.apache.commons.lang3.tuple.Pair;
         version = @Versions(min = MinecraftVersion.V14))
 public final class Initializer implements PCFInitializer {
     public Initializer() {
-        NetworkAdapters.register(
+        NetworkRegistry.registerAdapter(
                 CCustomQueryPacketAdapter.INSTANCE, SCustomQueryAnswerPacketAdapter.INSTANCE);
 
         CrossStitch.GET_ARGUMENT_TYPE_ENTRY =
