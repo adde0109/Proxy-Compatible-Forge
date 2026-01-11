@@ -29,7 +29,6 @@ import io.netty.handler.codec.DecoderException;
 
 import org.adde0109.pcf.PCF;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -166,7 +165,7 @@ public final class VelocityProxy {
         for (int i = 0; i < count; i++) {
             final String name = readUtf(buf);
             final String value = readUtf(buf);
-            final @Nullable String signature = readNullable(buf, FriendlyByteBuf::readUtf);
+            final String signature = readNullable(buf, FriendlyByteBuf::readUtf);
             propertiesBuilder.put(name, new Property(name, value, signature));
         }
         return propertiesBuilder.build();
@@ -185,7 +184,7 @@ public final class VelocityProxy {
         for (int i = 0; i < count; i++) {
             final String name = readUtf(buf);
             final String value = readUtf(buf);
-            final @Nullable String signature = readNullable(buf, FriendlyByteBuf::readUtf);
+            final String signature = readNullable(buf, FriendlyByteBuf::readUtf);
             properties.add(new SimpleImmutableEntry<>(name, new Property(name, value, signature)));
         }
         return properties;
@@ -232,6 +231,15 @@ public final class VelocityProxy {
 
         public byte id() {
             return this.id;
+        }
+
+        public static Version from(final int id) {
+            for (final Version version : values()) {
+                if (version.id() == (byte) id) {
+                    return version;
+                }
+            }
+            throw new IllegalArgumentException("Unknown Modern Forwarding Version: " + id);
         }
     }
 }

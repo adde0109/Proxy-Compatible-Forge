@@ -6,7 +6,6 @@ import dev.neuralnexus.taterapi.meta.MinecraftVersions;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
-import dev.neuralnexus.taterapi.meta.platforms.TaterMetadata;
 
 import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.EnumPacketDirection;
@@ -75,8 +74,7 @@ public abstract class EnumConnectionStateMixin {
         } else if (packetClass == this.pcf$CCheckClass) {
             this.shadow$registerPacket(
                     EnumPacketDirection.SERVERBOUND, C2SCustomQueryAnswerPacket.class);
-            TaterMetadata.initForge(); // TODO: Remove this and figure out why it isn't being loaded
-            new AdapterRegistryInit();
+            new AdapterRegistryInit(); // TODO: Remove this and figure out why it isn't being loaded
         }
     }
 }

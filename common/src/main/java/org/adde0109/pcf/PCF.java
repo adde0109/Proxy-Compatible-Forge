@@ -1,6 +1,5 @@
 package org.adde0109.pcf;
 
-import dev.neuralnexus.taterapi.adapter.AdapterRegistry;
 import dev.neuralnexus.taterapi.loader.EntrypointLoader;
 import dev.neuralnexus.taterapi.logger.Logger;
 import dev.neuralnexus.taterapi.meta.Constraint;
@@ -11,8 +10,11 @@ import dev.neuralnexus.taterapi.meta.ModContainer;
 import dev.neuralnexus.taterapi.meta.ModResource;
 import dev.neuralnexus.taterapi.meta.Platform;
 import dev.neuralnexus.taterapi.meta.Platforms;
+import dev.neuralnexus.taterapi.network.NetworkRegistry;
+import dev.neuralnexus.taterapi.registries.AdapterRegistry;
 
 import org.adde0109.pcf.forwarding.Mode;
+import org.adde0109.pcf.forwarding.modern.PlayerInfoQueryPayload;
 import org.adde0109.pcf.forwarding.modern.VelocityProxy;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
@@ -71,6 +73,11 @@ public final class PCF {
             PCF.logger.error("Failed to access PCF Mod Resources: " + e.getClass(), e);
         }
         loader.onInit();
+
+        if (this.forwarding().enabled() && this.forwarding().mode().equals(Mode.MODERN)) {
+            NetworkRegistry.registerQueryPayload(
+                    PlayerInfoQueryPayload.IDENTIFIER, PlayerInfoQueryPayload.STREAM_CODEC);
+        }
 
         Constraint.Evaluator.DEBUG = debug;
     }

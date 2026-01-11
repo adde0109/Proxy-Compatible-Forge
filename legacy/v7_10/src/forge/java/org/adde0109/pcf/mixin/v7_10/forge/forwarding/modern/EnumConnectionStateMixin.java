@@ -4,7 +4,6 @@ import dev.neuralnexus.taterapi.meta.Mappings;
 import dev.neuralnexus.taterapi.meta.anno.AConstraint;
 import dev.neuralnexus.taterapi.meta.anno.Versions;
 import dev.neuralnexus.taterapi.meta.enums.MinecraftVersion;
-import dev.neuralnexus.taterapi.meta.platforms.TaterMetadata;
 
 import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.Packet;
@@ -34,8 +33,7 @@ public abstract class EnumConnectionStateMixin {
     private void onRegisterC2S(int id, Class<? extends Packet> packetClass, CallbackInfoReturnable<EnumConnectionState> cir) {
         if (packetClass == C01PacketEncryptionResponse.class) {
             this.shadow$func_150751_a(0x2, C2SCustomQueryAnswerPacket.class);
-            TaterMetadata.initForge(); // TODO: Remove this and figure out why it isn't being loaded
-            new AdapterRegistryInit();
+            new AdapterRegistryInit(); // TODO: Remove this and figure out why it isn't being loaded
         }
     }
 

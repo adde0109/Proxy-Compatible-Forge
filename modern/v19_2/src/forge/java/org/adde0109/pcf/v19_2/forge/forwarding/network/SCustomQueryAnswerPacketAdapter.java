@@ -1,37 +1,42 @@
 package org.adde0109.pcf.v19_2.forge.forwarding.network;
 
-import dev.neuralnexus.taterapi.adapter.AdapterCodec;
 import dev.neuralnexus.taterapi.network.protocol.login.ServerboundCustomQueryAnswerPacket;
-import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryAnswerPayloadImpl;
+import dev.neuralnexus.taterapi.network.protocol.login.custom.CustomQueryAnswerPayload;
+import dev.neuralnexus.taterapi.serialization.Result;
+import dev.neuralnexus.taterapi.serialization.codecs.ReversibleCodec;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.login.ServerboundCustomQueryPacket;
 
-import org.jspecify.annotations.NonNull;
-
 public final class SCustomQueryAnswerPacketAdapter
-        implements AdapterCodec<ServerboundCustomQueryPacket, ServerboundCustomQueryAnswerPacket> {
+        implements ReversibleCodec<
+                ServerboundCustomQueryPacket, ServerboundCustomQueryAnswerPacket> {
     public static final SCustomQueryAnswerPacketAdapter INSTANCE =
             new SCustomQueryAnswerPacketAdapter();
 
     @Override
-    public @NonNull ServerboundCustomQueryAnswerPacket from(
-            final @NonNull ServerboundCustomQueryPacket object) {
+    public Result<ServerboundCustomQueryAnswerPacket> encode(
+            final ServerboundCustomQueryPacket object) {
+        final int transactionId = object.getTransactionId();
         if (object.getData() == null) {
-            return new ServerboundCustomQueryAnswerPacket(object.getTransactionId());
+            return Result.success(new ServerboundCustomQueryAnswerPacket(transactionId));
         }
-        return new ServerboundCustomQueryAnswerPacket(
-                object.getTransactionId(),
-                new CustomQueryAnswerPayloadImpl(object.getData().slice()));
+        return Result.success(
+                new ServerboundCustomQueryAnswerPacket(
+                        transactionId,
+                        CustomQueryAnswerPayload.codec(transactionId)
+                                .decode(object.getData().slice())));
     }
 
     @Override
-    public @NonNull ServerboundCustomQueryPacket to(
-            final @NonNull ServerboundCustomQueryAnswerPacket object) {
+    public Result<ServerboundCustomQueryPacket> decode(
+            final ServerboundCustomQueryAnswerPacket object) {
         if (object.payload() == null) {
-            return new ServerboundCustomQueryPacket(object.transactionId(), null);
+            return Result.success(new ServerboundCustomQueryPacket(object.transactionId(), null));
         }
-        return new ServerboundCustomQueryPacket(
-                object.transactionId(), new FriendlyByteBuf(object.payload().data().slice()));
+        return Result.success(
+                new ServerboundCustomQueryPacket(
+                        object.transactionId(),
+                        new FriendlyByteBuf(object.payload().data().slice())));
     }
 }
