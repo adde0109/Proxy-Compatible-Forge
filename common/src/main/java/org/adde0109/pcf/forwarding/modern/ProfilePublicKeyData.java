@@ -2,7 +2,7 @@ package org.adde0109.pcf.forwarding.modern;
 
 import dev.neuralnexus.taterapi.meta.Constraint;
 import dev.neuralnexus.taterapi.meta.MinecraftVersions;
-import dev.neuralnexus.taterapi.serialization.codecs.ReversibleCodec;
+import dev.neuralnexus.taterapi.serialization.Codec;
 
 import org.adde0109.pcf.PCF;
 import org.jspecify.annotations.NonNull;
@@ -17,10 +17,9 @@ import java.time.Instant;
  * @param key the public key
  * @param keySignature the key signature
  */
-@SuppressWarnings("unchecked")
 public record ProfilePublicKeyData(
         @NonNull Instant expiresAt, @NonNull PublicKey key, byte[] keySignature) {
-    public static final ReversibleCodec<?, ProfilePublicKeyData> ADAPTER_CODEC;
+    public static final Codec<?, ProfilePublicKeyData> ADAPTER_CODEC;
 
     static {
         if (Constraint.range(MinecraftVersions.V19, MinecraftVersions.V19_2).result()) {
@@ -33,13 +32,13 @@ public record ProfilePublicKeyData(
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> @NonNull ProfilePublicKeyData fromMC(final @NonNull T obj) {
-        assert ADAPTER_CODEC != null;
-        return ((ReversibleCodec<T, ProfilePublicKeyData>) ADAPTER_CODEC).encode(obj).unwrap();
+        return ((Codec<T, ProfilePublicKeyData>) ADAPTER_CODEC).encode(obj).unwrap();
     }
 
+    @SuppressWarnings({"unchecked", "DataFlowIssue"})
     public <T> @NonNull T toMC() {
-        assert ADAPTER_CODEC != null;
-        return ((ReversibleCodec<T, ProfilePublicKeyData>) ADAPTER_CODEC).decode(this).unwrap();
+        return ((Codec<T, ProfilePublicKeyData>) ADAPTER_CODEC).decode(this).unwrap();
     }
 }
