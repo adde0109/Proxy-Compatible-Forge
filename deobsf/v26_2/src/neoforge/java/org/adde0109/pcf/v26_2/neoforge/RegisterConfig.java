@@ -23,6 +23,6 @@ public final class RegisterConfig implements PCFInitializer {
                         .<ModContainer>mod(PCF.MOD_ID)
                         .map(Wrapped::unwrap)
                         .orElseThrow();
-        container.registerConfig(ModConfig.Type.COMMON, Config.spec, PCF.CONFIG_FILE_NAME);
+        container.registerConfig(Config.configType(), Config.spec, PCF.CONFIG_FILE_NAME);
     }
 }

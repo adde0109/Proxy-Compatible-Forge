@@ -33,6 +33,19 @@ public final class Config {
     private static final Config config;
     public static final ModConfigSpec spec;
 
+    /**
+     * NeoForge 26.3 removed COMMON. Look the type up by name so one jar runs on both sides of that
+     * change. Do not use SYNCED: this config holds the forwarding secret.
+     */
+    static ModConfig.Type configType() {
+        for (final ModConfig.Type type : ModConfig.Type.values()) {
+            if (type.name().equals("LOCAL")) {
+                return type;
+            }
+        }
+        return ModConfig.Type.valueOf("COMMON");
+    }
+
     static {
         final Pair<Config, ModConfigSpec> specPair =
                 new ModConfigSpec.Builder().configure(Config::new);
@@ -76,7 +89,7 @@ public final class Config {
                 modConfigConstructor.setAccessible(true);
                 ModConfig dummyModConfig =
                         modConfigConstructor.newInstance(
-                                ModConfig.Type.COMMON,
+                                configType(),
                                 spec,
                                 null,
                                 CONFIG_FILE_NAME,
